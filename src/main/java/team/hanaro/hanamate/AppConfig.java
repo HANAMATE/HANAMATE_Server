@@ -1,14 +1,14 @@
-package team.hanaro.hanamate;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import team.hanaro.hanamate.domain.member.MemberRepository;
-import team.hanaro.hanamate.domain.member.MemberRepositoryImpl;
-import team.hanaro.hanamate.domain.member.MemberService;
-import team.hanaro.hanamate.domain.member.MemberServiceImpl;
-
-@Configuration
-public class AppConfig {
+//package team.hanaro.hanamate;
+//
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import team.hanaro.hanamate.domain.member.MemberRepository;
+//import team.hanaro.hanamate.domain.member.MemberRepositoryImpl;
+//import team.hanaro.hanamate.domain.member.MemberService;
+//import team.hanaro.hanamate.domain.member.MemberServiceImpl;
+//
+//@Configuration
+//public class AppConfig {
 
 //    @Bean
 //    public MemberService memberService(){
@@ -19,4 +19,4 @@ public class AppConfig {
 //        return new MemberRepositoryImpl();
 //    }
 
-}
+//}
