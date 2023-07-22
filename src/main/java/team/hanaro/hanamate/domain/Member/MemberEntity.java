@@ -1,12 +1,13 @@
 package team.hanaro.hanamate.domain.Member;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Setter
+//@Setter
 @Getter
 @Table(name = "member_table")
 //테이블 역할을 함.DB 테이블을 자바 객체처럼 쓰는 것
@@ -24,22 +25,35 @@ public class MemberEntity {
     @Column
     private String memberName;
 
+    public MemberEntity() {
+
+    }
+
+    @Builder
+    public MemberEntity(Long id, String memberEmail, String memberPassword, String memberName) {
+        this.id = id;
+        this.memberEmail = memberEmail;
+        this.memberPassword = memberPassword;
+        this.memberName = memberName;
+    }
+
     public static MemberEntity toMemberEntity(MemberDTO memberDTO) {
-        MemberEntity memberEntity = new MemberEntity();
-        //DTO로 담긴걸 Entity 객체로 넘기는 것
-        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
-        memberEntity.setMemberPassword(memberDTO.getMemberPassword());
-        memberEntity.setMemberName(memberDTO.getMemberName());
+        MemberEntity memberEntity = MemberEntity.builder()
+                .memberEmail(memberDTO.getMemberEmail())
+                .memberPassword(memberDTO.getMemberPassword())
+                .memberName(memberDTO.getMemberName())
+                .build();
+
         return memberEntity;
     }
 
     public static MemberEntity toUpdateMemberEntity(MemberDTO memberDTO) {
-        MemberEntity memberEntity = new MemberEntity();
-        memberEntity.setId(memberDTO.getId()); //Update에는 ID값이 필요해서 널어줌
-        //DTO로 담긴걸 Entity 객체로 넘기는 것
-        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
-        memberEntity.setMemberPassword(memberDTO.getMemberPassword());
-        memberEntity.setMemberName(memberDTO.getMemberName());
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(memberDTO.getId())
+                .memberEmail(memberDTO.getMemberEmail())
+                .memberPassword(memberDTO.getMemberPassword())
+                .memberName(memberDTO.getMemberName())
+                .build();
         return memberEntity;
     }
 
