@@ -18,35 +18,13 @@ public class MemberController {
     //생성자 주입
     private final MemberService memberService;
 
-
-    // 회원가입 페이지 출력 요청
-    @GetMapping("/member/save")
-    public String saveForm() {
-        return "save";
+    //로그인
+    @GetMapping("/")
+    public String loginForm(){
+        return "login"; //templates 폴더의 login.html을 찾아감.
     }
 
-
-    // 회원가입에서 save() 후 post 받아줌
-    @PostMapping("/member/save")
-//    public String save(@RequestParam("memberEmail") String memberEmail,
-//                       @RequestParam("memberPassword") String memberPassword,
-//                       @RequestParam("memberName") String memberName) {
-    public String save(@ModelAttribute MemberDTO memberDTO) {
-        System.out.println("MemberController.save");
-//        System.out.println("memberEmail = " + memberEmail + ", memberPassword = " + memberPassword + ", memberName = " + memberName);
-        System.out.println("memberDTO = " + memberDTO);
-        memberService.save(memberDTO);
-        return "login";
-//        return "index";
-    }
-
-    @GetMapping("/member/login")
-    public String loginForm() {
-        return "login";
-    }
-
-
-    @PostMapping("/member/login")
+    @PostMapping("/")
     public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session){
         MemberDTO loginResult = memberService.login(memberDTO);
         if (loginResult != null){
@@ -59,6 +37,31 @@ public class MemberController {
         }
 
     }
+
+    // 회원가입 페이지 출력 요청
+    @GetMapping("/signup")
+    public String saveForm() {
+        return "signup";
+    }
+
+
+    // 회원가입에서 save() 후 post 받아줌
+    @PostMapping("/signup")
+//    public String save(@RequestParam("memberEmail") String memberEmail,
+//                       @RequestParam("memberPassword") String memberPassword,
+//                       @RequestParam("memberName") String memberName) {
+    public String signup(@ModelAttribute MemberDTO memberDTO) {
+        System.out.println("MemberController.save");
+//        System.out.println("memberEmail = " + memberEmail + ", memberPassword = " + memberPassword + ", memberName = " + memberName);
+        System.out.println("memberDTO = " + memberDTO);
+        memberService.signup(memberDTO);
+        return "login";
+    }
+
+
+
+
+
 
     @GetMapping("/member/")
     public String findAll(Model model){

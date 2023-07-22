@@ -3,15 +3,15 @@ package team.hanaro.hanamate.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    public void save(MemberDTO memberDTO) {
+
+
+    public void signup(MemberDTO memberDTO) {
         //1. dto -> entity 변환
         //2. repository의 save 메서드 호출
         MemberEntity memberEntity = MemberEntity.toMemberEntity(memberDTO);
@@ -36,7 +36,10 @@ public class MemberService {
                 //비밀번호가 일치
                 //entity -> dto 변환 후 리턴
                 MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
+
+
                 return dto;
+
             }
             else{
                 //비밀번호 불일치(로그인실패)
