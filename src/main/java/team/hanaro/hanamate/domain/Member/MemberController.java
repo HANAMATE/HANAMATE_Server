@@ -3,16 +3,15 @@ package team.hanaro.hanamate.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
-
+import java.util.Map;
 @Controller
+//@RestController
 @RequiredArgsConstructor
+//@RequestMapping
 public class MemberController {
 
     //생성자 주입
@@ -23,20 +22,28 @@ public class MemberController {
     public String loginForm(){
         return "login"; //templates 폴더의 login.html을 찾아감.
     }
+//    public Map<String, Object> firstController(){
+//        return memberService.getFirstData();
+//    }
 
-    @PostMapping("/")
-    public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session){
-        MemberDTO loginResult = memberService.login(memberDTO);
-        if (loginResult != null){
-            //login 성공
-            session.setAttribute("loginEmail", loginResult.getMemberEmail());
-            return "main";
-        }else{
-            //login 실패
-            return "login";
-        }
 
-    }
+//    @PostMapping("/")
+//    @ResponseBody
+//    public Map<String, Object> login(@ModelAttribute MemberDTO memberDTO, HttpSession session){
+//        MemberDTO loginResult = memberService.login(memberDTO);
+//        if (loginResult != null){
+//            //login 성공
+//            session.setAttribute("loginEmail", loginResult.getMemberEmail());
+////            return "main";
+//            return memberService.getFirstData();
+////            return memberService.getFirstData();
+//        }else{
+//            return null;
+//            //login 실패
+////            return "login";
+//        }
+//
+//    }
 
     // 회원가입 페이지 출력 요청
     @GetMapping("/signup")
