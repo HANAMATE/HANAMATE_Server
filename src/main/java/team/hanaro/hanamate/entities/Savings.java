@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain;
+package team.hanaro.hanamate.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

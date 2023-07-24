@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain;
+package team.hanaro.hanamate.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,24 +6,20 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.sql.Blob;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "images")
+@Table(name = "loan_history")
 @Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Images {
-
+public class LoanHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long imageId;
-    private String fileName;
-    private Integer fileSize;
-    private String fileType;
-    @Lob
-    private Blob fileData;
-    private Timestamp createdAt;
+    private Long historyId;
+    private Long allowanceId;
+    private Integer allowanceAmount;
+    private Timestamp transactionDate;
+    private Boolean success;
 }

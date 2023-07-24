@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain;
+package team.hanaro.hanamate.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,14 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "wallets_and_users")
+@Table(name = "parents_and_child")
 @Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class WalletsAndUsers {
+public class ParentsAndChilds {
     @Id
-    private Long walletId;
+    private Long childrenId;
 
-    private Long userId;
+    private Long parentsId;
 }

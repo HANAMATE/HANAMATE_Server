@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain;
+package team.hanaro.hanamate.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,19 +9,17 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "savings_history")
+@Table(name = "allowance_history")
 @Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class SavingsHistory {
+public class AllowanceHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long historyId;
-    private Long savingsId;
-    private Integer sequence;
-    private Integer depositAmount;
+    private Long allowanceId;
+    private Integer allowanceAmount;
     private Timestamp transactionDate;
-    private Integer balance;
     private Boolean success;
 }
