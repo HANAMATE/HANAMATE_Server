@@ -13,9 +13,9 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WalletsAndUsers {
+public class WalletsAndMember {
     @Id
     private Long walletId;
 
-    private Long userId;
+    private Long memberId;
 }

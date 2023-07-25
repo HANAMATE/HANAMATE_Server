@@ -6,21 +6,21 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "users")
+@Table(name = "member")
 @Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long userId;
+    private Long memberId;
 
     private Long walletId; /* 개인 지갑 Id */
     private Long accountId;
 
-    private String userName;
+    private String memberName;
     private String loginId;
 
     private String loginPw;
@@ -34,6 +34,6 @@ public class User {
     private Integer age;
     private Timestamp registrationDate;
 
-    private boolean userType; /* 0: 부모, 1: 아이 */
+    private boolean memberType; /* 0: 부모, 1: 아이 */
 
 }
