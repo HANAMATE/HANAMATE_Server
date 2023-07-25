@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.Login;
+package team.hanaro.hanamate.global;
 
 import lombok.*;
 

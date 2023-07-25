@@ -2,19 +2,15 @@ package team.hanaro.hanamate.domain.Member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import team.hanaro.hanamate.domain.Login.DefaultRes;
-import team.hanaro.hanamate.domain.Login.LoginReq;
-import team.hanaro.hanamate.global.ResponseMessage;
-import team.hanaro.hanamate.global.StatusCode;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Map;
 @Slf4j
 @Controller
 //@RestController
@@ -23,63 +19,6 @@ public class MemberController {
 
     //생성자 주입
     private final MemberService memberService;
-
-    //로그인
-    @GetMapping("/")
-    @ResponseBody
-    public String loginForm(@RequestBody LoginReq loginReq){
-        log.info("LoginReq = {}", loginReq);
-        return "login"; //templates 폴더의 login.html을 찾아감.
-    }
-//    @ResponseBody
-//    @PostMapping("/")
-//    public ResponseEntity login(@RequestBody LoginReq loginReq) {
-//        return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, loginReq), HttpStatus.OK);
-//    }
-
-//    @PostMapping("/")
-//    @ResponseBody
-//    public ResponseEntity login(@RequestBody MemberDTO memberDTO, HttpSession session){
-//        MemberDTO loginResult = memberService.login(memberDTO);
-//        if (loginResult != null){
-//            //login 성공
-//            session.setAttribute("loginEmail", loginResult.getMemberEmail());
-//
-//            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
-//
-//        }else{
-//            return null;
-//            //login 실패
-////            return "login";
-//        }
-//
-//    }
-
-
-    // 회원가입 페이지 출력 요청
-    @GetMapping("/signup")
-    public String saveForm() {
-        return "signup";
-    }
-
-
-    // 회원가입에서 save() 후 post 받아줌
-    @PostMapping("/signup")
-//    public String save(@RequestParam("memberEmail") String memberEmail,
-//                       @RequestParam("memberPassword") String memberPassword,
-//                       @RequestParam("memberName") String memberName) {
-    public String signup(@ModelAttribute MemberDTO memberDTO) {
-        System.out.println("MemberController.save");
-//        System.out.println("memberEmail = " + memberEmail + ", memberPassword = " + memberPassword + ", memberName = " + memberName);
-        System.out.println("memberDTO = " + memberDTO);
-        memberService.signup(memberDTO);
-        return "login";
-    }
-
-
-
-
-
 
     @GetMapping("/member/")
     public String findAll(Model model){

@@ -2,7 +2,7 @@ package team.hanaro.hanamate.domain.Member;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import team.hanaro.hanamate.domain.Signup.SignupReq;
 
 import javax.persistence.*;
 
@@ -37,11 +37,11 @@ public class MemberEntity {
         this.memberName = memberName;
     }
 
-    public static MemberEntity toMemberEntity(MemberDTO memberDTO) {
+    public static MemberEntity toMemberEntity(SignupReq signupReq) {
         MemberEntity memberEntity = MemberEntity.builder()
-                .memberEmail(memberDTO.getMemberEmail())
-                .memberPassword(memberDTO.getMemberPassword())
-                .memberName(memberDTO.getMemberName())
+                .memberEmail(signupReq.getMemberEmail())
+                .memberPassword(signupReq.getMemberPassword())
+                .memberName(signupReq.getMemberName())
                 .build();
 
         return memberEntity;

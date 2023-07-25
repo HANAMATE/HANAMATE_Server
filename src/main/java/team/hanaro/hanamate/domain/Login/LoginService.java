@@ -2,7 +2,6 @@ package team.hanaro.hanamate.domain.Login;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import team.hanaro.hanamate.domain.Member.MemberDTO;
 import team.hanaro.hanamate.domain.Member.MemberEntity;
 
 import java.util.Optional;
