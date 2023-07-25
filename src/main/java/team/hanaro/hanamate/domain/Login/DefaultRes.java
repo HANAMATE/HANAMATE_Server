@@ -15,6 +15,7 @@ import lombok.*;
 @ToString
 @Builder
 
+//상태코드, 응답메세지, 데이터로 형식을 갖춰서 클라이언트에게 응답을 해주기 위해서 DefaultRes 클래스를 만들었음
 public class DefaultRes<T>{
 
     private int statusCode;
@@ -27,6 +28,7 @@ public class DefaultRes<T>{
         this.data = null;
     }
 
+//    static 메소드로 만든 이유는 DefaultRes()형태로 바로 사용하기 위해서 했던 것이고, static으로 사용했기 때문에 제네릭 메소드 형태로 만들었음. (제네릭 메소드 학습하기)
     public static<T> DefaultRes<T> res(final int statusCode, final String responseMessage) {
         return res(statusCode, responseMessage, null);
     }

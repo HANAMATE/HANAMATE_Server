@@ -1,9 +1,14 @@
 package team.hanaro.hanamate.domain.Member;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import team.hanaro.hanamate.domain.Login.DefaultRes;
+import team.hanaro.hanamate.global.ResponseMessage;
+import team.hanaro.hanamate.global.StatusCode;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -11,7 +16,6 @@ import java.util.Map;
 @Controller
 //@RestController
 @RequiredArgsConstructor
-//@RequestMapping
 public class MemberController {
 
     //생성자 주입
@@ -27,23 +31,31 @@ public class MemberController {
 //    }
 
 
-//    @PostMapping("/")
+    @PostMapping("/")
 //    @ResponseBody
-//    public Map<String, Object> login(@ModelAttribute MemberDTO memberDTO, HttpSession session){
-//        MemberDTO loginResult = memberService.login(memberDTO);
-//        if (loginResult != null){
-//            //login 성공
-//            session.setAttribute("loginEmail", loginResult.getMemberEmail());
-////            return "main";
-//            return memberService.getFirstData();
-////            return memberService.getFirstData();
-//        }else{
-//            return null;
-//            //login 실패
-////            return "login";
-//        }
-//
+    public ResponseEntity login(@ModelAttribute MemberDTO memberDTO, HttpSession session){
+        MemberDTO loginResult = memberService.login(memberDTO);
+        if (loginResult != null){
+            //login 성공
+            session.setAttribute("loginEmail", loginResult.getMemberEmail());
+
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
+
+        }else{
+            return null;
+            //login 실패
+//            return "login";
+        }
+
+    }
+
+//    @PostMapping("/")
+////    @RequestBody
+//    public ResponseEntity login(@RequestParam("memberEmail") String memberEmail,
+//                                @RequestParam("memberPassword") String memberPassword) {
+//        return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
 //    }
+
 
     // 회원가입 페이지 출력 요청
     @GetMapping("/signup")

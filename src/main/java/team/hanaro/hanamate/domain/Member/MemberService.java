@@ -10,15 +10,15 @@ import java.util.*;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public Map<String, Object> getFirstData(){
-        Map<String, Object> firstData = new HashMap<>();
-
-        firstData.put("label1", "check1");
-        firstData.put("label2", "check2");
-        firstData.put("label3", "check3");
-
-        return firstData;
-    }
+//    public Map<String, Object> getFirstData(){
+//        Map<String, Object> firstData = new HashMap<>();
+//
+//        firstData.put("label1", "check1");
+//        firstData.put("label2", "check2");
+//        firstData.put("label3", "check3");
+//
+//        return firstData;
+//    }
 
     public void signup(MemberDTO memberDTO) {
         //1. dto -> entity 변환
