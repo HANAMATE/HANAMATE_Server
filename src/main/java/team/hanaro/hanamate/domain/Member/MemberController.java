@@ -1,18 +1,21 @@
 package team.hanaro.hanamate.domain.Member;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.Login.DefaultRes;
+import team.hanaro.hanamate.domain.Login.LoginReq;
 import team.hanaro.hanamate.global.ResponseMessage;
 import team.hanaro.hanamate.global.StatusCode;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+@Slf4j
 @Controller
 //@RestController
 @RequiredArgsConstructor
@@ -23,37 +26,33 @@ public class MemberController {
 
     //로그인
     @GetMapping("/")
-    public String loginForm(){
+    @ResponseBody
+    public String loginForm(@RequestBody LoginReq loginReq){
+        log.info("LoginReq = {}", loginReq);
         return "login"; //templates 폴더의 login.html을 찾아감.
     }
-//    public Map<String, Object> firstController(){
-//        return memberService.getFirstData();
+//    @ResponseBody
+//    @PostMapping("/")
+//    public ResponseEntity login(@RequestBody LoginReq loginReq) {
+//        return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, loginReq), HttpStatus.OK);
 //    }
 
-
-    @PostMapping("/")
-//    @ResponseBody
-    public ResponseEntity login(@ModelAttribute MemberDTO memberDTO, HttpSession session){
-        MemberDTO loginResult = memberService.login(memberDTO);
-        if (loginResult != null){
-            //login 성공
-            session.setAttribute("loginEmail", loginResult.getMemberEmail());
-
-            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
-
-        }else{
-            return null;
-            //login 실패
-//            return "login";
-        }
-
-    }
-
 //    @PostMapping("/")
-////    @RequestBody
-//    public ResponseEntity login(@RequestParam("memberEmail") String memberEmail,
-//                                @RequestParam("memberPassword") String memberPassword) {
-//        return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
+//    @ResponseBody
+//    public ResponseEntity login(@RequestBody MemberDTO memberDTO, HttpSession session){
+//        MemberDTO loginResult = memberService.login(memberDTO);
+//        if (loginResult != null){
+//            //login 성공
+//            session.setAttribute("loginEmail", loginResult.getMemberEmail());
+//
+//            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
+//
+//        }else{
+//            return null;
+//            //login 실패
+////            return "login";
+//        }
+//
 //    }
 
 
