@@ -1,9 +1,6 @@
 package team.hanaro.hanamate.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Blob;
@@ -15,6 +12,7 @@ import java.sql.Timestamp;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Images {
 
     @Id
