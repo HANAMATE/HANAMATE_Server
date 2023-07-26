@@ -16,11 +16,11 @@ public class LoginService {
         2. DB에서 조회한 비밀번호와 사용자가 입력한 비밀번호가 일치하는지 판단
          */
 
-        Optional<MemberEntity> byMemberEmail = loginRepository.findByMemberEmail(loginReq.getMemberEmail());
-        if (byMemberEmail.isPresent()){
+        Optional<MemberEntity> byLoginId = loginRepository.findByLoginId(loginReq.getLoginId());
+        if (byLoginId.isPresent()){
             //조회 결과가 있다.(해당 이메일을 가진 회원정보가 있다)
-            MemberEntity memberEntity =byMemberEmail.get();
-            if((memberEntity.getMemberPassword().equals(loginReq.getMemberPassword()))){
+            MemberEntity memberEntity =byLoginId.get();
+            if((memberEntity.getLoginPw().equals(loginReq.getLoginPw()))){
                 //비밀번호가 일치
                 //entity -> dto 변환 후 리턴
                 LoginReq dto = LoginReq.toMemberDTO(memberEntity);

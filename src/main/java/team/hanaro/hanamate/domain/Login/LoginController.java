@@ -36,7 +36,7 @@ public class LoginController {
         LoginReq loginResult = loginService.login(loginReq);
         if (loginResult != null){
             //login 성공
-            session.setAttribute("loginEmail", loginResult.getMemberEmail());
+            session.setAttribute("loginEmail", loginResult.getLoginId());
 //            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, loginResult), HttpStatus.OK);
         }else{

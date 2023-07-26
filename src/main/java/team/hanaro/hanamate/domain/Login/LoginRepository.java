@@ -11,5 +11,6 @@ public interface LoginRepository extends JpaRepository<MemberEntity, Long> {
 
     //이메일로 회원 정보 조회(select * from member_table where member_email=?)
     //Optional은 자바에서 제공하는 클래스인데 기본적으로 Optional에 감싸서 객체를 넘겨줌
-    Optional<MemberEntity> findByMemberEmail(String memberEmail);
+//    Optional<MemberEntity> findByMemberEmail(String memberEmail);
+    Optional<MemberEntity> findByLoginId(String memberId);
 }

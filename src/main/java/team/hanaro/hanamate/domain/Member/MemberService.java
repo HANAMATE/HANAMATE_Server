@@ -36,8 +36,8 @@ public class MemberService {
         }
     }
 
-    public MemberDTO updateForm(String myEmail) {
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(myEmail);
+    public MemberDTO updateForm(String myLoginId) {
+        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByLoginId(myLoginId);
         if(optionalMemberEntity.isPresent()){
             return MemberDTO.toMemberDTO(optionalMemberEntity.get());
         }else{

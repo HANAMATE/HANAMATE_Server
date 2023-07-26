@@ -11,13 +11,13 @@ import team.hanaro.hanamate.domain.Member.MemberEntity;
 
 public class LoginReq {
 
-    private String memberEmail;
-    private String memberPassword;
+    private String loginId;
+    private String loginPw;
 
     public static LoginReq toMemberDTO(MemberEntity memberEntity) {
         LoginReq loginReq = new LoginReq();
-        loginReq.setMemberEmail(memberEntity.getMemberEmail());
-        loginReq.setMemberPassword(memberEntity.getMemberPassword());
+        loginReq.setLoginId(memberEntity.getLoginId());
+        loginReq.setLoginPw(memberEntity.getLoginPw());
         return loginReq;
     }
 }
