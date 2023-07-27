@@ -1,10 +1,12 @@
 package team.hanaro.hanamate.domain.Login;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import team.hanaro.hanamate.domain.Member.MemberEntity;
 
 import java.util.Optional;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginService {
@@ -24,8 +26,7 @@ public class LoginService {
                 //비밀번호가 일치
                 //entity -> dto 변환 후 리턴
                 LoginReq dto = LoginReq.toMemberDTO(memberEntity);
-
-
+                log.info("dto={}" ,dto);
                 return dto;
 
             }
@@ -39,4 +40,6 @@ public class LoginService {
         }
 
     }
+
+
 }

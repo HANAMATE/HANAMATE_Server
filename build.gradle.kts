@@ -26,6 +26,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    //security
+    implementation ("org.springframework.boot:spring-boot-starter-security")
+    testImplementation ("org.springframework.security:spring-security-test")
+
+    // jwt
+    implementation ("io.jsonwebtoken:jjwt:0.9.1")
+
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")

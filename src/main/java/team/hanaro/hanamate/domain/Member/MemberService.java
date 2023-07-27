@@ -36,6 +36,17 @@ public class MemberService {
         }
     }
 
+
+    public MemberEntity getLoginMemberByLoginId(String loginId) {
+        if(loginId == null) return null;
+
+        Optional<MemberEntity> optionalUser = memberRepository.findByLoginId(loginId);
+        if(optionalUser.isEmpty()) return null;
+
+        return optionalUser.get();
+    }
+
+
     public MemberDTO updateForm(String myLoginId) {
         Optional<MemberEntity> optionalMemberEntity = memberRepository.findByLoginId(myLoginId);
         if(optionalMemberEntity.isPresent()){

@@ -3,6 +3,8 @@ package team.hanaro.hanamate.domain.Login;
 import lombok.*;
 import team.hanaro.hanamate.domain.Member.MemberEntity;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -11,7 +13,9 @@ import team.hanaro.hanamate.domain.Member.MemberEntity;
 
 public class LoginReq {
 
+    @NotBlank
     private String loginId;
+    @NotBlank
     private String loginPw;
 
     public static LoginReq toMemberDTO(MemberEntity memberEntity) {
