@@ -28,9 +28,9 @@ public class Loans {
     private Integer balance;
     private Integer repaymentAmount; // TODO: 어떤 컬럼인지 확인
 
-    private Integer paymentDate;
+    /*private Integer paymentDate;
     private String dayOfWeek;
-    private Boolean everyday;
+    private Boolean everyday;*/ // 0728: 대출 상환은 정기 용돈에서 차감
 
     /*private String paymentMethod;*/ // TODO: 원리금균등상환만 하는데 컬럼 따로 필요한지 확인
     private Integer interestRate; /* 5%면 5 */
