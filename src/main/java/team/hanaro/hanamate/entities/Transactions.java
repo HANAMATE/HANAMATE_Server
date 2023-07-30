@@ -25,5 +25,5 @@ public class Transactions {
     private Integer amount;
     private String location;
     private Integer balance;
-    private boolean status;
+    private Boolean status;
 }
