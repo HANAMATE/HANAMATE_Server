@@ -37,6 +37,7 @@ public class MemberService {
     }
 
 
+    //엔티티로 반환함..(JWT에 쓰이는 건데 Entity로 해도 되는건지는 좀 의문이 듬)
     public MemberEntity getLoginMemberByLoginId(String loginId) {
         if(loginId == null) return null;
 

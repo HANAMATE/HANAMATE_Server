@@ -17,9 +17,9 @@ public class JwtTokenUtil {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expireTimeMs))
-                .signWith(SignatureAlgorithm.HS256, key)
+                .setIssuedAt(new Date(System.currentTimeMillis())) //토큰이 발급된 시간, 토큰의 age가 얼마나 되었는지 판단 가능
+                .setExpiration(new Date(System.currentTimeMillis() + expireTimeMs)) //토큰 만료 시간
+                .signWith(SignatureAlgorithm.HS256, key) //서명 알고리즘은 HS256 사용
                 .compact();
     }
 
@@ -28,7 +28,7 @@ public class JwtTokenUtil {
         return extractClaims(token, secretKey).get("loginId").toString();
     }
 
-    // 밝급된 Token이 만료 시간이 지났는지 체크
+    // 발급된 Token이 만료 시간이 지났는지 체크
     public static boolean isExpired(String token, String secretKey) {
         Date expiredDate = extractClaims(token, secretKey).getExpiration();
         // Token의 만료 날짜가 지금보다 이전인지 check

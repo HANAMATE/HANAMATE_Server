@@ -24,12 +24,12 @@ public class SecurityConfig {
         return httpSecurity
                 .httpBasic().disable()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//Token 로그인 방식에서는 session이 필요없기 때문
                 .and()
                 .addFilterBefore(new JwtTokenFilter(memberService, secretKey), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers("/jwt-login/info").authenticated()
-                .antMatchers("/jwt-login/admin/**").hasAuthority(MemberType.parent.name())
+                .authorizeRequests()//인증, 인가가 필요한 URL 지정
+                .antMatchers("/jwt-login/info").authenticated()//.authenticated():해당 URL에 진입하기 위해서 Authentication(인증, 로그인)이 필요함
+                .antMatchers("/jwt-login/admin/**").hasAuthority(MemberType.parent.name())//.hasAuthority(): 해당 URL에 진입하기 위해서 Authorization(인가, ex)권한이 ADMIN인 저만 진입 가능)이 필요함
                 .and().build();
     }
 }

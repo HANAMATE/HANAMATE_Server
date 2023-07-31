@@ -2,11 +2,15 @@ package team.hanaro.hanamate.domain.Login;//package team.hanaro.hanamate.domain.
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import team.hanaro.hanamate.domain.Jwt.JwtTokenUtil;
+import team.hanaro.hanamate.domain.Member.MemberEntity;
+import team.hanaro.hanamate.domain.Member.MemberService;
+
 @Slf4j
 @RequiredArgsConstructor
 //@Controller
@@ -34,6 +38,8 @@ public class LoginController {
 
 //            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS), HttpStatus.OK);
 //            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, loginResult), HttpStatus.OK);
+
+            //로그인 성공 => JWT Token 발급
             String secretKey = "vlweyvbsyt9v7zq57tejmnvuyzblycfpqye08f7mgva9xkha";
             long expireTimeMs = 1000 * 60 * 60;     // Token 유효 시간 = 60분
 
@@ -46,10 +52,19 @@ public class LoginController {
             return jwtToken;
         }else{
             //login 실패
-            return"실패";
+            return"로그인 아이디 또는 비밀번호가 틀렸습니다 = 실패";
 //            return new ResponseEntity(DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.LOGIN_FAIL), HttpStatus.OK);
 
         }
 
     }
+
+//    @GetMapping("/info")
+//    public String memberInfo(Authentication auth){
+//        MemberEntity loginMember = MemberService.getLoginMemberByLoginId(auth.getName());
+//
+//        return String.format("loginId : %s", loginMember.getLoginId());
+//    }
+
+
 }

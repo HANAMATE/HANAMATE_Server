@@ -52,7 +52,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // Jwt Token에서 loginId 추출
         String loginId = JwtTokenUtil.getLoginId(token, secretKey);
 
-        // 추출한 loginId로 User 찾아오기
+        // 추출한 loginId로 MemberEntity 찾아오기
         MemberEntity memberEntity = memberService.getLoginMemberByLoginId(loginId);
 
         // loginUser 정보로 UsernamePasswordAuthenticationToken 발급
