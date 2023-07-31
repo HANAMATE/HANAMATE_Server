@@ -27,4 +27,8 @@ public class LoginReq {
         loginReq.setMemberType(memberEntity.getMemberType());
         return loginReq;
     }
+
+    public void setEncodePwd(String encodePwd){
+        this.loginPw=encodePwd;
+    }
 }

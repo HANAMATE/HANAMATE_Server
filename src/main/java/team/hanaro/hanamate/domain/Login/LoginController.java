@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import team.hanaro.hanamate.domain.Jwt.JwtTokenUtil;
+import team.hanaro.hanamate.jwt.JwtTokenUtil;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,6 +45,9 @@ public class LoginController {
             log.info("secretKey={}", secretKey);
             log.info("expireTimeMs={}", expireTimeMs);
             String jwtToken = JwtTokenUtil.createToken(loginResult.getLoginId(), secretKey, expireTimeMs);
+
+
+
 //            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, jwtToken), HttpStatus.OK);
 //            return"성공";
             return jwtToken;

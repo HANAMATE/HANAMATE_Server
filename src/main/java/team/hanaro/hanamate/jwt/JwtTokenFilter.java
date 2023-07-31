@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.Jwt;
+package team.hanaro.hanamate.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +10,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import team.hanaro.hanamate.domain.Login.LoginReq;
 import team.hanaro.hanamate.domain.Login.LoginService;
-import team.hanaro.hanamate.domain.Member.MemberEntity;
-import team.hanaro.hanamate.domain.Member.MemberService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+
+// JwtTokenFilter에서는 사용자의 요청에서 Jwt Token을 추출한 후 해당 Token이 유효한지 체크 => 유효하다면 UsernamePasswordAuthenticationFilter를 통과할 수 있게끔 권한 부여
 @Slf4j
 // OncePerRequestFilter : 매번 들어갈 때 마다 체크 해주는 필터
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.Jwt;
+package team.hanaro.hanamate.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
