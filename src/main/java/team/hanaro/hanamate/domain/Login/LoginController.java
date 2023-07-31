@@ -59,12 +59,18 @@ public class LoginController {
 
     }
 
-//    @GetMapping("/info")
-//    public String memberInfo(Authentication auth){
-//        MemberEntity loginMember = MemberService.getLoginMemberByLoginId(auth.getName());
-//
-//        return String.format("loginId : %s", loginMember.getLoginId());
-//    }
+    @GetMapping("/info")
+    public String memberInfo(Authentication auth){
+        log.info("auth={}", auth);
+        log.info("auth.getName()={}", auth.getAuthorities());
+        LoginReq loginMember = loginService.getLoginMemberByLoginId(auth.getName());
+        log.info("loginMember = {}", loginMember);
+        log.info("auth={}", auth);
+
+
+
+        return String.format("loginId : %s", loginMember.getLoginId());
+    }
 
 
 }

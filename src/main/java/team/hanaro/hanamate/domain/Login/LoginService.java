@@ -41,5 +41,21 @@ public class LoginService {
 
     }
 
+    //인증, 인가 시 사용
+    //loginId가 null이거나(로그인 X) loginId로 찾아온 Member가 없으면 null return
+    //엔티티로 반환함..(JWT에 쓰이는 건데 Entity로 해도 되는건지는 좀 의문이 듬)
+    public LoginReq getLoginMemberByLoginId(String loginId) {
+        if(loginId == null) return null;
+
+        Optional<MemberEntity> optionalUser = loginRepository.findByLoginId(loginId);
+        if(optionalUser.isEmpty()) return null;
+
+        MemberEntity memberEntity=optionalUser.get();
+        //entity -> dto 변환 후 리턴
+        LoginReq dto = LoginReq.toMemberDTO(memberEntity);
+        return dto;
+    }
+
+
 
 }
