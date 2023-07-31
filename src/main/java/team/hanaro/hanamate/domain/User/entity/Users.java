@@ -1,9 +1,10 @@
-package team.hanaro.hanamate.domain.User;
+package team.hanaro.hanamate.domain.User.entity;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import team.hanaro.hanamate.domain.User.entity.BaseTime;
 
 import javax.persistence.*;
 import java.util.ArrayList;

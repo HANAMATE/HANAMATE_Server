@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import org.springframework.stereotype.Component;
-import team.hanaro.hanamate.domain.User.UserResponseDto;
+import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
 
 import java.security.Key;
 import java.util.Arrays;

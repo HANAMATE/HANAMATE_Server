@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.User;
+package team.hanaro.hanamate.domain.User.entity;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

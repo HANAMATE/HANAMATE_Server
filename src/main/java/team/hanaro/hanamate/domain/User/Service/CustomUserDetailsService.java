@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.User;
+package team.hanaro.hanamate.domain.User.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import team.hanaro.hanamate.domain.User.entity.Users;
+import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 
 @Service
 @RequiredArgsConstructor

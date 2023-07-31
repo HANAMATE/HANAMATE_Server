@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.User;
+package team.hanaro.hanamate.domain.User.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import team.hanaro.hanamate.domain.User.Helper;
+import team.hanaro.hanamate.domain.User.Dto.Response;
+import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
+import team.hanaro.hanamate.domain.User.Service.UsersService;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 @Slf4j

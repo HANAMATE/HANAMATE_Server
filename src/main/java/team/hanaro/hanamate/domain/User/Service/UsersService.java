@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.User;
+package team.hanaro.hanamate.domain.User.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import team.hanaro.hanamate.domain.User.Authority;
+import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
+import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
+import team.hanaro.hanamate.domain.User.Dto.Response;
+import team.hanaro.hanamate.domain.User.entity.Users;
+import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 import team.hanaro.hanamate.security.SecurityUtil;
 

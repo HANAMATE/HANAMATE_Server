@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.User;
+package team.hanaro.hanamate.domain.User.Dto;
 
 import lombok.Builder;
 import lombok.Getter;
