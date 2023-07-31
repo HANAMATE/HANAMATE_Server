@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import team.hanaro.hanamate.domain.Jwt.JwtTokenUtil;
-import team.hanaro.hanamate.domain.Member.MemberEntity;
-import team.hanaro.hanamate.domain.Member.MemberService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -68,9 +66,12 @@ public class LoginController {
         log.info("auth={}", auth);
 
 
-
         return String.format("loginId : %s", loginMember.getLoginId());
     }
 
+    @GetMapping("/admin")
+    public String adminPage(){
+        return "관리자 페이지 접근 성공";
+    }
 
 }
