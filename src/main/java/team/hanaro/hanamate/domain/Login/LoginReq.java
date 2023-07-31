@@ -1,7 +1,6 @@
 package team.hanaro.hanamate.domain.Login;
 
 import lombok.*;
-import team.hanaro.hanamate.domain.Member.MemberEntity;
 import team.hanaro.hanamate.domain.Member.MemberType;
 
 import javax.validation.constraints.NotBlank;
@@ -20,13 +19,13 @@ public class LoginReq {
     private String loginPw;
     private MemberType memberType; /* 0: 부모, 1: 아이 */
 
-    public static LoginReq toMemberDTO(MemberEntity memberEntity) {
-        LoginReq loginReq = new LoginReq();
-        loginReq.setLoginId(memberEntity.getLoginId());
-        loginReq.setLoginPw(memberEntity.getLoginPw());
-        loginReq.setMemberType(memberEntity.getMemberType());
-        return loginReq;
-    }
+//    public static LoginReq toMemberDTO(MemberEntity memberEntity) {
+//        LoginReq loginReq = new LoginReq();
+//        loginReq.setLoginId(memberEntity.getLoginId());
+//        loginReq.setLoginPw(memberEntity.getLoginPw());
+//        loginReq.setMemberType(memberEntity.getMemberType());
+//        return loginReq;
+//    }
 
     public void setEncodePwd(String encodePwd){
         this.loginPw=encodePwd;

@@ -12,7 +12,7 @@ import java.util.Optional;
 public class LoginService {
     private final LoginRepository loginRepository;
 
-    public LoginReq login(LoginReq loginReq) {
+    public LoginRes login(LoginReq loginReq) {
         /*
         1. 회원이 입력한 이메일로 DB에서 조회를 함.
         2. DB에서 조회한 비밀번호와 사용자가 입력한 비밀번호가 일치하는지 판단
@@ -25,7 +25,7 @@ public class LoginService {
             if((memberEntity.getLoginPw().equals(loginReq.getLoginPw()))){
                 //비밀번호가 일치
                 //entity -> dto 변환 후 리턴
-                LoginReq dto = LoginReq.toMemberDTO(memberEntity);
+                LoginRes dto = LoginRes.toMemberDTO(memberEntity);
                 log.info("dto={}" ,dto);
                 return dto;
 
@@ -44,7 +44,7 @@ public class LoginService {
     //인증, 인가 시 사용
     //loginId가 null이거나(로그인 X) loginId로 찾아온 Member가 없으면 null return
     //엔티티로 반환함..(JWT에 쓰이는 건데 Entity로 해도 되는건지는 좀 의문이 듬)
-    public LoginReq getLoginMemberByLoginId(String loginId) {
+    public LoginRes getLoginMemberByLoginId(String loginId) {
         if(loginId == null) return null;
 
         Optional<MemberEntity> optionalUser = loginRepository.findByLoginId(loginId);
@@ -52,7 +52,7 @@ public class LoginService {
 
         MemberEntity memberEntity=optionalUser.get();
         //entity -> dto 변환 후 리턴
-        LoginReq dto = LoginReq.toMemberDTO(memberEntity);
+        LoginRes dto = LoginRes.toMemberDTO(memberEntity);
         return dto;
     }
 
