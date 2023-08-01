@@ -8,14 +8,14 @@ import team.hanaro.hanamate.entities.Wallets;
 @AllArgsConstructor
 @Builder
 @ToString
-public class MyWalletResDTO {
+public class MyWalletResDto {
     private Long walletId;
     private Boolean walletType;
     private Long balance;
     private Long targetAmount;
 
-    public MyWalletResDTO fromWalletsEntity(Wallets wallets){
-        MyWalletResDTO myWalletResDTO = MyWalletResDTO.builder().
+    public MyWalletResDto fromWalletsEntity(Wallets wallets) {
+        MyWalletResDto myWalletResDTO = MyWalletResDto.builder().
                 walletId(wallets.getWalletId())
                 .walletType(wallets.getWalletType())
                 .balance(wallets.getBalance())

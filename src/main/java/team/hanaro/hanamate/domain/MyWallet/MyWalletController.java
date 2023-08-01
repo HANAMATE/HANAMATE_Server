@@ -1,9 +1,11 @@
 package team.hanaro.hanamate.domain.MyWallet;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 //@Controller
 @RestController
 public class MyWalletController {
@@ -14,13 +16,18 @@ public class MyWalletController {
         this.myWalletService = myWalletService;
     }
 
-    @GetMapping("/healthy")
-    public String myWallet(){
+    @GetMapping("/my-wallet/healthy")
+    public String HealthyCheck() {
         return "healthy";
     }
 
     @GetMapping("/my-wallet")
-    public MyWalletResDTO myWallet(@RequestBody MyWalletReqDTO myWalletReqDTO){
+    public MyWalletResDto myWallet(@RequestBody MyWalletReqDto myWalletReqDTO) {
         return myWalletService.myWallet(myWalletReqDTO);
+    }
+
+    @GetMapping("/my-wallet/transactions")
+    public List<MyWalletTransactionResDto> myWalletTransactions(@RequestBody MyWalletReqDto myWalletReqDTO) {
+        return myWalletService.myWalletTransactions(myWalletReqDTO);
     }
 }
