@@ -31,9 +31,12 @@ dependencies {
     testImplementation ("org.springframework.security:spring-security-test")
 
     // jwt
-    implementation ("io.jsonwebtoken:jjwt:0.9.1")
-    compileOnly("io.jsonwebtoken:jjwt-api:0.11.2")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+//    implementation ("io.jsonwebtoken:jjwt:0.9.1")
+//    compileOnly("io.jsonwebtoken:jjwt-api:0.11.2")
+//    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
 
     //redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
@@ -43,7 +46,7 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
+//    testImplementation("org.springframework.security:spring-security-test")
 
 }
 

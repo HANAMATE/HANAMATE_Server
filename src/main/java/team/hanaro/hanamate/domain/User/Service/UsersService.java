@@ -53,10 +53,13 @@ public class UsersService {
 
     public ResponseEntity<?> login(UserRequestDto.Login login) {
 
+        //로그인 실패
         if (usersRepository.findByEmail(login.getEmail()).orElse(null) == null) {
+            //(ResponseEntity<?>)StatusCode, ResponseMessage, ResponseData를 담아서 클라이언트에게 응답을 보냄
             return response.fail("해당하는 유저가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
+        //로그인 성공
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = login.toAuthentication();

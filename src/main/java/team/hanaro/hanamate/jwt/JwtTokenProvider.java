@@ -1,17 +1,18 @@
 package team.hanaro.hanamate.jwt;
 
+import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import org.springframework.stereotype.Component;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
 
@@ -32,6 +33,7 @@ public class JwtTokenProvider {
 
     private final Key key;
 
+    //(토큰을 복호화하며 토큰 유효시간 또는 시그니터, 잘못된 형식의 토큰 등의 유효성을 체크한다)
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
