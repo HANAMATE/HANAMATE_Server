@@ -16,7 +16,7 @@ import team.hanaro.hanamate.domain.User.Authority;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
 import team.hanaro.hanamate.domain.User.Dto.Response;
-import team.hanaro.hanamate.domain.User.entity.Users;
+import team.hanaro.hanamate.entities.Users;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 import team.hanaro.hanamate.security.SecurityUtil;
