@@ -28,4 +28,5 @@ public class AllowanceResponseDto {
             expirationDate = requests.getExpirationDate();
         }
     }
+
 }

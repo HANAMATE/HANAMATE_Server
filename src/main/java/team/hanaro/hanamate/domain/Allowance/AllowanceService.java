@@ -3,6 +3,8 @@ package team.hanaro.hanamate.domain.Allowance;
 import org.springframework.stereotype.Service;
 import team.hanaro.hanamate.entities.Requests;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Optional;
 
 @Service
@@ -14,7 +16,6 @@ public class AllowanceService {
         this.allowanceRepository = allowanceRepository;
     }
 
-
     public AllowanceResponseDto.ChildResponseList getChildRequestList(AllowanceRequestDto.ChildRequestList childRequestList) {
         System.out.println(childRequestList.getUserId());
         Optional<Requests> myRequests = allowanceRepository.findAllByRequesterId(childRequestList.getUserId());
@@ -24,5 +25,29 @@ public class AllowanceService {
         } else {
             return null;
         }
+    }
+
+    public String makeChildRequest(AllowanceRequestDto.ChildRequest childRequest) {
+        Calendar cal = Calendar.getInstance();
+        Timestamp requestDate = new Timestamp(cal.getTimeInMillis());
+        cal.add(Calendar.DATE, 7);
+        Timestamp expiredDate = new Timestamp(cal.getTimeInMillis());
+
+        if (childRequest.getUserId() == null || childRequest.getAllowanceAmount() == null) {
+            return "failed";
+        }
+
+        Requests requests = Requests.builder()
+                .targetId(0L) //TODO: 부모 아이디로 설정
+                .requesterId(childRequest.getUserId())
+                .askAllowance(false)
+                .allowanceAmount(childRequest.getAllowanceAmount())
+                .requestDate(requestDate)
+                .expirationDate(expiredDate)
+                .requestDescription(childRequest.getRequestDescription())
+                .build();
+        allowanceRepository.save(requests);
+        allowanceRepository.flush();
+        return "success";
     }
 }

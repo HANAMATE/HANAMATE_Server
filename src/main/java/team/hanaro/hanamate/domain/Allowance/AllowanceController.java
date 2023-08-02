@@ -1,9 +1,6 @@
 package team.hanaro.hanamate.domain.Allowance;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/allowance")
@@ -19,8 +16,13 @@ public class AllowanceController {
     public AllowanceResponseDto.ChildResponseList GetAllowanceList(@RequestBody AllowanceRequestDto.ChildRequestList childRequestList) {
         return allowanceService.getChildRequestList(childRequestList);
     }
+
     /* 2. 아이 : 용돈 조르기 요청 */
+    @PostMapping("/request")
+    public String MakeAllowanceRequest(@RequestBody AllowanceRequestDto.ChildRequest childRequest) {
+        return allowanceService.makeChildRequest(childRequest);
+    }
     /* 3. 부모 : 용돈 조르기 승인 */
-    /* 4. 부모 : 정기 용돈 */
-    /* 5. 부모 : 용돈 보내기 */
+    /* 4. 부모 : 용돈 보내기 */
+    /* 5. 부모 : 정기 용돈 */
 }

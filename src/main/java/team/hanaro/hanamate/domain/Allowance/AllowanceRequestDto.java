@@ -15,4 +15,14 @@ public class AllowanceRequestDto {
         @NotBlank
         private Long userId;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChildRequest {
+        @NotBlank
+        private Long userId;
+        private Integer allowanceAmount;
+        private String requestDescription;
+    }
 }
