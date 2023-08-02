@@ -18,14 +18,12 @@ public class MyWalletTransactionResDto {
     private Integer balance;
     private String type;
 
-    public MyWalletTransactionResDto fromTransactionsEntity(Transactions transactions) {
-        MyWalletTransactionResDto myWalletTransactionResDTO = MyWalletTransactionResDto.builder().
-                id(transactions.getId())
-                .walletId(transactions.getWalletId())
-                .date(transactions.getDate())
-                .amount(transactions.getAmount())
-                .balance(transactions.getBalance())
-                .type(transactions.getType()).build();
-        return myWalletTransactionResDTO;
+    public MyWalletTransactionResDto(Transactions transactions) {
+        id = transactions.getId();
+        walletId = transactions.getWalletId();
+        date = transactions.getDate();
+        amount = transactions.getAmount();
+        balance = transactions.getBalance();
+        type = transactions.getType();
     }
 }

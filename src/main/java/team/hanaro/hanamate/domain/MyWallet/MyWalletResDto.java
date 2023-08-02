@@ -14,12 +14,10 @@ public class MyWalletResDto {
     private Long balance;
     private Long targetAmount;
 
-    public MyWalletResDto fromWalletsEntity(Wallets wallets) {
-        MyWalletResDto myWalletResDTO = MyWalletResDto.builder().
-                walletId(wallets.getWalletId())
-                .walletType(wallets.getWalletType())
-                .balance(wallets.getBalance())
-                .targetAmount(wallets.getTargetAmount()).build();
-        return myWalletResDTO;
+    public MyWalletResDto(Wallets wallets) {
+        walletId = wallets.getWalletId();
+        walletType = wallets.getWalletType();
+        balance = wallets.getBalance();
+        targetAmount = wallets.getTargetAmount();
     }
 }

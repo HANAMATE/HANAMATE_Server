@@ -17,7 +17,7 @@ public class MyWalletService {
     public MyWalletResDto myWallet(MyWalletReqDto myWalletReqDTO) {
         Optional<Wallets> myWalletInfo = myWalletRepository.findById(myWalletReqDTO.getWalletId());
         if (myWalletInfo.isPresent()) {
-            MyWalletResDto myWalletResDTO = new MyWalletResDto().fromWalletsEntity(myWalletInfo.get());
+            MyWalletResDto myWalletResDTO = new MyWalletResDto(myWalletInfo.get());
             return myWalletResDTO;
         } else {
             return null;
@@ -43,7 +43,7 @@ public class MyWalletService {
             List<Transactions> transactionsList = myTransactionsInfoList.get();
             List<MyWalletTransactionResDto> myWalletTransactionResDtoList = new ArrayList<>();
             for (Transactions transaction : transactionsList) {
-                MyWalletTransactionResDto myWalletTransactionResDTO = new MyWalletTransactionResDto().fromTransactionsEntity(transaction);
+                MyWalletTransactionResDto myWalletTransactionResDTO = new MyWalletTransactionResDto(transaction);
                 myWalletTransactionResDtoList.add(myWalletTransactionResDTO);
             }
             return myWalletTransactionResDtoList;
