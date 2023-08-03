@@ -16,11 +16,6 @@ public class MyWalletController {
         this.myWalletService = myWalletService;
     }
 
-    @GetMapping("/my-wallet/healthy")
-    public String HealthyCheck() {
-        return "healthy";
-    }
-
     @GetMapping("/my-wallet")
     public MyWalletResDto myWallet(@RequestBody MyWalletReqDto myWalletReqDTO) {
         return myWalletService.myWallet(myWalletReqDTO);
@@ -30,4 +25,6 @@ public class MyWalletController {
     public List<MyWalletTransactionResDto> myWalletTransactions(@RequestBody MyWalletReqDto myWalletReqDTO) {
         return myWalletService.myWalletTransactions(myWalletReqDTO);
     }
+
+
 }
