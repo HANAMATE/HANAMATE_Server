@@ -1,9 +1,11 @@
 package team.hanaro.hanamate.domain.Allowance;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Transactional
 @RestController
 @RequestMapping("/allowance")
 public class AllowanceController {
@@ -24,7 +26,12 @@ public class AllowanceController {
     public String MakeAllowanceRequest(@RequestBody AllowanceRequestDto.ChildRequest childRequest) {
         return allowanceService.makeChildRequest(childRequest);
     }
+
     /* 3. 부모 : 용돈 조르기 승인 */
+    @PostMapping("/request/approve")
+    public String ApproveAllowanceRequest(@RequestBody AllowanceRequestDto.ParentApprove parentApprove) {
+        return allowanceService.approveRequest(parentApprove);
+    }
     /* 4. 부모 : 용돈 보내기 */
     /* 5. 부모 : 정기 용돈 */
 }

@@ -22,7 +22,18 @@ public class AllowanceRequestDto {
     public static class ChildRequest {
         @NotBlank
         private Long userId;
+        @NotBlank
         private Integer allowanceAmount;
         private String requestDescription;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ParentApprove {
+        @NotBlank
+        private Long requestId;
+        @NotBlank
+        private Boolean askAllowance;
     }
 }

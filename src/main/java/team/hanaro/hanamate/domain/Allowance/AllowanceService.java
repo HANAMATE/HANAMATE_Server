@@ -47,7 +47,6 @@ public class AllowanceService {
         Requests requests = Requests.builder()
                 .targetId(0L) //TODO: 부모 아이디로 설정
                 .requesterId(childRequest.getUserId())
-                .askAllowance(false)
                 .allowanceAmount(childRequest.getAllowanceAmount())
                 .requestDate(requestDate)
                 .expirationDate(expiredDate)
@@ -56,5 +55,21 @@ public class AllowanceService {
         allowanceRepository.save(requests);
         allowanceRepository.flush();
         return "success";
+    }
+
+    public String approveRequest(AllowanceRequestDto.ParentApprove parentApprove) {
+        //1. 용돈 조르기 거부
+        if (!parentApprove.getAskAllowance()) {
+            int result = allowanceRepository.updateByRequestId(parentApprove.getRequestId(), parentApprove.getAskAllowance());
+            if (result != -1) {
+                return "success";
+            } else {
+                return "failed";
+            }
+        }
+        //2. 용돈 조르기 성공
+        else {
+            return "개발 중";
+        }
     }
 }
