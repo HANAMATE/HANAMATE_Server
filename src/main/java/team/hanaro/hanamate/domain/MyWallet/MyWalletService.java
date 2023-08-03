@@ -14,36 +14,36 @@ public class MyWalletService {
     private final MyWalletRepository myWalletRepository;
     private final MyWalletTransactionsRepository myWalletTransactionsRepository;
 
-    public MyWalletResDto myWallet(MyWalletReqDto myWalletReqDTO) {
-        Optional<Wallets> myWalletInfo = myWalletRepository.findById(myWalletReqDTO.getWalletId());
+    public ResponseDto.MyWallet myWallet(RequestDto.MyWallet myWalletReqDto) {
+        Optional<Wallets> myWalletInfo = myWalletRepository.findById(myWalletReqDto.getWalletId());
         if (myWalletInfo.isPresent()) {
-            MyWalletResDto myWalletResDTO = new MyWalletResDto(myWalletInfo.get());
-            return myWalletResDTO;
+            ResponseDto.MyWallet myWalletResDto = new ResponseDto.MyWallet(myWalletInfo.get());
+            return myWalletResDto;
         } else {
             return null;
         }
     }
 
-    public List<MyWalletTransactionResDto> myWalletTransactions(MyWalletReqDto myWalletReqDTO) {
+    public List<ResponseDto.MyTransactions> myWalletTransactions(RequestDto.MyWallet myWalletReqDto) {
         Integer year;
         Integer month;
 
-        if (myWalletReqDTO.getYear() != null && myWalletReqDTO.getMonth() != null) {
-            year = myWalletReqDTO.getYear();
-            month = myWalletReqDTO.getMonth();
+        if (myWalletReqDto.getYear() != null && myWalletReqDto.getMonth() != null) {
+            year = myWalletReqDto.getYear();
+            month = myWalletReqDto.getMonth();
         } else {
             year = Calendar.getInstance().get(Calendar.YEAR);
             month = Calendar.getInstance().get(Calendar.MONTH) + 1;
         }
 
         HashMap<String, Timestamp> map = getDate(year, month);
-        Optional<List<Transactions>> myTransactionsInfoList = myWalletTransactionsRepository.findAllByWalletIdAndDateBetween(myWalletReqDTO.getWalletId(), map.get("startDate"), map.get("endDate"));
+        Optional<List<Transactions>> myTransactionsInfoList = myWalletTransactionsRepository.findAllByWalletIdAndDateBetween(myWalletReqDto.getWalletId(), map.get("startDate"), map.get("endDate"));
 
         if (myTransactionsInfoList.isPresent()) {
             List<Transactions> transactionsList = myTransactionsInfoList.get();
-            List<MyWalletTransactionResDto> myWalletTransactionResDtoList = new ArrayList<>();
+            List<ResponseDto.MyTransactions> myWalletTransactionResDtoList = new ArrayList<>();
             for (Transactions transaction : transactionsList) {
-                MyWalletTransactionResDto myWalletTransactionResDTO = new MyWalletTransactionResDto(transaction);
+                ResponseDto.MyTransactions myWalletTransactionResDTO = new ResponseDto.MyTransactions(transaction);
                 myWalletTransactionResDtoList.add(myWalletTransactionResDTO);
             }
             return myWalletTransactionResDtoList;

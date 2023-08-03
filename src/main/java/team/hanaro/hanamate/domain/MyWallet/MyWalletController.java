@@ -17,13 +17,13 @@ public class MyWalletController {
     }
 
     @GetMapping("/my-wallet")
-    public MyWalletResDto myWallet(@RequestBody MyWalletReqDto myWalletReqDTO) {
-        return myWalletService.myWallet(myWalletReqDTO);
+    public ResponseDto.MyWallet myWallet(@RequestBody RequestDto.MyWallet myWallet) {
+        return myWalletService.myWallet(myWallet);
     }
 
     @GetMapping("/my-wallet/transactions")
-    public List<MyWalletTransactionResDto> myWalletTransactions(@RequestBody MyWalletReqDto myWalletReqDTO) {
-        return myWalletService.myWalletTransactions(myWalletReqDTO);
+    public List<ResponseDto.MyTransactions> myWalletTransactions(@RequestBody RequestDto.MyWallet myWallet) {
+        return myWalletService.myWalletTransactions(myWallet);
     }
 
 
