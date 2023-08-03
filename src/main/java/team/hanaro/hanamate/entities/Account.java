@@ -16,9 +16,9 @@ import java.sql.Timestamp;
 @Builder
 public class Account {
     @Id
-    private Long accountId;
-
     private Long memberId;
+
+    private Long accountId;
     private String name;
     private Timestamp openDate;
     private Integer balance;
