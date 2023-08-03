@@ -2,6 +2,7 @@ package team.hanaro.hanamate.domain.MyWallet;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import team.hanaro.hanamate.entities.Account;
 import team.hanaro.hanamate.entities.Transactions;
 import team.hanaro.hanamate.entities.Wallets;
 
@@ -13,6 +14,7 @@ import java.util.*;
 public class MyWalletService {
     private final MyWalletRepository myWalletRepository;
     private final MyWalletTransactionsRepository myWalletTransactionsRepository;
+    private final AccountRepository accountRepository;
 
     public ResponseDto.MyWallet myWallet(RequestDto.MyWallet myWalletReqDto) {
         Optional<Wallets> myWalletInfo = myWalletRepository.findById(myWalletReqDto.getWalletId());
@@ -47,6 +49,16 @@ public class MyWalletService {
                 myWalletTransactionResDtoList.add(myWalletTransactionResDTO);
             }
             return myWalletTransactionResDtoList;
+        } else {
+            return null;
+        }
+    }
+
+    public ResponseDto.AccountBalance getAccountBalance(RequestDto.AccountBalance accountReqDto) {
+        Optional<Account> account = accountRepository.findByMemberId(accountReqDto.getMemberId());
+        if (account.isPresent()) {
+            ResponseDto.AccountBalance accountResDto = new ResponseDto.AccountBalance(account.get());
+            return accountResDto;
         } else {
             return null;
         }

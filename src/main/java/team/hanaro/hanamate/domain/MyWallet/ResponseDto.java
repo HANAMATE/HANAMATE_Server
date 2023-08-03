@@ -1,6 +1,7 @@
 package team.hanaro.hanamate.domain.MyWallet;
 
 import lombok.*;
+import team.hanaro.hanamate.entities.Account;
 import team.hanaro.hanamate.entities.Transactions;
 import team.hanaro.hanamate.entities.Wallets;
 
@@ -48,6 +49,23 @@ public class ResponseDto {
             amount = transactions.getAmount();
             balance = transactions.getBalance();
             type = transactions.getType();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class AccountBalance {
+        private Long accountId;
+        private String name;
+        private Integer balance;
+
+        public AccountBalance(Account account) {
+            accountId = account.getAccountId();
+            name = account.getName();
+            balance = account.getBalance();
         }
     }
 

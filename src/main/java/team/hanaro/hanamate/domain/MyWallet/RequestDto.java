@@ -6,9 +6,8 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.NotBlank;
 
 public class RequestDto {
-    
+
     @Getter
-    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
@@ -22,6 +21,16 @@ public class RequestDto {
         private Integer year;
         @Nullable
         private Integer month;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class AccountBalance {
+        @NotBlank
+        private Long memberId;
     }
 
 }

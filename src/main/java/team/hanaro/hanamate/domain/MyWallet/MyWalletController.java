@@ -26,5 +26,8 @@ public class MyWalletController {
         return myWalletService.myWalletTransactions(myWallet);
     }
 
-
+    @GetMapping("/my-wallet/account")
+    public ResponseDto.AccountBalance GetAccountBalance(@RequestBody RequestDto.AccountBalance account) {
+        return myWalletService.getAccountBalance(account);
+    }
 }
