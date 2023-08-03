@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import team.hanaro.hanamate.entities.Requests;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,12 +18,17 @@ public class AllowanceService {
         this.allowanceRepository = allowanceRepository;
     }
 
-    public AllowanceResponseDto.ChildResponseList getChildRequestList(AllowanceRequestDto.ChildRequestList childRequestList) {
+    public List<AllowanceResponseDto.ChildResponseList> getChildRequestList(AllowanceRequestDto.ChildRequestList childRequestList) {
         System.out.println(childRequestList.getUserId());
-        Optional<Requests> myRequests = allowanceRepository.findAllByRequesterId(childRequestList.getUserId());
+        Optional<List<Requests>> myRequests = allowanceRepository.findAllByRequesterId(childRequestList.getUserId());
         if (myRequests.isPresent()) {
-            AllowanceResponseDto.ChildResponseList childResponseList = new AllowanceResponseDto.ChildResponseList(myRequests.get());
-            return childResponseList;
+            List<Requests> requestsList = myRequests.get();
+            List<AllowanceResponseDto.ChildResponseList> childResponseListArrayList = new ArrayList<>();
+            for (Requests request : requestsList) {
+                AllowanceResponseDto.ChildResponseList childResponseList = new AllowanceResponseDto.ChildResponseList(request);
+                childResponseListArrayList.add(childResponseList);
+            }
+            return childResponseListArrayList;
         } else {
             return null;
         }

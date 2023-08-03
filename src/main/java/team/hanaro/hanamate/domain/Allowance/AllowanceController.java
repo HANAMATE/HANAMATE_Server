@@ -2,6 +2,8 @@ package team.hanaro.hanamate.domain.Allowance;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/allowance")
 public class AllowanceController {
@@ -13,7 +15,7 @@ public class AllowanceController {
 
     /* 1. 아이 : 용돈 조르기 요청 조회하기 */
     @GetMapping("/request/list")
-    public AllowanceResponseDto.ChildResponseList GetAllowanceList(@RequestBody AllowanceRequestDto.ChildRequestList childRequestList) {
+    public List<AllowanceResponseDto.ChildResponseList> GetAllowanceList(@RequestBody AllowanceRequestDto.ChildRequestList childRequestList) {
         return allowanceService.getChildRequestList(childRequestList);
     }
 
