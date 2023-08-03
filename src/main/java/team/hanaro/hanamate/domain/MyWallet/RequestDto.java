@@ -33,4 +33,16 @@ public class RequestDto {
         private Long memberId;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class RequestAmount {
+        @NotBlank
+        private Long memberId;
+        @NotBlank
+        private Integer amount;
+    }
+
 }

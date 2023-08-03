@@ -1,6 +1,7 @@
 package team.hanaro.hanamate.domain.MyWallet;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,5 +30,10 @@ public class MyWalletController {
     @GetMapping("/my-wallet/account")
     public ResponseDto.AccountBalance GetAccountBalance(@RequestBody RequestDto.AccountBalance account) {
         return myWalletService.getAccountBalance(account);
+    }
+
+    @PostMapping("/my-wallet/account")
+    public String GetMoneyFromAccount(@RequestBody RequestDto.RequestAmount requestAmount) {
+        return myWalletService.getMoneyFromAccount(requestAmount);
     }
 }
