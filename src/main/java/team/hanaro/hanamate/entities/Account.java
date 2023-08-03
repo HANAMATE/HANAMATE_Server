@@ -2,7 +2,9 @@ package team.hanaro.hanamate.entities;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Entity
@@ -14,7 +16,6 @@ import java.sql.Timestamp;
 @Builder
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
     private Long memberId;
