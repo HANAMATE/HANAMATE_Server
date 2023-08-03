@@ -14,16 +14,16 @@ import java.sql.Timestamp;
 @Builder
 public class Transactions {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
     private Long id;
 
     private Long walletId;
     private Long counterId;
-    private Timestamp date;
-    private String type;
+    private Timestamp transactionDate;
+    private String transactionType;
     private Integer amount;
     private String location;
     private Integer balance;
-    private Boolean status;
+    private Boolean success;
 }
