@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
     private Long memberId;

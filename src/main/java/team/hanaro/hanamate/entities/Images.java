@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class Images {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long imageId;
     private String fileName;
     private Integer fileSize;

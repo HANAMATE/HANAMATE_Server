@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Builder
 public class Wallets {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long walletId;
     private Boolean walletType; /* 0: 개인, 1: 모임통장 */
     private Long balance;
