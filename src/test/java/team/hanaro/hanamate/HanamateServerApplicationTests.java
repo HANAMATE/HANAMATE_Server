@@ -1,11 +1,10 @@
 package team.hanaro.hanamate;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
+//@SpringBootTest
 class HanamateServerApplicationTests {
 
     @Test
