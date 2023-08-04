@@ -29,8 +29,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation:2.5.6")
 
     //security
-    implementation ("org.springframework.boot:spring-boot-starter-security")
-    testImplementation ("org.springframework.security:spring-security-test")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    testImplementation("org.springframework.security:spring-security-test")
 
     // jwt
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
@@ -50,8 +50,23 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 //    testImplementation("org.springframework.security:spring-security-test")
 
+    // Spring Boot Starter Web
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    // Swagger UI Starter
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks {
+    jar {
+        enabled = false
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        manifest {
+            attributes["Main-Class"] = "team.hanaro.hanamate.HanamateServerApplication"
+        }
+    }
 }

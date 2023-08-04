@@ -45,10 +45,10 @@ public class ResponseDto {
         public MyTransactions(Transactions transactions) {
             id = transactions.getId();
             walletId = transactions.getWalletId();
-            date = transactions.getDate();
+            date = transactions.getTransactionDate();
             amount = transactions.getAmount();
             balance = transactions.getBalance();
-            type = transactions.getType();
+            type = transactions.getTransactionType();
         }
     }
 

@@ -39,7 +39,7 @@ public class MyWalletService {
         }
 
         HashMap<String, Timestamp> map = getDate(year, month);
-        Optional<List<Transactions>> myTransactionsInfoList = myWalletTransactionsRepository.findAllByWalletIdAndDateBetween(myWalletReqDto.getWalletId(), map.get("startDate"), map.get("endDate"));
+        Optional<List<Transactions>> myTransactionsInfoList = myWalletTransactionsRepository.findAllByWalletIdAndTransactionDateBetween(myWalletReqDto.getWalletId(), map.get("startDate"), map.get("endDate"));
 
         if (myTransactionsInfoList.isPresent()) {
             List<Transactions> transactionsList = myTransactionsInfoList.get();
@@ -89,8 +89,8 @@ public class MyWalletService {
     public void makeTransaction(Account account, Wallets wallet, RequestDto.RequestAmount requestAmount) {
         Transactions transactions = Transactions.builder()
                 .walletId(wallet.getWalletId())
-                .date(new Timestamp(Calendar.getInstance().getTimeInMillis()))
-                .type("충전")
+                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .transactionType("충전")
                 .amount(requestAmount.getAmount())
                 .balance(account.getBalance() - requestAmount.getAmount())
                 .build();
