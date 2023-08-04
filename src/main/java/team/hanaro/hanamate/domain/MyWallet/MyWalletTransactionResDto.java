@@ -13,17 +13,17 @@ import java.sql.Timestamp;
 public class MyWalletTransactionResDto {
     private Long id;
     private Long walletId;
-    private Timestamp date;
+    private Timestamp transactionDate;
     private Integer amount;
     private Integer balance;
-    private String type;
+    private String transactionType;
 
     public MyWalletTransactionResDto(Transactions transactions) {
         id = transactions.getId();
         walletId = transactions.getWalletId();
-        date = transactions.getDate();
+        transactionDate = transactions.getTransactionDate();
         amount = transactions.getAmount();
         balance = transactions.getBalance();
-        type = transactions.getType();
+        transactionType = transactions.getTransactionType();
     }
 }

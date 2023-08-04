@@ -11,5 +11,5 @@ public interface MyWalletTransactionsRepository extends JpaRepository<Transactio
 
     Optional<List<Transactions>> findAllByWalletId(Long aLong);
 
-    Optional<List<Transactions>> findAllByWalletIdAndDateBetween(Long aLong, Timestamp start, Timestamp end);
+    Optional<List<Transactions>> findAllByWalletIdAndTransactionDateBetween(Long aLong, Timestamp start, Timestamp end);
 }
