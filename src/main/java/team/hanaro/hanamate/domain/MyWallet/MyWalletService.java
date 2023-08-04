@@ -66,20 +66,36 @@ public class MyWalletService {
 
     public String getMoneyFromAccount(RequestDto.RequestAmount requestAmount) {
         Optional<Account> account = accountRepository.findByMemberId(requestAmount.getMemberId());
-        if (account.isPresent()) {
+        Optional<Wallets> wallet = myWalletRepository.findById(requestAmount.getWalletId());
+        if (account.isPresent() && wallet.isPresent()) {
 
             if (account.get().getBalance() < requestAmount.getAmount()) {   // 1. 남은 잔액보다 돈이 적을 때
                 return "계좌 잔액이 부족합니다.";
             } else {  // 2. 남은 잔액보다 돈이 많을 때
-
                 // 2-1. transaction 추가
-                // 2-2. account 잔액 차감
-                // 2-3. wallet 잔액 추가
+                makeTransaction(account.get(), wallet.get(), requestAmount);
+                // 2-2. wallet 잔액 추가
+                myWalletRepository.updateByWalletId(wallet.get().getWalletId(), account.get().getBalance() + requestAmount.getAmount());
+                // 2-3. account 잔액 차감
+                accountRepository.updateByMemberId(requestAmount.getMemberId(), account.get().getBalance() - requestAmount.getAmount());
+
                 return "success";
             }
         } else {
             return "계좌가 존재하지 않습니다.";
         }
+    }
+
+    public void makeTransaction(Account account, Wallets wallet, RequestDto.RequestAmount requestAmount) {
+        Transactions transactions = Transactions.builder()
+                .walletId(wallet.getWalletId())
+                .date(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .type("충전")
+                .amount(requestAmount.getAmount())
+                .balance(account.getBalance() - requestAmount.getAmount())
+                .build();
+
+        myWalletTransactionsRepository.save(transactions);
     }
 
     public HashMap<String, Timestamp> getDate(Integer year, Integer month) {

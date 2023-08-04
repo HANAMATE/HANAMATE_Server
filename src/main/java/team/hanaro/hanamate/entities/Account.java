@@ -16,10 +16,9 @@ import java.sql.Timestamp;
 @Builder
 public class Account {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long accountId;
-
     private Long memberId;
+
+    private Long accountId;
     private String name;
     private Timestamp openDate;
     private Integer balance;

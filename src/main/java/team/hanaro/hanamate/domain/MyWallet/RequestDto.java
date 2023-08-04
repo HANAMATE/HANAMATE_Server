@@ -41,6 +41,9 @@ public class RequestDto {
     public static class RequestAmount {
         @NotBlank
         private Long memberId;
+
+        @NotBlank
+        private Long walletId;
         @NotBlank
         private Integer amount;
     }
