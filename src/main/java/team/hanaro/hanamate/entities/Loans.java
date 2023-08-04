@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class Loans {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long loanId;
 
     private Long childrenId;

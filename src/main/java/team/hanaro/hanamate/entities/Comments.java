@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class Comments {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
     private Long articleId;

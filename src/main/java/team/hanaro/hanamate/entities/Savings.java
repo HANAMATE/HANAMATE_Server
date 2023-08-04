@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class Savings {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long savingsId;
 
     private Long childrenId;

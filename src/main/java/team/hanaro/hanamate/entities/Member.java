@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
     private Long walletId; /* 개인 지갑 Id */
