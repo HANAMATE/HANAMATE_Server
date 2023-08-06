@@ -37,16 +37,17 @@ public class UsersService {
     private final RedisTemplate redisTemplate;
 
     public ResponseEntity<?> signUp(UserRequestDto.SignUp signUp) {
-        if (usersRepository.existsByEmail(signUp.getEmail())) {
-            return response.fail("이미 회원가입된 이메일입니다.", HttpStatus.BAD_REQUEST);
+        if (usersRepository.existsById(signUp.getId())) {
+            return response.fail("이미 회원가입된 아이디입니다.", HttpStatus.BAD_REQUEST);
         }
 
+        //DTO(Signup)을 이용하여 User(Entity)로 반환하는 Builder (DTO-> Entity)
         Users user = Users.builder()
-                .email(signUp.getEmail())
+                .id(signUp.getId())
                 .password(passwordEncoder.encode(signUp.getPassword()))
                 .roles(Collections.singletonList(Authority.ROLE_USER.name()))
                 .build();
-        usersRepository.save(user);
+        usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
 
         return response.success("회원가입에 성공했습니다.");
     }
@@ -54,7 +55,7 @@ public class UsersService {
     public ResponseEntity<?> login(UserRequestDto.Login login) {
 
         //로그인 실패
-        if (usersRepository.findByEmail(login.getEmail()).orElse(null) == null) {
+        if (usersRepository.findById(login.getId()).orElse(null) == null) {
             //(ResponseEntity<?>)StatusCode, ResponseMessage, ResponseData를 담아서 클라이언트에게 응답을 보냄
             return response.fail("해당하는 유저가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -133,9 +134,9 @@ public class UsersService {
 
     public ResponseEntity<?> authority() {
         // SecurityContext에 담겨 있는 authentication userEamil 정보
-        String userEmail = SecurityUtil.getCurrentUserEmail();
+        String userId = SecurityUtil.getCurrentUserEmail();
 
-        Users user = usersRepository.findByEmail(userEmail)
+        Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("No authentication information."));
 
         // add ROLE_ADMIN
