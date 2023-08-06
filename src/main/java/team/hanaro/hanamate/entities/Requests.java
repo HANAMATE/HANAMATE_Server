@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class Requests {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long requestId;
 
     private Long targetId;

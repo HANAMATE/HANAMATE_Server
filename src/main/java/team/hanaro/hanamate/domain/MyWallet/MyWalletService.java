@@ -37,7 +37,7 @@ public class MyWalletService {
         }
 
         HashMap<String, Timestamp> map = getDate(year, month);
-        Optional<List<Transactions>> myTransactionsInfoList = myWalletTransactionsRepository.findAllByWalletIdAndDateBetween(myWalletReqDTO.getWalletId(), map.get("startDate"), map.get("endDate"));
+        Optional<List<Transactions>> myTransactionsInfoList = myWalletTransactionsRepository.findAllByWalletIdAndTransactionDateBetween(myWalletReqDTO.getWalletId(), map.get("startDate"), map.get("endDate"));
 
         if (myTransactionsInfoList.isPresent()) {
             List<Transactions> transactionsList = myTransactionsInfoList.get();

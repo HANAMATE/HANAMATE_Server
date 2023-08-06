@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Builder
 public class Allowances {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long allowanceId;
 
     private Long parentId;
