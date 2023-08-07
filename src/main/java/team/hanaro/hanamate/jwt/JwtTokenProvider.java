@@ -1,7 +1,5 @@
 package team.hanaro.hanamate.jwt;
 
-import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -52,7 +50,7 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
-                .setExpiration(accessTokenExpiresIn)
+                .setExpiration(accessTokenExpiresIn) //만료 시간 설정
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
