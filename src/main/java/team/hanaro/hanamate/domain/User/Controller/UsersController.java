@@ -14,7 +14,7 @@ import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping
 @RestController
 public class UsersController {
 
