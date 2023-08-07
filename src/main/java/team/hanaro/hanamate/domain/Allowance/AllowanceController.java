@@ -36,5 +36,11 @@ public class AllowanceController {
     }
 
     /* 4. 부모 : 용돈 보내기 */
+    @Operation(summary = "[부모] 용돈 보내기", description = "용돈 보내기", tags = {"용돈"})
+    @PostMapping("")
+    public ResponseEntity<?> SendAllowance(@RequestBody AllowanceRequestDto.SendAllowance sendAllowance) {
+        return allowanceService.sendAllowance(sendAllowance);
+    }
+
     /* 5. 부모 : 정기 용돈 */
 }

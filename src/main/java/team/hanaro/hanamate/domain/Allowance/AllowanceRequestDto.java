@@ -32,8 +32,22 @@ public class AllowanceRequestDto {
     @AllArgsConstructor
     public static class ParentApprove {
         @NotBlank
+        private Long walletId;
+        @NotBlank
         private Long requestId;
         @NotBlank
         private Boolean askAllowance;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SendAllowance {
+        @NotBlank
+        private Long userId;
+        @NotBlank
+        private Long childId;
+        @NotBlank
+        private Integer amount;
     }
 }

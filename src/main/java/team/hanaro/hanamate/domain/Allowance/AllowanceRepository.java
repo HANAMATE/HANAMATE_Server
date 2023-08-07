@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface AllowanceRepository extends JpaRepository<Requests, Long> {
     Optional<List<Requests>> findAllByRequesterId(Long aLong);
 
+    Optional<Requests> findByRequestId(Long aLong);
+
     @Modifying
     @Query("update Requests r set r.askAllowance=:askAllowance where r.requestId=:requestId")
     int updateByRequestId(Long requestId, Boolean askAllowance);
