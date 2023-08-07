@@ -13,11 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import team.hanaro.hanamate.domain.User.Authority;
+import team.hanaro.hanamate.domain.User.Dto.Response;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
-import team.hanaro.hanamate.domain.User.Dto.Response;
-import team.hanaro.hanamate.entities.Users;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+import team.hanaro.hanamate.entities.Users;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 import team.hanaro.hanamate.security.SecurityUtil;
 
@@ -50,6 +50,11 @@ public class UsersService {
                 .phoneNumber(signUp.getPhoneNumber())
                 .userType(signUp.getUserType())
                 .roles(Collections.singletonList(Authority.ROLE_USER.name())) //SpringSecurity 관련
+//                .wallets(Arrays.asList(
+//                        Wallets.builder()
+//                                .walletId(1000L)
+//                                .build()
+//                ))
                 .build();
         usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
 

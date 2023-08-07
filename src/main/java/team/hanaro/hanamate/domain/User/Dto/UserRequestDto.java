@@ -3,12 +3,10 @@ package team.hanaro.hanamate.domain.User.Dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import team.hanaro.hanamate.domain.User.Authority;
 import team.hanaro.hanamate.domain.User.UserType;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import java.sql.Timestamp;
 
 public class UserRequestDto {
 
@@ -40,7 +38,6 @@ public class UserRequestDto {
 
         private UserType userType;
 
-        private Timestamp registrationDate;
 
 
 

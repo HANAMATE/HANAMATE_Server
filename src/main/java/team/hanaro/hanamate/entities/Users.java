@@ -1,14 +1,15 @@
 package team.hanaro.hanamate.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import team.hanaro.hanamate.domain.User.Authority;
+import org.springframework.security.core.userdetails.UserDetails;
 import team.hanaro.hanamate.domain.User.UserType;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,8 +27,15 @@ public class Users extends BaseTime implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @Column
-    private Long walletId; /* 개인 지갑 Id */
+//    @Column
+//    private Long walletId; /* 개인 지갑 Id */
+
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "user_id") // adjust the join column name according to your schema
+//    @Builder.Default
+//    private List<Wallets> wallets = new ArrayList<>();
+
+
     @Column
     private Long accountId;
 
@@ -46,8 +54,7 @@ public class Users extends BaseTime implements UserDetails {
     @Column
     private String phoneNumber;
 
-    @Column
-    private Timestamp registrationDate;
+
 
     @Column
     private UserType userType;
