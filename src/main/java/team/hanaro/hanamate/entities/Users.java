@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import team.hanaro.hanamate.domain.User.Authority;
+import team.hanaro.hanamate.domain.User.UserType;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -31,7 +33,6 @@ public class Users extends BaseTime implements UserDetails {
 
     @Column
     private String id;
-//    private String email;
 
     @Column
     private String password;
@@ -49,6 +50,10 @@ public class Users extends BaseTime implements UserDetails {
     private Timestamp registrationDate;
 
     @Column
+    private UserType userType;
+
+    //SpringSecurity 관련
+    @Column
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
@@ -59,6 +64,7 @@ public class Users extends BaseTime implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public String getUsername() {

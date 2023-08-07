@@ -3,9 +3,12 @@ package team.hanaro.hanamate.domain.User.Dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import team.hanaro.hanamate.domain.User.Authority;
+import team.hanaro.hanamate.domain.User.UserType;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.sql.Timestamp;
 
 public class UserRequestDto {
 
@@ -14,8 +17,11 @@ public class UserRequestDto {
 
     public static class SignUp {
 
-//        @NotEmpty(message = "이메일은 필수 입력값입니다.")
-//        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
+        @NotEmpty(message = "이름은 필수 입력값입니다.")
+        @Pattern(regexp = "^[가-힣]{2,4}$", message = "이름은 2~4자 이내입니다.")
+        private String name;
+
+
         @NotEmpty(message = "아이디는 필수 입력값입니다.")
         @Pattern(regexp = "^[A-Za-z0-9]{2,6}$", message = "아이디는 영문 대 소문자, 숫자만 사용할 수 있습니다. ")
         private String id;
@@ -23,6 +29,21 @@ public class UserRequestDto {
         @NotEmpty(message = "비밀번호는 필수 입력값입니다.")
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$", message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
         private String password;
+
+        @NotEmpty(message = "주민등록번호는 필수 입력값입니다.")
+        @Pattern(regexp = "^(?:[0-9]{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[1,2][0-9]|3[0,1]))-[1-4][0-9]{6}$", message = "주민등록번호 형식에 맞게 입력해주세요.")
+        private String identification;
+
+        @NotEmpty(message = "전화번호는 필수 입력값입니다.")
+        @Pattern(regexp = "^0\\d{1,2}(-|\\))\\d{3,4}-\\d{4}$", message = "전화번호 형식에 맞게 입력해주세요")
+        private String phoneNumber;
+
+        private UserType userType;
+
+        private Timestamp registrationDate;
+
+
+
     }
 
 

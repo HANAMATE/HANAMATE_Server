@@ -43,9 +43,13 @@ public class UsersService {
 
         //DTO(Signup)을 이용하여 User(Entity)로 반환하는 Builder (DTO-> Entity)
         Users user = Users.builder()
+                .name(signUp.getName())
                 .id(signUp.getId())
                 .password(passwordEncoder.encode(signUp.getPassword()))
-                .roles(Collections.singletonList(Authority.ROLE_USER.name()))
+                .identification(signUp.getIdentification())
+                .phoneNumber(signUp.getPhoneNumber())
+                .userType(signUp.getUserType())
+                .roles(Collections.singletonList(Authority.ROLE_USER.name())) //SpringSecurity 관련
                 .build();
         usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
 
