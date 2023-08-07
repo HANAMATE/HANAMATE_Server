@@ -75,15 +75,19 @@ public class MyWalletService {
                 // 2-1. transaction 추가
                 makeTransaction(account.get(), wallet.get(), requestAmount);
                 // 2-2. wallet 잔액 추가
-                myWalletRepository.updateByWalletId(wallet.get().getWalletId(), account.get().getBalance() + requestAmount.getAmount());
+                myWalletRepository.updateByWalletId(wallet.get().getWalletId(), Long.valueOf(wallet.get().getBalance() + requestAmount.getAmount()));
                 // 2-3. account 잔액 차감
                 accountRepository.updateByMemberId(requestAmount.getMemberId(), account.get().getBalance() - requestAmount.getAmount());
-
                 return "success";
             }
         } else {
             return "계좌가 존재하지 않습니다.";
         }
+    }
+
+    public void connectAccount() {
+        // 1. 연결된 계좌가 없을 때
+        // 새로운 계좌 만들어서 save
     }
 
     public void makeTransaction(Account account, Wallets wallet, RequestDto.RequestAmount requestAmount) {
