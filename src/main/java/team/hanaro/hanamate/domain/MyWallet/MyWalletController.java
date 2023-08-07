@@ -46,5 +46,10 @@ public class MyWalletController {
     public String GetMoneyFromAccount(@RequestBody RequestDto.RequestAmount requestAmount) {
         return myWalletService.getMoneyFromAccount(requestAmount);
     }
-    
+
+    @Operation(summary = "계좌 연결", description = "은행 계좌 연결하기", tags = {"내 지갑"})
+    @PostMapping("/connect")
+    public String ConnectAccount(@RequestBody RequestDto.ConnectAccount connectAccount) {
+        return myWalletService.connectAccount(connectAccount);
+    }
 }

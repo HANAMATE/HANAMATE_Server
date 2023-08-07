@@ -85,9 +85,25 @@ public class MyWalletService {
         }
     }
 
-    public void connectAccount() {
+    public String connectAccount(RequestDto.ConnectAccount connectAccount) {
+        Optional<Account> account = accountRepository.findByMemberId(connectAccount.getMemberId());
         // 1. 연결된 계좌가 없을 때
-        // 새로운 계좌 만들어서 save
+        if (account.isEmpty()) {// 새로운 계좌 만들어서 save
+            // balance 난수 생성
+            double randomValue = Math.random();
+            int intValue = (int) (randomValue * 100);
+            Account newAccount = Account.builder()
+                    .memberId(connectAccount.getMemberId())
+                    .accountId(connectAccount.getAccountId())
+                    .openDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                    .name(connectAccount.getName())
+                    .balance(10000 * intValue)
+                    .build();
+            accountRepository.save(newAccount);
+            return "success";
+        } else {
+            return "이미 계좌가 존재합니다.";
+        }
     }
 
     public void makeTransaction(Account account, Wallets wallet, RequestDto.RequestAmount requestAmount) {

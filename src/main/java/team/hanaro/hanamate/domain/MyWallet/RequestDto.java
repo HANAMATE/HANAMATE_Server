@@ -48,4 +48,19 @@ public class RequestDto {
         private Integer amount;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class ConnectAccount {
+        @NotBlank
+        private Long memberId;
+
+        @NotBlank
+        private Long accountId;
+        @NotBlank
+        private String name;
+    }
+
 }
