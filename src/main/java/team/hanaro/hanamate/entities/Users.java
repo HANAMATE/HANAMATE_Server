@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
+//@Setter
 @Getter
 @Entity
 public class Users extends BaseTime implements UserDetails {
@@ -24,10 +25,28 @@ public class Users extends BaseTime implements UserDetails {
     private Long idx;
 
     @Column
-    private String email;
+    private Long walletId; /* 개인 지갑 Id */
+    @Column
+    private Long accountId;
+
+    @Column
+    private String id;
+//    private String email;
 
     @Column
     private String password;
+
+    @Column
+    private String name;
+
+    @Column
+    private String identification;
+
+    @Column
+    private String phoneNumber;
+
+    @Column
+    private Timestamp registrationDate;
 
     @Column
     @ElementCollection(fetch = FetchType.EAGER)
@@ -43,7 +62,7 @@ public class Users extends BaseTime implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return id;
     }
 
     @Override

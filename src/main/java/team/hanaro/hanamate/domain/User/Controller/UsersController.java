@@ -14,7 +14,7 @@ import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping
 @RestController
 public class UsersController {
 
@@ -23,7 +23,7 @@ public class UsersController {
     private final Response response;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@Validated UserRequestDto.SignUp signUp, Errors errors) {
+    public ResponseEntity<?> signUp(@Validated @RequestBody UserRequestDto.SignUp signUp, Errors errors) {
         // validation check
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
