@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import team.hanaro.hanamate.domain.MyWallet.MyWalletRepository;
-import team.hanaro.hanamate.domain.MyWallet.MyWalletTransactionsRepository;
+import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
+import team.hanaro.hanamate.domain.MyWallet.Repository.WalletRepository;
 import team.hanaro.hanamate.domain.User.Dto.Response;
 import team.hanaro.hanamate.entities.Member;
 import team.hanaro.hanamate.entities.Requests;
@@ -23,8 +23,8 @@ import java.util.Optional;
 public class AllowanceService {
 
     private final AllowanceRepository allowanceRepository;
-    private final MyWalletRepository myWalletRepository;
-    private final MyWalletTransactionsRepository myWalletTransactionsRepository;
+    private final WalletRepository walletRepository;
+    private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
     private final Response response;
 
@@ -69,7 +69,7 @@ public class AllowanceService {
 
     public ResponseEntity<?> approveRequest(AllowanceRequestDto.ParentApprove parentApprove) {
         Optional<Requests> request = allowanceRepository.findByRequestId(parentApprove.getRequestId());
-        Optional<Wallets> parentWallet = myWalletRepository.findById(parentApprove.getWalletId());
+        Optional<Wallets> parentWallet = walletRepository.findById(parentApprove.getWalletId());
 
         if (request.isEmpty()) {
             return response.fail("유효하지 않은 요청Id 입니다.", HttpStatus.BAD_REQUEST);
@@ -96,7 +96,7 @@ public class AllowanceService {
             }
             // 2. 성공
             Optional<Member> child = memberRepository.findByMemberId(request.get().getRequestId());
-            Optional<Wallets> childWallet = myWalletRepository.findById(child.get().getWalletId());
+            Optional<Wallets> childWallet = walletRepository.findById(child.get().getWalletId());
 
             if (child.isEmpty()) {
                 response.fail("용돈 조르기 요청의 아이Id가 잘못되었습니다.", HttpStatus.BAD_REQUEST);
@@ -107,9 +107,9 @@ public class AllowanceService {
             // 2-1. Transaction 작성
             makeTransaction(request.get(), parentWallet.get(), childWallet.get(), parentApprove);
             // 2-2. 아이 지갑 +
-            myWalletRepository.updateByWalletId(childWallet.get().getWalletId(), childWallet.get().getBalance() + request.get().getAllowanceAmount());
+            walletRepository.updateByWalletId(childWallet.get().getWalletId(), childWallet.get().getBalance() + request.get().getAllowanceAmount());
             // 2-3. 부모 지갑 -
-            myWalletRepository.updateByWalletId(parentApprove.getWalletId(), childWallet.get().getBalance() - request.get().getAllowanceAmount());
+            walletRepository.updateByWalletId(parentApprove.getWalletId(), childWallet.get().getBalance() - request.get().getAllowanceAmount());
             return response.success("용돈 조르기 요청을 승인했습니다.");
         }
     }
@@ -117,10 +117,10 @@ public class AllowanceService {
     public ResponseEntity<?> sendAllowance(AllowanceRequestDto.SendAllowance sendAllowance) {
         //아이 지갑 존재 여부
         Optional<Member> child = memberRepository.findByMemberId(sendAllowance.getChildId());
-        Optional<Wallets> childWallet = myWalletRepository.findById(child.get().getWalletId());
+        Optional<Wallets> childWallet = walletRepository.findById(child.get().getWalletId());
         //부모 지갑 존재 여부
         Optional<Member> parent = memberRepository.findByMemberId(sendAllowance.getUserId());
-        Optional<Wallets> parentWallet = myWalletRepository.findById(parent.get().getWalletId());
+        Optional<Wallets> parentWallet = walletRepository.findById(parent.get().getWalletId());
 
         if (child.isEmpty()) {
             response.fail("아이Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -138,9 +138,9 @@ public class AllowanceService {
         // 1. Transaction 작성
         makeTransaction(parentWallet.get(), childWallet.get(), sendAllowance.getAmount());
         // 2. 아이 지갑 +
-        myWalletRepository.updateByWalletId(childWallet.get().getWalletId(), childWallet.get().getBalance() + sendAllowance.getAmount());
+        walletRepository.updateByWalletId(childWallet.get().getWalletId(), childWallet.get().getBalance() + sendAllowance.getAmount());
         // 3. 부모 지갑 -
-        myWalletRepository.updateByWalletId(parentWallet.get().getWalletId(), childWallet.get().getBalance() - sendAllowance.getAmount());
+        walletRepository.updateByWalletId(parentWallet.get().getWalletId(), childWallet.get().getBalance() - sendAllowance.getAmount());
 
         return response.success("용돈 이체에 성공했습니다.");
     }
@@ -165,8 +165,8 @@ public class AllowanceService {
                 .balance((int) (child.getBalance() + request.getAllowanceAmount()))
                 .build();
 
-        myWalletTransactionsRepository.save(parentToChildTransaction);
-        myWalletTransactionsRepository.save(childToParentTransaction);
+        transactionRepository.save(parentToChildTransaction);
+        transactionRepository.save(childToParentTransaction);
     }
 
     public void makeTransaction(Wallets parent, Wallets child, Integer amount) {
@@ -189,8 +189,8 @@ public class AllowanceService {
                 .balance((int) (child.getBalance() + amount))
                 .build();
 
-        myWalletTransactionsRepository.save(parentToChildTransaction);
-        myWalletTransactionsRepository.save(childToParentTransaction);
+        transactionRepository.save(parentToChildTransaction);
+        transactionRepository.save(childToParentTransaction);
     }
 
 }
