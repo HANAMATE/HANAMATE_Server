@@ -13,6 +13,8 @@ public interface WalletRepository extends JpaRepository<Wallets, Long> {
     @Override
     Optional<Wallets> findById(Long aLong);
 
+    Optional<Wallets> findByUserId(Long aLong);
+
     @Transactional
     @Modifying
     @Query("update Wallets w set w.balance=:balance where w.walletId=:walletId")

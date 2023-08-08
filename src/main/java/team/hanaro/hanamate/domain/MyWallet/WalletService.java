@@ -157,4 +157,28 @@ public class WalletService {
 
         return map;
     }
+
+    /**
+     * <p>회원가입 시 생성된 유저 Id를 바탕으로, 개인지갑 생성</p>
+     * <p>이미 개인 지갑이 존재하는 경우 null</p>
+     *
+     * @param : 유저 ID
+     * @return : 생성된 지갑 ID 또는 null
+     */
+    public Long createPrivateWallet(Long userId) {
+        Optional<Wallets> wallets = walletRepository.findByUserId(userId);
+        if (wallets.isPresent()) {
+            return null;
+        }
+
+        Wallets newWallet = Wallets.builder()
+                .userId(userId)
+                .walletType(false)
+                .balance(0)
+                .build();
+
+        Wallets savedWallet = walletRepository.save(newWallet);
+
+        return savedWallet.getWalletId();
+    }
 }
