@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.MyWallet;
+package team.hanaro.hanamate.domain.MyWallet.Dto;
 
 import lombok.*;
 import team.hanaro.hanamate.entities.Account;
@@ -18,8 +18,8 @@ public class ResponseDto {
     public static class MyWallet {
         private Long walletId;
         private Boolean walletType;
-        private Long balance;
-        private Long targetAmount;
+        private Integer balance;
+        private Integer targetAmount;
 
         public MyWallet(Wallets wallets) {
             walletId = wallets.getWalletId();

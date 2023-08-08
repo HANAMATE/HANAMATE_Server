@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.MyWallet;
+package team.hanaro.hanamate.domain.MyWallet.Dto;
 
 import lombok.*;
 import org.springframework.lang.Nullable;
