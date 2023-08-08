@@ -27,6 +27,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-validation:2.5.6")
+    runtimeOnly ("com.h2database:h2")
 
     //security
     implementation("org.springframework.boot:spring-boot-starter-security")
