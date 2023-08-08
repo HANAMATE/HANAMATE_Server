@@ -4,6 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import team.hanaro.hanamate.domain.MyWallet.Dto.RequestDto;
+import team.hanaro.hanamate.domain.MyWallet.Dto.ResponseDto;
+import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
+import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
+import team.hanaro.hanamate.domain.MyWallet.Repository.WalletRepository;
 import team.hanaro.hanamate.domain.User.Dto.Response;
 import team.hanaro.hanamate.entities.Account;
 import team.hanaro.hanamate.entities.Transactions;
@@ -14,14 +19,14 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class MyWalletService {
-    private final MyWalletRepository myWalletRepository;
-    private final MyWalletTransactionsRepository myWalletTransactionsRepository;
+public class WalletService {
+    private final WalletRepository walletRepository;
+    private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final Response response;
 
     public ResponseEntity<?> myWallet(RequestDto.MyWallet myWalletReqDto) {
-        Optional<Wallets> myWalletInfo = myWalletRepository.findById(myWalletReqDto.getWalletId());
+        Optional<Wallets> myWalletInfo = walletRepository.findById(myWalletReqDto.getWalletId());
         if (myWalletInfo.isPresent()) {
             ResponseDto.MyWallet myWalletResDto = new ResponseDto.MyWallet(myWalletInfo.get());
             return response.success(myWalletResDto, "내 지갑 잔액 조회에 성공했습니다.", HttpStatus.OK);
@@ -43,7 +48,7 @@ public class MyWalletService {
         }
 
         HashMap<String, Timestamp> map = getDate(year, month);
-        Optional<List<Transactions>> myTransactionsInfoList = myWalletTransactionsRepository.findAllByWalletIdAndTransactionDateBetween(myWalletReqDto.getWalletId(), map.get("startDate"), map.get("endDate"));
+        Optional<List<Transactions>> myTransactionsInfoList = transactionRepository.findAllByWalletIdAndTransactionDateBetween(myWalletReqDto.getWalletId(), map.get("startDate"), map.get("endDate"));
 
         if (myTransactionsInfoList.isPresent()) {
             List<Transactions> transactionsList = myTransactionsInfoList.get();
@@ -70,7 +75,7 @@ public class MyWalletService {
 
     public ResponseEntity<?> getMoneyFromAccount(RequestDto.RequestAmount requestAmount) {
         Optional<Account> account = accountRepository.findByMemberId(requestAmount.getMemberId());
-        Optional<Wallets> wallet = myWalletRepository.findById(requestAmount.getWalletId());
+        Optional<Wallets> wallet = walletRepository.findById(requestAmount.getWalletId());
         if (account.isPresent() && wallet.isPresent()) {
 
             if (account.get().getBalance() < requestAmount.getAmount()) {   // 1. 남은 잔액보다 돈이 적을 때
@@ -79,7 +84,7 @@ public class MyWalletService {
                 // 2-1. transaction 추가
                 makeTransaction(account.get(), wallet.get(), requestAmount);
                 // 2-2. wallet 잔액 추가
-                myWalletRepository.updateByWalletId(wallet.get().getWalletId(), Long.valueOf(wallet.get().getBalance() + requestAmount.getAmount()));
+                walletRepository.updateByWalletId(wallet.get().getWalletId(), Long.valueOf(wallet.get().getBalance() + requestAmount.getAmount()));
                 // 2-3. account 잔액 차감
                 accountRepository.updateByMemberId(requestAmount.getMemberId(), account.get().getBalance() - requestAmount.getAmount());
                 return response.success("충전을 완료했습니다.");
@@ -119,7 +124,7 @@ public class MyWalletService {
                 .balance(account.getBalance() - requestAmount.getAmount())
                 .build();
 
-        myWalletTransactionsRepository.save(transactions);
+        transactionRepository.save(transactions);
     }
 
     public HashMap<String, Timestamp> getDate(Integer year, Integer month) {
@@ -151,5 +156,29 @@ public class MyWalletService {
         map.put("endDate", end);
 
         return map;
+    }
+
+    /**
+     * <p>회원가입 시 생성된 유저 Id를 바탕으로, 개인지갑 생성</p>
+     * <p>이미 개인 지갑이 존재하는 경우 null</p>
+     *
+     * @param : 유저 ID
+     * @return : 생성된 지갑 ID 또는 null
+     */
+    public Long createPrivateWallet(Long userId) {
+        Optional<Wallets> wallets = walletRepository.findByUserId(userId);
+        if (wallets.isPresent()) {
+            return null;
+        }
+
+        Wallets newWallet = Wallets.builder()
+                .userId(userId)
+                .walletType(false)
+                .balance(0)
+                .build();
+
+        Wallets savedWallet = walletRepository.save(newWallet);
+
+        return savedWallet.getWalletId();
     }
 }

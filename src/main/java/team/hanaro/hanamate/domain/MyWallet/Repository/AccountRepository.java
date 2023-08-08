@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.MyWallet;
+package team.hanaro.hanamate.domain.MyWallet.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
