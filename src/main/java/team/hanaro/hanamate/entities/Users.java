@@ -1,12 +1,15 @@
 package team.hanaro.hanamate.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import team.hanaro.hanamate.domain.User.UserType;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,14 +27,19 @@ public class Users extends BaseTime implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @Column
-    private Long walletId; /* 개인 지갑 Id */
+//    @Column
+//    private Long walletId; /* 개인 지갑 Id */
+
+
+//    @OneToOne
+//    @JoinColumn(name="walletId")
+//    private Wallets wallets;
+
     @Column
     private Long accountId;
 
     @Column
     private String id;
-//    private String email;
 
     @Column
     private String password;
@@ -45,9 +53,12 @@ public class Users extends BaseTime implements UserDetails {
     @Column
     private String phoneNumber;
 
-    @Column
-    private Timestamp registrationDate;
 
+
+    @Column
+    private UserType userType;
+
+    //SpringSecurity 관련
     @Column
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -59,6 +70,7 @@ public class Users extends BaseTime implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public String getUsername() {
