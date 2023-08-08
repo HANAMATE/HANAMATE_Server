@@ -30,11 +30,10 @@ public class Users extends BaseTime implements UserDetails {
 //    @Column
 //    private Long walletId; /* 개인 지갑 Id */
 
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "user_id") // adjust the join column name according to your schema
-//    @Builder.Default
-//    private List<Wallets> wallets = new ArrayList<>();
 
+//    @OneToOne
+//    @JoinColumn(name="walletId")
+//    private Wallets wallets;
 
     @Column
     private Long accountId;
