@@ -15,7 +15,9 @@ public class Wallets {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long walletId;
+
+    private Long userId;
     private Boolean walletType; /* 0: 개인, 1: 모임통장 */
-    private Long balance;
-    private Long targetAmount; /* 모임통장일 때 목표금액 */
+    private Integer balance;
+    private Integer targetAmount; /* 모임통장일 때 목표금액 */
 }
