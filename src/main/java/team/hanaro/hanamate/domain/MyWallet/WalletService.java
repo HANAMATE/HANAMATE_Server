@@ -84,7 +84,7 @@ public class WalletService {
                 // 2-1. transaction 추가
                 makeTransaction(account.get(), wallet.get(), requestAmount);
                 // 2-2. wallet 잔액 추가
-                walletRepository.updateByWalletId(wallet.get().getWalletId(), Long.valueOf(wallet.get().getBalance() + requestAmount.getAmount()));
+                walletRepository.updateByWalletId(wallet.get().getWalletId(), wallet.get().getBalance() + requestAmount.getAmount());
                 // 2-3. account 잔액 차감
                 accountRepository.updateByMemberId(requestAmount.getMemberId(), account.get().getBalance() - requestAmount.getAmount());
                 return response.success("충전을 완료했습니다.");
