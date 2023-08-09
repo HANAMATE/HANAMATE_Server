@@ -7,14 +7,14 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.User.Helper;
-import team.hanaro.hanamate.domain.User.Dto.Response;
+import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Service.UsersService;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/users")
 @RestController
 public class UsersController {
 

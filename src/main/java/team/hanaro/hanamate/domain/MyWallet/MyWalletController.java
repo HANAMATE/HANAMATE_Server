@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import team.hanaro.hanamate.domain.User.Dto.Response;
+import team.hanaro.hanamate.global.Response;
 
 @Tag(name = "내 지갑", description = "내 지갑과 관련된 기능")
 @RequiredArgsConstructor

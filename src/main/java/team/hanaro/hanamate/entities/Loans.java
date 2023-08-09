@@ -39,4 +39,5 @@ public class Loans {
     private Integer sequence; /* 상환 회차 */
     private Boolean valid;
     private Boolean completed;
+
 }

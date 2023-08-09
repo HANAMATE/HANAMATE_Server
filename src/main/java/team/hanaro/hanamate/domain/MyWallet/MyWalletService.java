@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import team.hanaro.hanamate.domain.User.Dto.Response;
+import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.entities.Account;
 import team.hanaro.hanamate.entities.Transactions;
 import team.hanaro.hanamate.entities.Wallets;

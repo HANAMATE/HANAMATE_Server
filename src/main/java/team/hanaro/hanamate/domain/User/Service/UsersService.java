@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import team.hanaro.hanamate.domain.User.Authority;
-import team.hanaro.hanamate.domain.User.Dto.Response;
+import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
