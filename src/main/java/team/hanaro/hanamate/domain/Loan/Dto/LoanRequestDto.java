@@ -12,7 +12,7 @@ public class LoanRequestDto {
     @Setter
     public static class Apply{
 
-        private Long childrenId;
+        private String childrenId;
 
         @NotEmpty(message = "대출 이름은 필수 입력값입니다.")
         private String loanName;
@@ -20,8 +20,8 @@ public class LoanRequestDto {
         @NotEmpty(message = "대출 금액은 필수 입력값입니다.")
         private String loanAmount;
 
-        @NotEmpty(message = "잘못된 요청입니다.")
-        private String accessToken;
+//        @NotEmpty(message = "잘못된 요청입니다.")
+//        private String accessToken;
 
 
     }

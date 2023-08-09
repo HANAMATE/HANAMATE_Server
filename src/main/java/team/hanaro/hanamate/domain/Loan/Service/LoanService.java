@@ -15,6 +15,8 @@ import team.hanaro.hanamate.entities.Loans;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,19 +27,26 @@ public class LoanService {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
 
-    public ResponseEntity<?> apply(LoanRequestDto.Apply apply) {
+    public ResponseEntity<?> apply(LoanRequestDto.Apply apply, HttpServletRequest request) {
 
+// 1. Access Token 가져오기
+        String accessToken = request.getHeader("Authorization"); // Assuming the access token is stored in the "Authorization" header
         log.info("대출 서비스 들어옴");
         // 1. Access Token 검증
-        if (!jwtTokenProvider.validateToken(apply.getAccessToken())){
+//        if (!jwtTokenProvider.validateToken(apply.getAccessToken())){
+//            return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+//        }
+// 2. Access Token 검증
+        if (!jwtTokenProvider.validateToken(accessToken)) {
             return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
         }
 
 
-        // 2. Access Token 에서 User Id를 가져옵니다.
-        Authentication authentication = jwtTokenProvider.getAuthentication(apply.getAccessToken());
+        // 3. Access Token 에서 User Id를 가져옵니다.
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         String userId = authentication.getName(); // User Id를 가져옵니다.
-        log.info("userId={}", userId);
+
+        log.info("userId={}", userId); //test 회원 아이디를 가져오게 됨.
 
         // 3. UserDetailsService를 통해 UserDetails 객체 가져오기
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
@@ -48,7 +57,7 @@ public class LoanService {
         // ... 대출 신청과 관련된 로직 수행 ...
 
 
-        Loans loans=Loans.builder()
+       Loans loans=Loans.builder()
                 .childrenId(userId)
                 .loanName(apply.getLoanName())
                 .loanAmount(Integer.valueOf(apply.getLoanAmount()))
