@@ -1,9 +1,6 @@
 package team.hanaro.hanamate.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,27 +15,26 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@Setter
 @Getter
+@Setter //TEST 용도 Setter 사용
 @Entity
-public class Users extends BaseTime implements UserDetails {
+@Table(name = "Users")
+public class User extends BaseTime implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long idx;
+    
+    //xxToOne 관계는 모두 FetchType.LAZY를 걸어줘야 함.
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "my_wallet_id")
+    private MyWallet myWallet;
 
-//    @Column
-//    private Long walletId; /* 개인 지갑 Id */
+    @OneToOne(fetch = FetchType.LAZY)
+    private Account account;
 
-
-//    @OneToOne
-//    @JoinColumn(name="walletId")
-//    private Wallets wallets;
-
-    @Column
-    private Long accountId;
-
-    @Column
+    @Column(name="login_id",unique = true)
     private String id;
 
     @Column
@@ -47,13 +43,12 @@ public class Users extends BaseTime implements UserDetails {
     @Column
     private String name;
 
+    // TODO: 2023/08/09 identification -> rrn 으로 변수명 변경 요청 
     @Column
     private String identification;
 
     @Column
     private String phoneNumber;
-
-
 
     @Column
     private UserType userType;

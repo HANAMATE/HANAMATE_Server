@@ -17,7 +17,7 @@ import team.hanaro.hanamate.domain.User.Dto.Response;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.entities.Users;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 import team.hanaro.hanamate.security.SecurityUtil;
 
@@ -42,7 +42,7 @@ public class UsersService {
         }
 
         //DTO(Signup)을 이용하여 User(Entity)로 반환하는 Builder (DTO-> Entity)
-        Users user = Users.builder()
+        User user = User.builder()
                 .name(signUp.getName())
                 .id(signUp.getId())
                 .password(passwordEncoder.encode(signUp.getPassword()))
@@ -145,7 +145,7 @@ public class UsersService {
         // SecurityContext에 담겨 있는 authentication userEamil 정보
         String userId = SecurityUtil.getCurrentUserEmail();
 
-        Users user = usersRepository.findById(userId)
+        User user = usersRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("No authentication information."));
 
         // add ROLE_ADMIN

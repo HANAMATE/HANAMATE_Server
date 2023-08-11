@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 public class Loans {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "loan_id")
     private Long loanId;
 
     private Long childrenId;

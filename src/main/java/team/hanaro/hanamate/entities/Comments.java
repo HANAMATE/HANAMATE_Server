@@ -12,13 +12,20 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
     private Long commentId;
 
-    private Long articleId;
-    private Long writerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id")
+    private Article article;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String content;
     private Timestamp postedDate;

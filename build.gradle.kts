@@ -29,6 +29,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation:2.5.6")
     runtimeOnly ("com.h2database:h2")
 
+    //p6spy - sql 쿼리문 모니터링 및 로깅 라이브러리
+    implementation ("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6")
+
+
     //security
     implementation("org.springframework.boot:spring-boot-starter-security")
     testImplementation("org.springframework.security:spring-security-test")

@@ -117,7 +117,7 @@ public class WalletService {
 
     public void makeTransaction(Account account, Wallets wallet, RequestDto.RequestAmount requestAmount) {
         Transactions transactions = Transactions.builder()
-                .walletId(wallet.getWalletId())
+//                .walletId(wallet.getWalletId())
                 .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .transactionType("충전")
                 .amount(requestAmount.getAmount())
@@ -173,7 +173,7 @@ public class WalletService {
 
         Wallets newWallet = Wallets.builder()
                 .userId(userId)
-                .walletType(false)
+//                .walletType(false)
                 .balance(0)
                 .build();
 
