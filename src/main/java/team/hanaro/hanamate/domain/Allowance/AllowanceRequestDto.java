@@ -20,8 +20,10 @@ public class AllowanceRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ChildRequest {
-        @NotBlank
+        @NotBlank(message = "유저 아이디가 비었습니다.")
         private Long userId;
+        @NotBlank(message = "부모 아이디가 비었습니다.") // TODO: 2023/08/11 parentId 추가 -ansik-
+        private Long parentId;
         @NotBlank
         private Integer allowanceAmount;
         private String requestDescription;
