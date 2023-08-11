@@ -9,10 +9,10 @@ import team.hanaro.hanamate.domain.MyWallet.Dto.ResponseDto;
 import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.WalletRepository;
-import team.hanaro.hanamate.domain.User.Dto.Response;
 import team.hanaro.hanamate.entities.Account;
 import team.hanaro.hanamate.entities.Transactions;
 import team.hanaro.hanamate.entities.Wallets;
+import team.hanaro.hanamate.global.Response;
 
 import java.sql.Timestamp;
 import java.util.*;
