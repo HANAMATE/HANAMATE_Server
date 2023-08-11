@@ -29,18 +29,14 @@ public class LoanService {
 
     public ResponseEntity<?> apply(LoanRequestDto.Apply apply, HttpServletRequest request) {
 
-// 1. Access Token 가져오기
+        // 1. Access Token 가져오기
         String accessToken = request.getHeader("Authorization"); // Assuming the access token is stored in the "Authorization" header
         log.info("대출 서비스 들어옴");
-        // 1. Access Token 검증
-//        if (!jwtTokenProvider.validateToken(apply.getAccessToken())){
-//            return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
-//        }
-// 2. Access Token 검증
+
+        // 2. Access Token 검증
         if (!jwtTokenProvider.validateToken(accessToken)) {
             return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
         }
-
 
         // 3. Access Token 에서 User Id를 가져옵니다.
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);

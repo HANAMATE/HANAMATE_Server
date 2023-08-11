@@ -21,6 +21,7 @@ import team.hanaro.hanamate.entities.Users;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 import team.hanaro.hanamate.security.SecurityUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -50,11 +51,6 @@ public class UsersService {
                 .phoneNumber(signUp.getPhoneNumber())
                 .userType(signUp.getUserType())
                 .roles(Collections.singletonList(Authority.ROLE_USER.name())) //SpringSecurity 관련
-//                .wallets(Arrays.asList(
-//                        Wallets.builder()
-//                                .walletId(1000L)
-//                                .build()
-//                ))
                 .build();
         usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
 
@@ -89,14 +85,17 @@ public class UsersService {
     }
 
     //토큰 재발급
-    public ResponseEntity<?> reissue(UserRequestDto.Reissue reissue) {
+    public ResponseEntity<?> reissue(HttpServletRequest request) {
+        String get_refreshToken = request.getHeader("RefreshToken");
+
         // 1. Refresh Token 검증
-        if (!jwtTokenProvider.validateToken(reissue.getRefreshToken())) {
+        if (!jwtTokenProvider.validateToken(get_refreshToken)) {
             return response.fail("Refresh Token 정보가 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        // 2. Access Token 에서 User email 을 가져옵니다.
-        Authentication authentication = jwtTokenProvider.getAuthentication(reissue.getAccessToken());
+        // 2. Access Token 에서 User Id를 가져옵니다.
+        String get_accessToken = request.getHeader("AccessToken");
+        Authentication authentication = jwtTokenProvider.getAuthentication(get_accessToken);
 
         // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
         String refreshToken = (String)redisTemplate.opsForValue().get("RT:" + authentication.getName());
@@ -104,7 +103,7 @@ public class UsersService {
         if(ObjectUtils.isEmpty(refreshToken)) {
             return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
         }
-        if(!refreshToken.equals(reissue.getRefreshToken())) {
+        if(!refreshToken.equals(get_refreshToken)) {
             return response.fail("Refresh Token 정보가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -117,6 +116,7 @@ public class UsersService {
 
         return response.success(tokenInfo, "Token 정보가 갱신되었습니다.", HttpStatus.OK);
     }
+
 
     public ResponseEntity<?> logout(UserRequestDto.Logout logout) {
         // 1. Access Token 검증

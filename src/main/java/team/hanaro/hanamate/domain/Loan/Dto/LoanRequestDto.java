@@ -20,9 +20,6 @@ public class LoanRequestDto {
         @NotEmpty(message = "대출 금액은 필수 입력값입니다.")
         private String loanAmount;
 
-//        @NotEmpty(message = "잘못된 요청입니다.")
-//        private String accessToken;
-
 
     }
 
