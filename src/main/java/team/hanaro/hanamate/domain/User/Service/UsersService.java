@@ -3,6 +3,7 @@ package team.hanaro.hanamate.domain.User.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import team.hanaro.hanamate.domain.User.Authority;
+import team.hanaro.hanamate.domain.User.Dto.UserResponse;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
@@ -36,6 +38,7 @@ public class UsersService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisTemplate redisTemplate;
+    private final UserResponse userResponse;
 
     public ResponseEntity<?> signUp(UserRequestDto.SignUp signUp) {
         if (usersRepository.existsById(signUp.getId())) {
@@ -77,11 +80,27 @@ public class UsersService {
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         UserResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
+        String refreshToken = tokenInfo.getRefreshToken();
+        String accessToken = tokenInfo.getAccessToken();
+
+
         // 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
         redisTemplate.opsForValue()
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
-        return response.success(tokenInfo, "로그인에 성공했습니다.", HttpStatus.OK);
+
+        // 헤더를 포함하여 ResponseEntity 생성
+        // userResponse.success()를 호출하여 ResponseEntity 생성
+        ResponseEntity<?> responseEntity = userResponse.success(accessToken,refreshToken,null, "로그인에 성공했습니다", HttpStatus.OK);
+
+        return responseEntity;
+
+
+
+
+
+
+
     }
 
     //토큰 재발급
@@ -98,23 +117,30 @@ public class UsersService {
         Authentication authentication = jwtTokenProvider.getAuthentication(get_accessToken);
 
         // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
-        String refreshToken = (String)redisTemplate.opsForValue().get("RT:" + authentication.getName());
+        String redisRefreshToken = (String)redisTemplate.opsForValue().get("RT:" + authentication.getName());
         // (추가) 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
-        if(ObjectUtils.isEmpty(refreshToken)) {
+        if(ObjectUtils.isEmpty(redisRefreshToken)) {
             return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
         }
-        if(!refreshToken.equals(get_refreshToken)) {
+        if(!redisRefreshToken.equals(get_refreshToken)) {
             return response.fail("Refresh Token 정보가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
         // 4. 새로운 토큰 생성
         UserResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
+
         // 5. RefreshToken Redis 업데이트
         redisTemplate.opsForValue()
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
-        return response.success(tokenInfo, "Token 정보가 갱신되었습니다.", HttpStatus.OK);
+        String refreshToken = tokenInfo.getRefreshToken();
+        String accessToken = tokenInfo.getAccessToken();
+
+        ResponseEntity<?> responseEntity = userResponse.success(accessToken,refreshToken,null, "Token 정보가 갱신되었습니다.", HttpStatus.OK);
+
+        return responseEntity;
+
     }
 
 
