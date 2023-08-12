@@ -17,8 +17,8 @@ public class Loans {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long loanId;
 
-    private Long childrenId;
-    private Long parentId;
+    private String childrenId;
+    private String parentId;
     private Long walletId;
     private String loanName;
     private Integer duration;
@@ -39,4 +39,5 @@ public class Loans {
     private Integer sequence; /* 상환 회차 */
     private Boolean valid;
     private Boolean completed;
+
 }
