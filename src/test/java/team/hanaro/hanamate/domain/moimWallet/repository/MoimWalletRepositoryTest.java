@@ -8,20 +8,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
+import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.WalletRepository;
 import team.hanaro.hanamate.entities.MoimWallet;
 import team.hanaro.hanamate.entities.MyWallet;
 import team.hanaro.hanamate.entities.Transactions;
-import team.hanaro.hanamate.entities.Wallets;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 //@SpringBootTest
 @DataJpaTest(showSql = false)
