@@ -27,7 +27,7 @@ public class User extends BaseTime implements UserDetails {
     private Long idx;
     
     //xxToOne 관계는 모두 FetchType.LAZY를 걸어줘야 함.
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "my_wallet_id")
     private MyWallet myWallet;
 
