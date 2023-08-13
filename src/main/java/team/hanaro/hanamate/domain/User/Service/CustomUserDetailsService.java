@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-//import team.hanaro.hanamate.entities.Users;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+//import team.hanaro.hanamate.entities.User;
 
 @Service
 @RequiredArgsConstructor

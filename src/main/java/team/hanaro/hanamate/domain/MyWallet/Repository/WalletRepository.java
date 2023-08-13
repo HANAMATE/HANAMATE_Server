@@ -4,16 +4,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
+import team.hanaro.hanamate.entities.MyWallet;
 import team.hanaro.hanamate.entities.Wallets;
 
 import java.util.Optional;
 
-public interface WalletRepository extends JpaRepository<Wallets, Long> {
+public interface WalletRepository extends JpaRepository<MyWallet, Long> {
 
     @Override
-    Optional<Wallets> findById(Long aLong);
+    Optional<MyWallet> findById(Long aLong);
 
-    Optional<Wallets> findByUserId(Long aLong);
+//    Optional<MyWallet> findByUserId(Long aLong);
 
     @Transactional
     @Modifying
