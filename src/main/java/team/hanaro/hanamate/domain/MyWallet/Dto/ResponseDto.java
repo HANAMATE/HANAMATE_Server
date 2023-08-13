@@ -23,7 +23,8 @@ public class ResponseDto {
 
         public MyWallet(Wallets wallets) {
             walletId = wallets.getWalletId();
-            walletType = wallets.getWalletType();
+            // TODO: 2023/08/13 아래 부분 wallet ==> Mywallet , MoimWallet으로 바뀌면서 없는 부분임
+//            walletType = wallets.getWalletType();
             balance = wallets.getBalance();
             targetAmount = wallets.getTargetAmount();
         }
@@ -44,7 +45,7 @@ public class ResponseDto {
 
         public MyTransactions(Transactions transactions) {
             id = transactions.getId();
-            walletId = transactions.getWalletId();
+            walletId = transactions.getWallet().getId();
             date = transactions.getTransactionDate();
             amount = transactions.getAmount();
             balance = transactions.getBalance();
