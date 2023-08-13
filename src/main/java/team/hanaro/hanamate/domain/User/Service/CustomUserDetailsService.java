@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import team.hanaro.hanamate.entities.Users;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+//import team.hanaro.hanamate.entities.User;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
-    private UserDetails createUserDetails(Users users) {
+    private UserDetails createUserDetails(team.hanaro.hanamate.entities.User users) {
         return new User(users.getUsername(), users.getPassword(), users.getAuthorities());
     }
 }

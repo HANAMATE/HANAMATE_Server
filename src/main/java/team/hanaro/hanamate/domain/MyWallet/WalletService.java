@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import team.hanaro.hanamate.domain.MyWallet.Dto.RequestDto;
 import team.hanaro.hanamate.domain.MyWallet.Dto.ResponseDto;
 import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
+import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.WalletRepository;
-import team.hanaro.hanamate.entities.Account;
-import team.hanaro.hanamate.entities.Transactions;
-import team.hanaro.hanamate.entities.Wallets;
+import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
 
 import java.sql.Timestamp;
@@ -20,13 +22,14 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class WalletService {
-    private final WalletRepository walletRepository;
+    private final MyWalletRepository walletRepository;
+    private final UsersRepository usersRepository;
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final Response response;
 
     public ResponseEntity<?> myWallet(RequestDto.MyWallet myWalletReqDto) {
-        Optional<Wallets> myWalletInfo = walletRepository.findById(myWalletReqDto.getWalletId());
+        Optional<MyWallet> myWalletInfo = walletRepository.findById(myWalletReqDto.getWalletId());
         if (myWalletInfo.isPresent()) {
             ResponseDto.MyWallet myWalletResDto = new ResponseDto.MyWallet(myWalletInfo.get());
             return response.success(myWalletResDto, "내 지갑 잔액 조회에 성공했습니다.", HttpStatus.OK);
@@ -50,6 +53,7 @@ public class WalletService {
         HashMap<String, Timestamp> map = getDate(year, month);
         Optional<List<Transactions>> myTransactionsInfoList = transactionRepository.findAllByWalletIdAndTransactionDateBetween(myWalletReqDto.getWalletId(), map.get("startDate"), map.get("endDate"));
 
+//        Optional<List<Transactions>> myTransactionsInfoList = transactionRepository.findAllByWalletId(myWalletReqDto.getWalletId());
         if (myTransactionsInfoList.isPresent()) {
             List<Transactions> transactionsList = myTransactionsInfoList.get();
             List<ResponseDto.MyTransactions> myWalletTransactionResDtoList = new ArrayList<>();
@@ -73,9 +77,10 @@ public class WalletService {
         }
     }
 
+    @Transactional
     public ResponseEntity<?> getMoneyFromAccount(RequestDto.RequestAmount requestAmount) {
         Optional<Account> account = accountRepository.findByMemberId(requestAmount.getMemberId());
-        Optional<Wallets> wallet = walletRepository.findById(requestAmount.getWalletId());
+        Optional<MyWallet> wallet = walletRepository.findById(requestAmount.getWalletId());
         if (account.isPresent() && wallet.isPresent()) {
 
             if (account.get().getBalance() < requestAmount.getAmount()) {   // 1. 남은 잔액보다 돈이 적을 때
@@ -84,9 +89,13 @@ public class WalletService {
                 // 2-1. transaction 추가
                 makeTransaction(account.get(), wallet.get(), requestAmount);
                 // 2-2. wallet 잔액 추가
-                walletRepository.updateByWalletId(wallet.get().getWalletId(), wallet.get().getBalance() + requestAmount.getAmount());
+                wallet.get().setBalance(wallet.get().getBalance() + requestAmount.getAmount());
+                walletRepository.save(wallet.get());
+//                walletRepository.updateByWalletId(wallet.get().getId(), wallet.get().getBalance() + requestAmount.getAmount());
                 // 2-3. account 잔액 차감
-                accountRepository.updateByMemberId(requestAmount.getMemberId(), account.get().getBalance() - requestAmount.getAmount());
+                account.get().setBalance(account.get().getBalance() - requestAmount.getAmount());
+                accountRepository.save(account.get());
+//                accountRepository.updateByMemberId(requestAmount.getMemberId(), account.get().getBalance() - requestAmount.getAmount());
                 return response.success("충전을 완료했습니다.");
             }
         } else {
@@ -115,15 +124,17 @@ public class WalletService {
         }
     }
 
-    public void makeTransaction(Account account, Wallets wallet, RequestDto.RequestAmount requestAmount) {
+    public void makeTransaction(Account account, MyWallet wallet, RequestDto.RequestAmount requestAmount) {
         Transactions transactions = Transactions.builder()
-//                .walletId(wallet.getWalletId())
                 .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .transactionType("충전")
+                .counterId(account.getAccountId())
                 .amount(requestAmount.getAmount())
                 .balance(account.getBalance() - requestAmount.getAmount())
+                .success(true)
                 .build();
 
+        transactions.setWallet(wallet);
         transactionRepository.save(transactions);
     }
 
@@ -166,19 +177,27 @@ public class WalletService {
      * @return : 생성된 지갑 ID 또는 null
      */
     public Long createPrivateWallet(Long userId) {
-        Optional<Wallets> wallets = walletRepository.findByUserId(userId);
-        if (wallets.isPresent()) {
+//        Optional<MyWallet> wallets = walletRepository.findByUserId(userId);
+//        if (wallets.isPresent()) {
+//            return null;
+//        }
+        User user = usersRepository.findById(userId).get();
+        MyWallet myWallet = user.getMyWallet();
+        if (ObjectUtils.isEmpty(myWallet)) {
             return null;
         }
-
-        Wallets newWallet = Wallets.builder()
-                .userId(userId)
+        MyWallet newWallet = MyWallet.builder()
+//                .userId(userId)
 //                .walletType(false)
                 .balance(0)
                 .build();
 
-        Wallets savedWallet = walletRepository.save(newWallet);
+//        MyWallet savedWallet = walletRepository.save(newWallet);
+        user.setMyWallet(newWallet);
+        usersRepository.save(user);
 
-        return savedWallet.getWalletId();
+        return user.getMyWallet().getId();
     }
+
+
 }

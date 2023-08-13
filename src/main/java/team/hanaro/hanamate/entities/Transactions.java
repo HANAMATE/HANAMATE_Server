@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Table(name = "transactions")
 @Getter
 @Setter
-@ToString
+//@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -20,7 +20,7 @@ public class Transactions {
     @Column(name = "transaction_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "wallet_id")
     @Setter
     private MyWallet wallet;
@@ -32,9 +32,12 @@ public class Transactions {
     private String location;
     private Integer balance;
     private Boolean success;
-
-//    @OneToOne(mappedBy = "transaction",cascade = CascadeType.ALL,orphanRemoval = true)
-//    private Article article;
+    public void addWallet(MyWallet wallet){
+        this.wallet = wallet;
+        wallet.addTransactions(this);
+    }
+    @OneToOne(mappedBy = "transaction",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Article article;
 
 
 
