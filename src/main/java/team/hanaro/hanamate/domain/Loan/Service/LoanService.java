@@ -10,12 +10,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanRequestDto;
 import team.hanaro.hanamate.domain.Loan.Repository.LoanRepository;
+import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.User.Service.CustomUserDetailsService;
 import team.hanaro.hanamate.entities.Loans;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,6 +29,8 @@ public class LoanService {
     private final Response response;
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
+
+    private final UsersRepository usersRepository;
 
     public ResponseEntity<?> apply(LoanRequestDto.Apply apply, HttpServletRequest request) {
 
@@ -52,9 +57,9 @@ public class LoanService {
         String username = userDetails.getUsername();
         // ... 대출 신청과 관련된 로직 수행 ...
 
-
-       Loans loans=Loans.builder()
-                .childrenId(userId)
+        User now_user = usersRepository.findById(userId).get();
+        Loans loans=Loans.builder()
+                .children(now_user)
                 .loanName(apply.getLoanName())
                 .loanAmount(Integer.valueOf(apply.getLoanAmount()))
                 .build();

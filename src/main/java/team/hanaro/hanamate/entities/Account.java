@@ -21,5 +21,6 @@ public class Account {
     private Long accountId;
     private String name;
     private Timestamp openDate;
+    @Setter
     private Integer balance;
 }
