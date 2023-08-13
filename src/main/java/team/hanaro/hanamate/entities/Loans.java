@@ -15,10 +15,17 @@ import java.sql.Timestamp;
 public class Loans {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "loan_id")
     private Long loanId;
 
-    private String childrenId;
-    private String parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "child_id")
+    private User children;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private User parent;
+
     private Long walletId;
     private String loanName;
     private Integer duration;
@@ -39,5 +46,4 @@ public class Loans {
     private Integer sequence; /* 상환 회차 */
     private Boolean valid;
     private Boolean completed;
-
 }

@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "member")
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +16,7 @@ import java.sql.Timestamp;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long memberId;
 
     private Long walletId; /* 개인 지갑 Id */
