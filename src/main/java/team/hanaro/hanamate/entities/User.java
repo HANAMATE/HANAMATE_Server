@@ -35,7 +35,7 @@ public class User extends BaseTime implements UserDetails {
     private Account account;
 
     @Column(name="login_id",unique = true)
-    private String id;
+    private String loginId;
 
     @Column
     private String password;
@@ -69,7 +69,7 @@ public class User extends BaseTime implements UserDetails {
 
     @Override
     public String getUsername() {
-        return id;
+        return loginId;
     }
 
 
