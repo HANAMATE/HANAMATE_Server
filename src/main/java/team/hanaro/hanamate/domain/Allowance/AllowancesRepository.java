@@ -10,9 +10,9 @@ import java.util.Optional;
 @Transactional
 public interface AllowancesRepository extends JpaRepository<Allowances, Long> {
 
-    Optional<Allowances> findByAllowanceId(Long aLong);
+    Optional<Allowances> findByAllowanceIdAndValidIsTrue(Long aLong);
 
-    Optional<List<Allowances>> findAllByParentId(Long aLong);
+    Optional<List<Allowances>> findAllByParentIdAndValidIsTrue(Long aLong);
 
-    Optional<Allowances> findByChildrenIdAndParentId(Long childId, Long parentId);
+    Optional<Allowances> findByChildrenIdAndParentIdAndValidIsTrue(Long childId, Long parentId);
 }

@@ -27,4 +27,7 @@ public class Allowances {
     private String dayOfWeek; /* 매주 O요일 */
     @Setter
     private Boolean everyday; /* 매일 */
+
+    @Setter
+    private boolean valid;
 }

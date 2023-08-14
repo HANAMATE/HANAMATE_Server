@@ -21,10 +21,13 @@ public class Requests {
     private Long requesterId;
     private Long loanId;
     private Long savingsId;
+    @Setter
     private Boolean askAllowance;
     private Integer allowanceAmount;
     private Timestamp requestDate;
     private Timestamp expirationDate;
+    @Setter
+    private Timestamp changedDate;
     private Integer result;
     private String requestDescription;
 

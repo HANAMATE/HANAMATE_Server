@@ -8,64 +8,87 @@ import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.Allowance.Dto.RequestDto;
 
 //@Transactional
-@Tag(name = "용돈", description = "용돈과 관련된 기능")
+@Tag(name = "용돈", description = "용돈 조르기, 용돈 보내기, 정기 용돈")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/allowance")
 public class AllowanceController {
     private final AllowanceService allowanceService;
 
-    /* 1. 아이 : 용돈 조르기 요청 조회*/
-    @Operation(summary = "[아이] 용돈 조르기 요청 조회", description = "용돈 조르기 한 내역 가져오기", tags = {"용돈"})
-    @GetMapping("/request/list")
-    public ResponseEntity<?> GetAllowanceList(@RequestBody RequestDto.ChildRequestList childRequestList) {
-        return allowanceService.getAllowanceRequestList(childRequestList);
+    /* 1. 아이 : 용돈 조르기(대기중) 요청 조회 */
+    @Operation(summary = "[아이] 용돈 조르기(대기중) 요청 조회", description = "용돈 조르기(대기중) 내역 가져오기", tags = {"용돈"})
+    @GetMapping("/child/request/pending")
+    public ResponseEntity<?> getMyAllowancePendingRequestList(@RequestBody RequestDto.User user) {
+        return allowanceService.getMyAllowancePendingRequestList(user);
     }
 
-    /* 2. 아이 : 용돈 조르기 생성 */
+    /* 2. 아이 : 용돈 조르기(승인/거절) 요청 조회 */
+    @Operation(summary = "[아이] 용돈 조르기(승인/거절) 요청 조회", description = "용돈 조르기(승인/거절) 내역 가져오기", tags = {"용돈"})
+    @GetMapping("/child/request")
+    public ResponseEntity<?> getMyAllowanceApprovedRequestList(@RequestBody RequestDto.User user) {
+        return allowanceService.getMyAllowanceApprovedRequestList(user);
+    }
+
+    /* 3. 아이 : 용돈 조르기 생성 */
     @Operation(summary = "[아이] 용돈 조르기 생성", description = "용돈 조르기", tags = {"용돈"})
-    @PostMapping("/request")
-    public ResponseEntity<?> MakeAllowanceRequest(@RequestBody RequestDto.ChildRequest childRequest) {
-        return allowanceService.makeAllowanceRequest(childRequest);
+    @PostMapping("/child/request")
+    public ResponseEntity<?> makeAllowanceRequest(@RequestBody RequestDto.Request request) {
+        return allowanceService.makeAllowanceRequest(request);
     }
 
-    /* 3. 부모 : 용돈 조르기 승인 */
-    @Operation(summary = "[부모] 용돈 조르기 승인", description = "용돈 조르기 승인", tags = {"용돈"})
-    @PostMapping("/request/approve")
-    public ResponseEntity<?> ApproveAllowanceRequest(@RequestBody RequestDto.ParentApprove parentApprove) {
-        return allowanceService.updateRequestStatus(parentApprove);
+    /* 4. 부모 : 용돈 조르기(대기중) 요청 조회 */
+    @Operation(summary = "[부모] 용돈 조르기(대기중) 요청 조회", description = "대기중인 용돈 조르기 요청 내역 가져오기", tags = {"용돈"})
+    @GetMapping("/parent/request/pending")
+    public ResponseEntity<?> getMyChildAllowancePendingRequestList(@RequestBody RequestDto.User user) {
+        return allowanceService.getMyChildAllowancePendingRequestList(user);
     }
 
-    /* 4. 부모 : 용돈 보내기 */
+    /* 5. 부모 : 용돈 조르기(승인,거절) 요청 조회 */
+    @Operation(summary = "[부모] 용돈 조르기(승인,거절) 요청 조회", description = "승인/거절 된 용돈 조르기 요청 내역 가져오기", tags = {"용돈"})
+    @GetMapping("/parent/request")
+    public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(@RequestBody RequestDto.User user) {
+        return allowanceService.getMyChildAllowanceApprovedRequestList(user);
+    }
+
+    /* 6. 부모 : 용돈 조르기 상태 변경(대기중 -> 승인/거절) */
+    @Operation(summary = "[부모] 용돈 조르기 상태 변경", description = "대기 중인 용돈 조르기를 승인or거절", tags = {"용돈"})
+    @PostMapping("/parent/request")
+    public ResponseEntity<?> approveAllowanceRequest(@RequestBody RequestDto.Approve approve) {
+        return allowanceService.updateRequestStatus(approve);
+    }
+
+    /* 7. 부모 : 용돈 보내기 */
     @Operation(summary = "[부모] 용돈 보내기", description = "용돈 보내기", tags = {"용돈"})
-    @PostMapping("")
-    public ResponseEntity<?> SendAllowance(@RequestBody RequestDto.SendAllowance sendAllowance) {
-        return allowanceService.sendAllowance(sendAllowance);
+    @PostMapping("/send")
+    public ResponseEntity<?> sendAllowance(@RequestBody RequestDto.Request request) {
+        return allowanceService.sendAllowance(request);
     }
 
-    /* 5. 부모 : 정기 용돈 조회 */
-    @Operation(summary = "[부모] 정기 용돈 조회하기", description = "정기 용돈 조히", tags = {"용돈"})
+    /* 8. 부모 : 정기 용돈 조회 */
+    @Operation(summary = "[부모] 정기 용돈 조회하기", description = "정기 용돈 조회", tags = {"용돈"})
     @GetMapping("/periodic")
-    public ResponseEntity<?> getPeriodicAllowance(@RequestBody RequestDto.PeriodicAllowance periodicAllowance) {
-        return allowanceService.getPeriodicAllowance(periodicAllowance);
+    public ResponseEntity<?> getPeriodicAllowance(@RequestBody RequestDto.User user) {
+        return allowanceService.getPeriodicAllowance(user);
     }
 
-    /* 6. 부모 : 정기 용돈 생성하기 */
+    /* 9. 부모 : 정기 용돈 생성하기 */
     @Operation(summary = "[부모] 정기 용돈 생성하기", description = "정기 용돈 생성", tags = {"용돈"})
     @PostMapping("/periodic")
-    public ResponseEntity<?> makePeriodicAllowance(@RequestBody RequestDto.makePeriodicAllowance periodicAllowance) {
-        return allowanceService.makePeriodicAllowance(periodicAllowance);
+    public ResponseEntity<?> makePeriodicAllowance(@RequestBody RequestDto.Periodic periodic) {
+        return allowanceService.makePeriodicAllowance(periodic);
     }
 
-    /* 7. 부모 : 정기 용돈 수정 */
-    @PostMapping("/periodic/update")
-    public ResponseEntity<?> updatePeriodicAllowance(@RequestBody RequestDto.updatePeriodicAllowance periodicAllowance) {
-        return allowanceService.updatePeriodicAllowance(periodicAllowance);
+    /* 10. 부모 : 정기 용돈 수정 */
+    @Operation(summary = "[부모] 정기 용돈 수정하기", description = "정기 용돈 수정", tags = {"용돈"})
+    @PutMapping("/periodic")
+    public ResponseEntity<?> updatePeriodicAllowance(@RequestBody RequestDto.UpdatePeriodic periodic) {
+        return allowanceService.updatePeriodicAllowance(periodic);
     }
 
-    /* 8. 부모 : 정기 용돈 삭제 */
+    /* 11. 부모 : 정기 용돈 삭제 */
+    @Operation(summary = "[부모] 정기 용돈 삭제하기", description = "정기 용돈 삭제", tags = {"용돈"})
     @DeleteMapping("/periodic")
-    public ResponseEntity<?> deletePeriodicAllowance(@RequestBody RequestDto.deletePeriodicAllowance periodicAllowance) {
-        return allowanceService.deletePeriodicAllowance(periodicAllowance);
+    public ResponseEntity<?> deletePeriodicAllowance(@RequestBody RequestDto.Allowance periodic) {
+        return allowanceService.deletePeriodicAllowance(periodic);
     }
 }

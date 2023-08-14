@@ -5,26 +5,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 
 public class RequestDto {
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ChildRequestList {
-        @NotBlank
+    public static class User {
+        @NotBlank(message = "유저 아이디가 비었습니다.")
         private Long userId;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ChildRequest {
-        @NotBlank(message = "유저 아이디가 비었습니다.")
-        private Long userId;
-        @NotBlank(message = "부모 아이디가 비었습니다.") // TODO: 2023/08/11 parentId 추가 -ansik-
+    public static class Request {
+        @NotBlank(message = "아이 아이디가 비었습니다.")
+        private Long childId;
+        @NotBlank(message = "부모 아이디가 비었습니다.") // ansik: 2023/08/11 parentId 추가
         private Long parentId;
-        @NotBlank
+        @Positive(message = "요청 금액은 1이상의 양수 값을 입력해주세요.")
+        @NotBlank(message = "요청 금액이 비었습니다.")
         private Integer allowanceAmount;
         private String requestDescription;
     }
@@ -32,44 +34,23 @@ public class RequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ParentApprove {
-        @NotBlank
-        private Long walletId;
-        @NotBlank
+    public static class Approve {
+        @NotBlank(message = "용돈 조르기 요청 Id를 입력해주세요.")
         private Long requestId;
-        @NotBlank
+        @NotBlank(message = "업데이트 할 상태값이(승인/거절) 비었습니다.")
         private Boolean askAllowance;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SendAllowance {
-        @NotBlank
-        private Long userId;
-        @NotBlank
-        private Long childId;
-        @NotBlank
-        private Integer amount;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PeriodicAllowance {
-        @NotBlank
-        private Long userId;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class makePeriodicAllowance {
-        @NotBlank
+    public static class Periodic {
+        @NotBlank(message = "부모 Id를 입력해주세요.")
         private Long parentId;
-        @NotBlank
+        @NotBlank(message = "아이 Id를 입력해주세요.")
         private Long childrenId;
-        @NotBlank
+        @Positive(message = "요청 금액은 1이상의 양수 값을 입력해주세요.")
+        @NotBlank(message = "정기 용돈 금액이 비었습니다.")
         private Integer allowanceAmount;
 
         private Integer transferDate; /* 한달에 한번 */
@@ -80,10 +61,11 @@ public class RequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class updatePeriodicAllowance {
-        @NotBlank
+    public static class UpdatePeriodic {
+        @NotBlank(message = "정기 용돈 Id를 입력해주세요.")
         private Long allowanceId;
-        @NotBlank
+        @Positive(message = "요청 금액은 1이상의 양수 값을 입력해주세요.")
+        @NotBlank(message = "정기 용돈 금액이 비었습니다.")
         private Integer allowanceAmount;
 
         private Integer transferDate; /* 한달에 한번 */
@@ -94,7 +76,7 @@ public class RequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class deletePeriodicAllowance {
+    public static class Allowance {
         @NotBlank
         private Long allowanceId;
     }

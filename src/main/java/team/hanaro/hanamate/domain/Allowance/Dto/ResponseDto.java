@@ -14,19 +14,27 @@ public class ResponseDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ChildResponseList {
+    public static class Request {
         private Long requestId;
-        private Integer allowanceAmount;
+        private Long targetId;
+        private Long requesterId;
         private Boolean askAllowance;
+        private Integer allowanceAmount;
         private Timestamp requestDate;
         private Timestamp expirationDate;
+        private Timestamp chagnedDate;
+        private String requestDescription;
 
-        public ChildResponseList(Requests requests) {
+        public Request(Requests requests) {
             requestId = requests.getRequestId();
+            targetId = requests.getTargetId();
+            requesterId = requests.getRequesterId();
             allowanceAmount = requests.getAllowanceAmount();
             askAllowance = requests.getAskAllowance();
             requestDate = requests.getRequestDate();
             expirationDate = requests.getExpirationDate();
+            chagnedDate = requests.getChangedDate();
+            requestDescription = requests.getRequestDescription();
         }
     }
 
@@ -34,7 +42,7 @@ public class ResponseDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PeriodicAllowance {
+    public static class Allowance {
         private Long allowanceId;
 
         private Long parentId;
@@ -45,7 +53,7 @@ public class ResponseDto {
         private String dayOfWeek; /* 매주 O요일 */
         private Boolean everyday; /* 매일 */
 
-        public PeriodicAllowance(Allowances allowances) {
+        public Allowance(Allowances allowances) {
             allowanceId = allowances.getAllowanceId();
             parentId = allowances.getParentId();
             childrenId = allowances.getChildrenId();
