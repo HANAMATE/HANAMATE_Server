@@ -17,10 +17,8 @@ public class Requests {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long requestId;
 
-    //    private User targetIdx;
-//    private User requesterIdx;
-    private Long targetIdx;
-    private Long requesterIdx;
+    private Long targetId;
+    private Long requesterId;
     private Long loanId;
     private Long savingsId;
     @Setter
