@@ -45,7 +45,7 @@ class MoimWalletRepositoryTest {
     void initTest() {
         MoimWallet moimWallet = new MoimWallet();
         moimWallet.setBalance(100);
-        moimWallet.setTarget_amount(20000);
+        moimWallet.setTargetAmount(20000);
         List<Transactions> transactions = new ArrayList<>();
         Transactions t1 = Transactions.builder()
                 .amount(100)
@@ -65,7 +65,8 @@ class MoimWalletRepositoryTest {
                 .build();
         transactions.add(t1);
         transactions.add(t2);
-        moimWallet.setTransactions(transactions);
+        moimWallet.addTransactions(t1);
+        moimWallet.addTransactions(t2);
         MoimWallet savedWallet = moimWalletRepository.save(moimWallet);
 
         em.flush();

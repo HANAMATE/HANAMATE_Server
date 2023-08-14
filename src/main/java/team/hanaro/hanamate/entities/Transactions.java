@@ -32,6 +32,7 @@ public class Transactions {
     private String location;
     private Integer balance;
     private Boolean success;
+    private String message;
     public void addWallet(MyWallet wallet){
         this.wallet = wallet;
         wallet.addTransactions(this);

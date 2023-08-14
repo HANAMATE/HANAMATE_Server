@@ -1,10 +1,10 @@
-package team.hanaro.hanamate.domain.MyWallet.Dto;
+package team.hanaro.hanamate.domain.moimWallet.dto;
 
 import lombok.*;
 import team.hanaro.hanamate.entities.Account;
 import team.hanaro.hanamate.entities.MoimWallet;
+import team.hanaro.hanamate.entities.MoimWalletAndUser;
 import team.hanaro.hanamate.entities.Transactions;
-//import team.hanaro.hanamate.entities.Wallets;
 
 import java.sql.Timestamp;
 
@@ -16,13 +16,14 @@ public class ResponseDto {
     @AllArgsConstructor
     @Builder
     @ToString
-    public static class MyWallet {
+    public static class MoimWalletList {
         private Long walletId;
         private String walletType;
         private Integer balance;
         private Integer targetAmount;
 
-        public MyWallet(team.hanaro.hanamate.entities.MyWallet wallets) {
+        //내가 가입한 모든 모임 월렛 조회용
+        public MoimWalletList(MoimWallet wallets) {
             walletId = wallets.getId();
             // TODO: 2023/08/13 아래 부분 wallet ==> Mywallet , MoimWallet으로 바뀌면서 없는 부분임
 //            walletType = wallets.getWalletType();
@@ -34,6 +35,7 @@ public class ResponseDto {
             }
 //            targetAmount = wallets.getTargetAmount();
         }
+
     }
 
     @Getter

@@ -122,6 +122,7 @@ public class WalletService {
         } else {
             return response.fail("연결된 계좌가 존재합니다.", HttpStatus.BAD_REQUEST);
         }
+        //내지갑 -> 모임지갑이 상속
     }
 
     public void makeTransaction(Account account, MyWallet wallet, RequestDto.RequestAmount requestAmount) {
