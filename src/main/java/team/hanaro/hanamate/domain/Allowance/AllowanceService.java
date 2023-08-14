@@ -70,8 +70,8 @@ public class AllowanceService {
         cal.add(Calendar.DATE, 7);
         Timestamp expiredDate = new Timestamp(cal.getTimeInMillis());
 
-        Optional<User> child = usersRepository.findByIdx(request.getChildIdx());
-        Optional<User> parent = usersRepository.findByIdx(request.getParentIdx());
+        Optional<User> child = usersRepository.findById(request.getChildIdx());
+        Optional<User> parent = usersRepository.findById(request.getParentIdx());
 
         if (child.isEmpty()) {
             return response.fail("childId가 잘못되었습니다.", HttpStatus.BAD_REQUEST);
