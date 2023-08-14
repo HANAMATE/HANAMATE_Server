@@ -18,4 +18,4 @@ insert into moim_wallet (target_amount, wallet_id) values (100, 1);
 insert into moim_wallet (target_amount, wallet_id) values (10000, 2);
 insert into moim_wallet (target_amount, wallet_id) values (1000000, 3);
 
-insert into wallets_and_users (moim_wallet_id, user_id) values (1, 1);
+-- insert into wallets_and_users (moim_wallet_id, user_id) values (1, 1);
