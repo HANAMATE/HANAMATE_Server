@@ -32,12 +32,15 @@ public class AllowanceService {
 
     /* 1. 아이 : 용돈 조르기(대기중) 요청 조회*/
     public ResponseEntity<?> getMyAllowancePendingRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByRequesterIdAndAskAllowanceIsNull(user.getUserId());
-        if (myRequests.isEmpty()) {
+        System.out.println("userIdx: " + user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findAllByRequesterIdxAndAskAllowanceIsNull(user.getUserIdx());
+
+        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         List<Requests> requestList = myRequests.get();
+        System.out.println(requestList.toString());
         List<ResponseDto.Request> responseRequestList = new ArrayList<>();
         for (Requests request : requestList) {
             ResponseDto.Request responseRequest = new ResponseDto.Request(request);
@@ -48,7 +51,7 @@ public class AllowanceService {
 
     /* 2. 아이 : 용돈 조르기(승인/거절) 요청 조회*/
     public ResponseEntity<?> getMyAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByRequesterIdAndAskAllowanceIsNotNull(user.getUserId());
+        Optional<List<Requests>> myRequests = requestsRepository.findAllByRequesterIdxAndAskAllowanceIsNotNull(user.getUserIdx());
         if (myRequests.isEmpty()) {
             return response.fail("승인/거절된 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -69,8 +72,8 @@ public class AllowanceService {
         cal.add(Calendar.DATE, 7);
         Timestamp expiredDate = new Timestamp(cal.getTimeInMillis());
 
-        Optional<User> child = usersRepository.findById(request.getChildId());
-        Optional<User> parent = usersRepository.findById(request.getParentId());
+        Optional<User> child = usersRepository.findByIdx(request.getChildIdx());
+        Optional<User> parent = usersRepository.findByIdx(request.getParentIdx());
 
         if (child.isEmpty()) {
             return response.fail("childId가 잘못되었습니다.", HttpStatus.BAD_REQUEST);
@@ -81,8 +84,8 @@ public class AllowanceService {
         }
 
         Requests requests = Requests.builder()
-                .targetId(request.getParentId()) //TODO: 부모 아이디로 설정 [코드 작성 08.11 / 안식]
-                .requesterId(request.getChildId())
+                .targetIdx(request.getParentIdx()) //TODO: 부모 아이디로 설정 [코드 작성 08.11 / 안식]
+                .requesterIdx(request.getChildIdx())
                 .allowanceAmount(request.getAllowanceAmount())
                 .requestDate(requestDate)
                 .expirationDate(expiredDate)
@@ -90,12 +93,13 @@ public class AllowanceService {
                 .build();
         requestsRepository.save(requests);
         requestsRepository.flush();
+
         return response.success("용돈 조르기에 성공했습니다.");
     }
 
     /* 4. 부모 : 용돈 조르기(대기중) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowancePendingRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByTargetIdAndAskAllowanceIsNull(user.getUserId());
+        Optional<List<Requests>> myRequests = requestsRepository.findAllByTargetIdxAndAskAllowanceIsNull(user.getUserIdx());
 
         if (myRequests.isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
@@ -112,7 +116,7 @@ public class AllowanceService {
 
     /* 5. 부모 : 용돈 조르기(승인,거절) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByTargetIdAndAskAllowanceIsNotNull(user.getUserId());
+        Optional<List<Requests>> myRequests = requestsRepository.findAllByTargetIdxAndAskAllowanceIsNotNull(user.getUserIdx());
 
         if (myRequests.isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
@@ -140,7 +144,7 @@ public class AllowanceService {
             return response.fail("대기중인 상태의 용돈 조르기 요청만 상태 update가 가능합니다.", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<User> parent = usersRepository.findById(request.get().getTargetId());
+        Optional<User> parent = usersRepository.findById(request.get().getTargetIdx());
         MyWallet parentWallet = parent.get().getMyWallet();
 
         if (parent.isEmpty()) {
@@ -181,6 +185,8 @@ public class AllowanceService {
             request.get().setAskAllowance(approve.getAskAllowance());
             request.get().setChangedDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             requestsRepository.save(request.get());
+            walletRepository.flush();
+            requestsRepository.flush();
             return response.success("용돈 조르기 요청을 승인했습니다.");
         }
     }
@@ -188,8 +194,8 @@ public class AllowanceService {
     /* 7. 부모 : 용돈 보내기 */
     @Transactional
     public ResponseEntity<?> sendAllowance(RequestDto.Request request) {
-        Optional<User> child = usersRepository.findById(request.getChildId());
-        Optional<User> parent = usersRepository.findById(request.getParentId());
+        Optional<User> child = usersRepository.findById(request.getChildIdx());
+        Optional<User> parent = usersRepository.findById(request.getParentIdx());
 
         if (child.isEmpty()) {
             response.fail("아이Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -235,13 +241,14 @@ public class AllowanceService {
 
         transactionRepository.save(parentToChildTransaction);
         transactionRepository.save(childToParentTransaction);
+        transactionRepository.flush();
     }
 
     /* 8. 부모 : 정기 용돈 조회 */
     public ResponseEntity<?> getPeriodicAllowance(RequestDto.User user) {
-        Optional<List<Allowances>> allowances = allowancesRepository.findAllByParentIdAndValidIsTrue(user.getUserId());
+        Optional<List<Allowances>> allowances = allowancesRepository.findAllByParentIdxAndValidIsTrue(user.getUserIdx());
 
-        if (allowances.isPresent()) {
+        if (allowances.isPresent() && !allowances.get().isEmpty()) {
             List<Allowances> allowancesList = allowances.get();
             List<ResponseDto.Allowance> responseAllowanceList = new ArrayList<>();
             for (Allowances allowance : allowancesList) {
@@ -258,26 +265,18 @@ public class AllowanceService {
     /* 9. 부모 : 정기 용돈 생성 */
     public ResponseEntity<?> makePeriodicAllowance(RequestDto.Periodic periodic) {
         /* 아이-부모 정기 용돈은 최대 한개까지 */
-        Optional<Allowances> myallowance = allowancesRepository.findByChildrenIdAndParentIdAndValidIsTrue(periodic.getChildrenId(), periodic.getParentId());
+        Optional<Allowances> myallowance = allowancesRepository.findByChildrenIdxAndParentIdxAndValidIsTrue(periodic.getChildIdx(), periodic.getParentIdx());
         if (myallowance.isPresent()) {
             return response.fail("아이-부모 사이에 정기 용돈이 존재합니다.", HttpStatus.BAD_REQUEST);
         }
 
-        boolean isPeriodicNoneExists = periodic.getEveryday() == null && periodic.getDayOfWeek() == null && periodic.getTransferDate() == null;
-        if (isPeriodicNoneExists) {
-            return response.fail("정기적으로 용돈을 줄 날짜를 입력해주세요", HttpStatus.BAD_REQUEST);
-        }
-
-        boolean isPeriodicConditionMorethanTwoExists = (periodic.getEveryday() != null && periodic.getDayOfWeek() != null)
-                || (periodic.getEveryday() != null && periodic.getTransferDate() != null)
-                || (periodic.getDayOfWeek() != null && periodic.getTransferDate() != null);
-        if (isPeriodicConditionMorethanTwoExists) {
-            return response.fail("정기적으로 용돈을 줄 날짜를 두개 이상 선택했습니다. 매일/매주/매월 중 하나만 선택해서 전달해주세요.", HttpStatus.BAD_REQUEST);
+        if (!isValidPeriodicCondition(periodic.getEveryday(), periodic.getDayOfWeek(), periodic.getTransferDate())) {
+            return response.fail("정기적으로 용돈을 줄 날짜를 잘못 입력했습니다.", HttpStatus.BAD_REQUEST);
         }
 
         Allowances allowance = Allowances.builder()
-                .childrenId(periodic.getChildrenId())
-                .parentId(periodic.getParentId())
+                .childrenIdx(periodic.getChildIdx())
+                .parentIdx(periodic.getParentIdx())
                 .allowanceAmount(periodic.getAllowanceAmount())
                 .transferDate(periodic.getTransferDate())
                 .dayOfWeek(periodic.getDayOfWeek())
@@ -300,16 +299,8 @@ public class AllowanceService {
             return response.fail("해당 Id의 정기 용돈이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        boolean isPeriodicNoneExists = periodic.getEveryday() == null && periodic.getDayOfWeek() == null && periodic.getTransferDate() == null;
-        if (isPeriodicNoneExists) {
-            return response.fail("정기적으로 용돈을 줄 날짜를 입력해주세요", HttpStatus.BAD_REQUEST);
-        }
-
-        boolean isPeriodicConditionMorethanTwoExists = (periodic.getEveryday() != null && periodic.getDayOfWeek() != null)
-                || (periodic.getEveryday() != null && periodic.getTransferDate() != null)
-                || (periodic.getDayOfWeek() != null && periodic.getTransferDate() != null);
-        if (isPeriodicConditionMorethanTwoExists) {
-            return response.fail("정기적으로 용돈을 줄 날짜를 두개 이상 선택했습니다. 매일/매주/매월 중 하나만 선택해서 전달해주세요.", HttpStatus.BAD_REQUEST);
+        if (!isValidPeriodicCondition(periodic.getEveryday(), periodic.getDayOfWeek(), periodic.getTransferDate())) {
+            return response.fail("정기적으로 용돈을 줄 날짜를 잘못 입력했습니다.", HttpStatus.BAD_REQUEST);
         }
 
         allowances.get().setAllowanceAmount(periodic.getAllowanceAmount());
@@ -332,5 +323,19 @@ public class AllowanceService {
         allowance.get().setValid(false);
         allowancesRepository.save(allowance.get());
         return response.success("정기 용돈을 삭제했습니다.");
+    }
+
+    private boolean isValidPeriodicCondition(Boolean everyday, Integer dayOfWeek, Integer transferDate) {
+        // 모두 다 0
+        boolean isPeriodicNoneExists = everyday.equals(false) && dayOfWeek.equals(0) && transferDate.equals(0);
+        // 둘 이상 값이 있을 경우
+        boolean isPeriodicConditionMorethanTwoExists = (!everyday.equals(false) && !dayOfWeek.equals(0))
+                || (!everyday.equals(false) && !transferDate.equals(0))
+                || (!dayOfWeek.equals(0) && !transferDate.equals(0));
+
+        if (isPeriodicConditionMorethanTwoExists || isPeriodicNoneExists) {
+            return false;
+        }
+        return true;
     }
 }

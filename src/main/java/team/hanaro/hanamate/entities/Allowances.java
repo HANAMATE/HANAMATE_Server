@@ -16,15 +16,15 @@ public class Allowances {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long allowanceId;
 
-    private Long parentId;
-    private Long childrenId;
+    private Long parentIdx;
+    private Long childrenIdx;
     @Setter
     private Integer allowanceAmount;
 
     @Setter
     private Integer transferDate; /* 한달에 한번 */
     @Setter
-    private String dayOfWeek; /* 매주 O요일 */
+    private Integer dayOfWeek; /* 매주 O요일 */
     @Setter
     private Boolean everyday; /* 매일 */
 
