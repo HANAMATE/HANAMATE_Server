@@ -17,35 +17,35 @@ public class AllowanceController {
     private final AllowanceService allowanceService;
 
     /* 1. 아이 : 용돈 조르기(대기중) 요청 조회 */
-    @Operation(summary = "[아이] 용돈 조르기(대기중) 요청 조회", description = "용돈 조르기(대기중) 내역 가져오기", tags = {"용돈"})
+    @Operation(summary = "[아이] 용돈 조르기(대기중) 요청 조회", description = "대기중인 용돈 조르기 내역을 requestDate를 기준으로 최근 20개까지 가져온다.", tags = {"용돈"})
     @GetMapping("/child/pending")
     public ResponseEntity<?> getMyAllowancePendingRequestList(@Validated @RequestBody RequestDto.User user) {
         return allowanceService.getMyAllowancePendingRequestList(user);
     }
 
     /* 2. 아이 : 용돈 조르기(승인/거절) 요청 조회 */
-    @Operation(summary = "[아이] 용돈 조르기(승인/거절) 요청 조회", description = "용돈 조르기(승인/거절) 내역 가져오기", tags = {"용돈"})
+    @Operation(summary = "[아이] 용돈 조르기(승인/거절) 요청 조회", description = "승인/거절된 용돈 조르기 내역을 changedDate를 기준으로 최근 20개까지 가져온다.", tags = {"용돈"})
     @GetMapping("/child")
     public ResponseEntity<?> getMyAllowanceApprovedRequestList(@Validated @RequestBody RequestDto.User user) {
         return allowanceService.getMyAllowanceApprovedRequestList(user);
     }
 
     /* 3. 아이 : 용돈 조르기 생성 */
-    @Operation(summary = "[아이] 용돈 조르기 생성", description = "용돈 조르기", tags = {"용돈"})
+    @Operation(summary = "[아이] 용돈 조르기 생성", description = "용돈 조르기 요청을 생성한다. pending중인 상태인 용돈 조르기 요청은 20개까지 생성 가능하다. ", tags = {"용돈"})
     @PostMapping("/child")
     public ResponseEntity<?> makeAllowanceRequest(@Validated @RequestBody RequestDto.Request request) {
         return allowanceService.makeAllowanceRequest(request);
     }
 
     /* 4. 부모 : 용돈 조르기(대기중) 요청 조회 */
-    @Operation(summary = "[부모] 용돈 조르기(대기중) 요청 조회", description = "대기중인 용돈 조르기 요청 내역 가져오기", tags = {"용돈"})
+    @Operation(summary = "[부모] 용돈 조르기(대기중) 요청 조회", description = "대기중인 용돈 조르기 내역을 requestDate를 기준으로 최근 20개까지 가져온다.", tags = {"용돈"})
     @GetMapping("/parent/pending")
     public ResponseEntity<?> getMyChildAllowancePendingRequestList(@Validated @RequestBody RequestDto.User user) {
         return allowanceService.getMyChildAllowancePendingRequestList(user);
     }
 
     /* 5. 부모 : 용돈 조르기(승인,거절) 요청 조회 */
-    @Operation(summary = "[부모] 용돈 조르기(승인,거절) 요청 조회", description = "승인/거절 된 용돈 조르기 요청 내역 가져오기", tags = {"용돈"})
+    @Operation(summary = "[부모] 용돈 조르기(승인,거절) 요청 조회", description = "승인/거절 된 용돈 조르기 내역을 changedDate를 기준으로 최근 20개까지 가져온다.", tags = {"용돈"})
     @GetMapping("/parent")
     public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(@Validated @RequestBody RequestDto.User user) {
         return allowanceService.getMyChildAllowanceApprovedRequestList(user);

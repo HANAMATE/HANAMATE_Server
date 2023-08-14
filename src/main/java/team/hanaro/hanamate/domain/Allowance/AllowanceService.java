@@ -32,15 +32,13 @@ public class AllowanceService {
 
     /* 1. 아이 : 용돈 조르기(대기중) 요청 조회*/
     public ResponseEntity<?> getMyAllowancePendingRequestList(RequestDto.User user) {
-        System.out.println("userIdx: " + user.getUserIdx());
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByRequesterIdxAndAskAllowanceIsNull(user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByRequestDateDesc(user.getUserIdx());
 
         if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         List<Requests> requestList = myRequests.get();
-        System.out.println(requestList.toString());
         List<ResponseDto.Request> responseRequestList = new ArrayList<>();
         for (Requests request : requestList) {
             ResponseDto.Request responseRequest = new ResponseDto.Request(request);
@@ -51,8 +49,8 @@ public class AllowanceService {
 
     /* 2. 아이 : 용돈 조르기(승인/거절) 요청 조회*/
     public ResponseEntity<?> getMyAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByRequesterIdxAndAskAllowanceIsNotNull(user.getUserIdx());
-        if (myRequests.isEmpty()) {
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByChangedDateDesc(user.getUserIdx());
+        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("승인/거절된 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -83,14 +81,21 @@ public class AllowanceService {
             return response.fail("parentId가 잘못되었습니다.", HttpStatus.BAD_REQUEST);
         }
 
+        Long pendingRequestCnt = requestsRepository.countAllByRequesterIdxAndAskAllowanceIsNull(request.getChildIdx());
+
+        if (pendingRequestCnt >= 20){
+            return response.fail("pending 상태인 요청이 20개입니다. 더이상의 용돈 조르기 요청 생성은 불가능합니다.", HttpStatus.BAD_REQUEST);
+        }
+
         Requests requests = Requests.builder()
-                .targetIdx(request.getParentIdx()) //TODO: 부모 아이디로 설정 [코드 작성 08.11 / 안식]
+                .targetIdx(request.getParentIdx()) //부모 아이디로 설정: [코드 작성 08.11 / 안식]
                 .requesterIdx(request.getChildIdx())
                 .allowanceAmount(request.getAllowanceAmount())
                 .requestDate(requestDate)
                 .expirationDate(expiredDate)
                 .requestDescription(request.getRequestDescription())
                 .build();
+
         requestsRepository.save(requests);
         requestsRepository.flush();
 
@@ -99,9 +104,9 @@ public class AllowanceService {
 
     /* 4. 부모 : 용돈 조르기(대기중) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowancePendingRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByTargetIdxAndAskAllowanceIsNull(user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNullOrderByRequestDateDesc(user.getUserIdx());
 
-        if (myRequests.isEmpty()) {
+        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -116,10 +121,10 @@ public class AllowanceService {
 
     /* 5. 부모 : 용돈 조르기(승인,거절) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findAllByTargetIdxAndAskAllowanceIsNotNull(user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByChangedDateDesc(user.getUserIdx());
 
-        if (myRequests.isEmpty()) {
-            return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
+        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
+            return response.fail("승인/거절된 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         List<Requests> requestList = myRequests.get();
@@ -162,29 +167,30 @@ public class AllowanceService {
         // 승인
         else {
             // 1. 잔액 부족
-            if (parentWallet.getBalance() < approve.getRequestId()) {
+            if (parentWallet.getBalance() < request.get().getAllowanceAmount()) {
                 return response.fail("잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
             }
             // 2. 성공
-            Optional<User> child = usersRepository.findById(request.get().getRequestId());
+            Optional<User> child = usersRepository.findById(request.get().getRequesterIdx());
             MyWallet childWallet = child.get().getMyWallet();
 
             if (child.isEmpty()) {
                 response.fail("용돈 조르기 요청의 아이Id가 올바르지 않습니다.", HttpStatus.BAD_REQUEST);
             }
 
-            // 2-1. Transaction 작성
-            makeTransaction(parentWallet, childWallet, request.get().getAllowanceAmount());
-            // 2-2. 아이 지갑 +
+            // 2-1. 아이 지갑 +
             childWallet.setBalance(childWallet.getBalance() + request.get().getAllowanceAmount());
             walletRepository.save(childWallet);
-            // 2-3. 부모 지갑 -
+            // 2-2. 부모 지갑 -
             parentWallet.setBalance(parentWallet.getBalance() - request.get().getAllowanceAmount());
             walletRepository.save(parentWallet);
+            // 2-3. Transaction 작성
+            makeTransaction(parent.get(), child.get(), request.get().getAllowanceAmount());
             // 2-4. request 변경
             request.get().setAskAllowance(approve.getAskAllowance());
             request.get().setChangedDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             requestsRepository.save(request.get());
+
             walletRepository.flush();
             requestsRepository.flush();
             return response.success("용돈 조르기 요청을 승인했습니다.");
@@ -207,55 +213,26 @@ public class AllowanceService {
         MyWallet childWallet = child.get().getMyWallet();
         MyWallet parentWallet = parent.get().getMyWallet();
 
-        // 1. Transaction 작성
-        makeTransaction(parentWallet, childWallet, request.getAllowanceAmount());
-        // 2. 아이 지갑 +
+        // 1. 아이 지갑 +
         childWallet.setBalance(childWallet.getBalance() + request.getAllowanceAmount());
         walletRepository.save(childWallet);
-        // 3. 부모 지갑 -
+        // 2. 부모 지갑 -
         parentWallet.setBalance(parentWallet.getBalance() - request.getAllowanceAmount());
         walletRepository.save(parentWallet);
+        // 3. Transaction 작성
+        makeTransaction(parent.get(), child.get(), request.getAllowanceAmount());
+        walletRepository.flush();
 
         return response.success("용돈 이체에 성공했습니다.");
     }
 
-    private void makeTransaction(MyWallet parent, MyWallet child, Integer amount) {
-        // 부모 -> 아이 거래내역
-        Transactions parentToChildTransaction = Transactions.builder()
-                .id(parent.getId())
-                .counterId(child.getId())
-                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
-                .transactionType("용돈 이체")
-                .amount(amount)
-                .balance((int) (parent.getBalance() - amount))
-                .build();
-        // 아이 -> 부모 거래내역
-        Transactions childToParentTransaction = Transactions.builder()
-                .id(child.getId())
-                .counterId(parent.getId())
-                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
-                .transactionType("용돈 입금")
-                .amount(amount)
-                .balance((int) (child.getBalance() + amount))
-                .build();
-
-        transactionRepository.save(parentToChildTransaction);
-        transactionRepository.save(childToParentTransaction);
-        transactionRepository.flush();
-    }
-
     /* 8. 부모 : 정기 용돈 조회 */
     public ResponseEntity<?> getPeriodicAllowance(RequestDto.User user) {
-        Optional<List<Allowances>> allowances = allowancesRepository.findAllByParentIdxAndValidIsTrue(user.getUserIdx());
+        Optional<Allowances> allowances = allowancesRepository.findAllByParentIdxAndValidIsTrue(user.getUserIdx());
 
-        if (allowances.isPresent() && !allowances.get().isEmpty()) {
-            List<Allowances> allowancesList = allowances.get();
-            List<ResponseDto.Allowance> responseAllowanceList = new ArrayList<>();
-            for (Allowances allowance : allowancesList) {
-                ResponseDto.Allowance responseAllowance = new ResponseDto.Allowance(allowance);
-                responseAllowanceList.add(responseAllowance);
-            }
-            return response.success(responseAllowanceList, "정기 용돈 조회에 성공했습니다.", HttpStatus.OK);
+        if (allowances.isPresent()) {
+            ResponseDto.Allowance responseAllowance = new ResponseDto.Allowance(allowances.get());
+            return response.success(responseAllowance, "정기 용돈 조회에 성공했습니다.", HttpStatus.OK);
         } else {
             return response.fail("정기 용돈 리스트가 없습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -325,6 +302,30 @@ public class AllowanceService {
         return response.success("정기 용돈을 삭제했습니다.");
     }
 
+    private void makeTransaction(User parent, User child, Integer amount) {
+        // 부모 -> 아이 거래내역
+        Transactions parentToChildTransaction = Transactions.builder()
+                .wallet(parent.getMyWallet())
+                .counterId(child.getIdx())
+                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .transactionType("용돈 이체")
+                .amount(amount)
+                .balance(parent.getMyWallet().getBalance())
+                .build();
+        // 아이 -> 부모 거래내역
+        Transactions childToParentTransaction = Transactions.builder()
+                .wallet(child.getMyWallet())
+                .counterId(parent.getIdx())
+                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .transactionType("용돈 입금")
+                .amount(amount)
+                .balance(child.getMyWallet().getBalance())
+                .build();
+
+        transactionRepository.save(parentToChildTransaction);
+        transactionRepository.save(childToParentTransaction);
+        transactionRepository.flush();
+    }
     private boolean isValidPeriodicCondition(Boolean everyday, Integer dayOfWeek, Integer transferDate) {
         // 모두 다 0
         boolean isPeriodicNoneExists = everyday.equals(false) && dayOfWeek.equals(0) && transferDate.equals(0);
