@@ -18,9 +18,13 @@ public class Allowances {
 
     private Long parentId;
     private Long childrenId;
+    @Setter
     private Integer allowanceAmount;
 
+    @Setter
     private Integer transferDate; /* 한달에 한번 */
+    @Setter
     private String dayOfWeek; /* 매주 O요일 */
+    @Setter
     private Boolean everyday; /* 매일 */
 }
