@@ -10,12 +10,12 @@ insert into users(create_date, modified_date, login_id, identification, name, pa
 insert into users(create_date, modified_date, login_id, identification, name, password, phone_number, user_type, account_member_id, my_wallet_id) values('2023-08-14 17:28:25.306829', '2023-08-14 17:28:25.306829', 'test4', '991004-1234568', '김민재', '$2a$10$a6nTLbQFCipdRD3xqGLLn.EA95hTmdrCtU6kZ0oK99Fr3x13eMV0G', '010-4444-3333', '0', NULL, 4);
 insert into users(create_date, modified_date, login_id, identification, name, password, phone_number, user_type, account_member_id, my_wallet_id) values('2023-08-14 17:28:25.306829', '2023-08-14 17:28:25.306829', 'test5', '981004-2234568', '강민경', '$2a$10$a6nTLbQFCipdRD3xqGLLn.EA95hTmdrCtU6kZ0oK99Fr3x13eMV0G', '010-2222-1111', '1', NULL, 5);
 
-insert into my_wallets (balance, dtype, wallet_id) values (0, 'moim',1);
-insert into my_wallets (balance, dtype, wallet_id) values (0, 'moim',2);
-insert into my_wallets (balance, dtype, wallet_id) values (0, 'moim',3);
+insert into my_wallets (balance, dtype, wallet_id) values (0, 'moim',6);
+insert into my_wallets (balance, dtype, wallet_id) values (0, 'moim',7);
+insert into my_wallets (balance, dtype, wallet_id) values (0, 'moim',8);
 
 insert into moim_wallet (target_amount, wallet_id) values (100, 1);
 insert into moim_wallet (target_amount, wallet_id) values (10000, 2);
 insert into moim_wallet (target_amount, wallet_id) values (1000000, 3);
 
-insert into wallets_and_users (moim_wallet, users) values (1, 1);
+insert into wallets_and_users (moim_wallet_id, user_id) values (1, 1);
