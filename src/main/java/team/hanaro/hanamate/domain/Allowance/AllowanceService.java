@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import team.hanaro.hanamate.domain.Allowance.Dto.RequestDto;
 import team.hanaro.hanamate.domain.Allowance.Dto.ResponseDto;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
@@ -52,12 +53,12 @@ public class AllowanceService {
         cal.add(Calendar.DATE, 7);
         Timestamp expiredDate = new Timestamp(cal.getTimeInMillis());
 
-        if (childRequest.getUserId() == null || childRequest.getAllowanceAmount() == null) {
+        if (childRequest.getUserId() == null || ObjectUtils.isEmpty(childRequest.getParentId()) || childRequest.getAllowanceAmount() == null) {
             return response.fail("용돈 조르기 요청에 실패했습니다.", HttpStatus.BAD_REQUEST);
         }
 
         Requests requests = Requests.builder()
-                .targetId(0L) //TODO: 부모 아이디로 설정
+                .targetId(childRequest.getParentId()) //TODO: 부모 아이디로 설정 [코드 작성 08.11 / 안식]
                 .requesterId(childRequest.getUserId())
                 .allowanceAmount(childRequest.getAllowanceAmount())
                 .requestDate(requestDate)
