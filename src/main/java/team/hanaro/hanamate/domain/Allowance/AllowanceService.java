@@ -14,6 +14,8 @@ import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -32,7 +34,7 @@ public class AllowanceService {
 
     /* 1. 아이 : 용돈 조르기(대기중) 요청 조회*/
     public ResponseEntity<?> getMyAllowancePendingRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByRequestDateDesc(user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByCreateDateDesc(user.getUserIdx());
 
         if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
@@ -49,7 +51,7 @@ public class AllowanceService {
 
     /* 2. 아이 : 용돈 조르기(승인/거절) 요청 조회*/
     public ResponseEntity<?> getMyAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByChangedDateDesc(user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(user.getUserIdx());
         if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("승인/거절된 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -65,10 +67,8 @@ public class AllowanceService {
 
     /* 3. 아이 : 용돈 조르기 생성 */
     public ResponseEntity<?> makeAllowanceRequest(RequestDto.Request request) {
-        Calendar cal = Calendar.getInstance();
-        Timestamp requestDate = new Timestamp(cal.getTimeInMillis());
-        cal.add(Calendar.DATE, 7);
-        Timestamp expiredDate = new Timestamp(cal.getTimeInMillis());
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiredDate = now.plus(7, ChronoUnit.DAYS);
 
         Optional<User> child = usersRepository.findById(request.getChildIdx());
         Optional<User> parent = usersRepository.findById(request.getParentIdx());
@@ -91,7 +91,6 @@ public class AllowanceService {
                 .targetIdx(request.getParentIdx()) //부모 아이디로 설정: [코드 작성 08.11 / 안식]
                 .requesterIdx(request.getChildIdx())
                 .allowanceAmount(request.getAllowanceAmount())
-                .requestDate(requestDate)
                 .expirationDate(expiredDate)
                 .requestDescription(request.getRequestDescription())
                 .build();
@@ -104,7 +103,7 @@ public class AllowanceService {
 
     /* 4. 부모 : 용돈 조르기(대기중) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowancePendingRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNullOrderByRequestDateDesc(user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNullOrderByCreateDateDesc(user.getUserIdx());
 
         if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
@@ -121,7 +120,7 @@ public class AllowanceService {
 
     /* 5. 부모 : 용돈 조르기(승인,거절) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByChangedDateDesc(user.getUserIdx());
+        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(user.getUserIdx());
 
         if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
             return response.fail("승인/거절된 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
@@ -160,7 +159,6 @@ public class AllowanceService {
         // 거절
         if (!approve.getAskAllowance()) {
             request.get().setAskAllowance(approve.getAskAllowance());
-            request.get().setChangedDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             requestsRepository.save(request.get());
             return response.success("용돈 조르기 요청을 거절했습니다.");
         }
@@ -188,7 +186,6 @@ public class AllowanceService {
             makeTransaction(parent.get(), child.get(), request.get().getAllowanceAmount());
             // 2-4. request 변경
             request.get().setAskAllowance(approve.getAskAllowance());
-            request.get().setChangedDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             requestsRepository.save(request.get());
 
             walletRepository.flush();

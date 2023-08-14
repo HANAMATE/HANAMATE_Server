@@ -19,13 +19,13 @@ public interface RequestsRepository extends JpaRepository<Requests, Long> {
 
     Optional<List<Requests>> findAllByTargetIdxAndAskAllowanceIsNotNull(Long aLong);
 
-    Optional<List<Requests>> findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByRequestDateDesc(Long aLong);
+    Optional<List<Requests>> findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByCreateDateDesc(Long aLong);
 
-    Optional<List<Requests>> findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByChangedDateDesc(Long aLong);
+    Optional<List<Requests>> findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(Long aLong);
 
-    Optional<List<Requests>> findTop20ByTargetIdxAndAskAllowanceIsNullOrderByRequestDateDesc(Long aLong);
+    Optional<List<Requests>> findTop20ByTargetIdxAndAskAllowanceIsNullOrderByCreateDateDesc(Long aLong);
 
-    Optional<List<Requests>> findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByChangedDateDesc(Long aLong);
+    Optional<List<Requests>> findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(Long aLong);
 
     Optional<Requests> findByRequestId(Long aLong);
 

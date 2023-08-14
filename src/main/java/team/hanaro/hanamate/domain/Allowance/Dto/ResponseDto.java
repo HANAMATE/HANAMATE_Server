@@ -8,6 +8,7 @@ import team.hanaro.hanamate.entities.Allowances;
 import team.hanaro.hanamate.entities.Requests;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class ResponseDto {
     @Getter
@@ -20,9 +21,9 @@ public class ResponseDto {
         private Long requesterIdx;
         private Boolean askAllowance;
         private Integer allowanceAmount;
-        private Timestamp requestDate;
-        private Timestamp expirationDate;
-        private Timestamp chagnedDate;
+        private LocalDateTime createDate;
+        private LocalDateTime modifiedDate;
+        private LocalDateTime expirationDate;
         private String requestDescription;
 
         public Request(Requests requests) {
@@ -31,9 +32,9 @@ public class ResponseDto {
             requesterIdx = requests.getRequesterIdx();
             allowanceAmount = requests.getAllowanceAmount();
             askAllowance = requests.getAskAllowance();
-            requestDate = requests.getRequestDate();
+            createDate = requests.getCreateDate();
             expirationDate = requests.getExpirationDate();
-            chagnedDate = requests.getChangedDate();
+            modifiedDate = requests.getModifiedDate();
             requestDescription = requests.getRequestDescription();
         }
     }
