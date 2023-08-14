@@ -2,20 +2,30 @@ package team.hanaro.hanamate.entities;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "wallets_and_users")
 @Getter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class WalletsAndMember {
-    @Id
-    private Long walletId;
+    @Id @GeneratedValue
+    @Column(name = "wallet_and_member_id")
+    private Long id;
 
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wallet_id")
+    private MoimWallet moimWallet;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
+/**
+ *  유저는 한가지 개인 지갑을 가진다.
+ *  유저는 여러가지 모임 통장을 가질 수 있다.
+ *
+ *  모임통장은 여러 유저를 포함할 수 있다.
+ * */

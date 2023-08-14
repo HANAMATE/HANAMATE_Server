@@ -7,14 +7,16 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.User.Helper;
-import team.hanaro.hanamate.domain.User.Dto.Response;
+import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Service.UsersService;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/users")
 @RestController
 public class UsersController {
 
@@ -42,12 +44,12 @@ public class UsersController {
 
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@Validated UserRequestDto.Reissue reissue, Errors errors) {
+    public ResponseEntity<?> reissue(@Validated UserRequestDto.Reissue reissue, Errors errors, HttpServletRequest request) {
         // validation check
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
-        return usersService.reissue(reissue);
+        return usersService.reissue(request);
     }
 
     @PostMapping("/logout")
