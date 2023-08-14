@@ -7,13 +7,14 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue("moim")
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class MoimWallet extends MyWallet{
 
     //목표 금액
+    @Setter
     private Integer target_amount;
 
 

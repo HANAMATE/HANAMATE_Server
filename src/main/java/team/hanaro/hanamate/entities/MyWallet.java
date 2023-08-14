@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 //@ToString
-@Getter @Setter
+@Getter
 public class MyWallet {
 
     @Id
@@ -23,6 +23,7 @@ public class MyWallet {
     @Column(name = "wallet_id")
     private Long id;
 
+    @Setter
     private  Integer balance=0;
 
     //cascade = Persist 속성을 명시해줌으로써, 영속성 전이를 사용하였음.
