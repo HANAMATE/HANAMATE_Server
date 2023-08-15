@@ -3,7 +3,7 @@ package team.hanaro.hanamate.domain.moimWallet.dto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 
 public class RequestDto {
 
@@ -16,10 +16,11 @@ public class RequestDto {
         //TODO: 입력값 Validation Check
 
         //userid
-        @NotBlank
+        @NotNull(message = "유저 아이디가 비었습니다.")
         private Long userId;
 
         @Nullable
+        @PositiveOrZero(message = "0 이상 양수값을 입력해야 합니다.")
         private Integer target_amount;
 
     }

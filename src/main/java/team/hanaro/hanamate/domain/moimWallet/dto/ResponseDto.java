@@ -25,15 +25,12 @@ public class ResponseDto {
         //내가 가입한 모든 모임 월렛 조회용
         public MoimWalletList(MoimWallet wallets) {
             walletId = wallets.getId();
-            // TODO: 2023/08/13 아래 부분 wallet ==> Mywallet , MoimWallet으로 바뀌면서 없는 부분임
-//            walletType = wallets.getWalletType();
             walletType=wallets.getDecriminatorValue();
             balance = wallets.getBalance();
             if ("moim".equals(walletType)) {
                 MoimWallet temp = (MoimWallet) wallets;
                 targetAmount = temp.getTargetAmount();
             }
-//            targetAmount = wallets.getTargetAmount();
         }
 
     }
