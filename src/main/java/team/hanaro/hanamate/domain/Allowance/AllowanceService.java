@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.hanaro.hanamate.domain.Allowance.Dto.RequestDto;
 import team.hanaro.hanamate.domain.Allowance.Dto.ResponseDto;
+import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
-import team.hanaro.hanamate.domain.MyWallet.Repository.WalletRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class AllowanceService {
 
     private final RequestsRepository requestsRepository;
-    private final WalletRepository walletRepository;
+    private final MyWalletRepository myWalletRepository;
     private final TransactionRepository transactionRepository;
     private final AllowancesRepository allowancesRepository;
     private final UsersRepository usersRepository;
@@ -178,17 +178,17 @@ public class AllowanceService {
 
             // 2-1. 아이 지갑 +
             childWallet.setBalance(childWallet.getBalance() + request.get().getAllowanceAmount());
-            walletRepository.save(childWallet);
+            myWalletRepository.save(childWallet);
             // 2-2. 부모 지갑 -
             parentWallet.setBalance(parentWallet.getBalance() - request.get().getAllowanceAmount());
-            walletRepository.save(parentWallet);
+            myWalletRepository.save(parentWallet);
             // 2-3. Transaction 작성
             makeTransaction(parent.get(), child.get(), request.get().getAllowanceAmount());
             // 2-4. request 변경
             request.get().setAskAllowance(approve.getAskAllowance());
             requestsRepository.save(request.get());
 
-            walletRepository.flush();
+            myWalletRepository.flush();
             requestsRepository.flush();
             return response.success("용돈 조르기 요청을 승인했습니다.");
         }
@@ -212,13 +212,13 @@ public class AllowanceService {
 
         // 1. 아이 지갑 +
         childWallet.setBalance(childWallet.getBalance() + request.getAllowanceAmount());
-        walletRepository.save(childWallet);
+        myWalletRepository.save(childWallet);
         // 2. 부모 지갑 -
         parentWallet.setBalance(parentWallet.getBalance() - request.getAllowanceAmount());
-        walletRepository.save(parentWallet);
+        myWalletRepository.save(parentWallet);
         // 3. Transaction 작성
         makeTransaction(parent.get(), child.get(), request.getAllowanceAmount());
-        walletRepository.flush();
+        myWalletRepository.flush();
 
         return response.success("용돈 이체에 성공했습니다.");
     }
