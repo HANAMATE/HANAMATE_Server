@@ -18,7 +18,6 @@ import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -57,7 +56,8 @@ public class LoanService {
         String username = userDetails.getUsername();
         // ... 대출 신청과 관련된 로직 수행 ...
 
-        User now_user = usersRepository.findById(userId).get();
+
+        User now_user = usersRepository.findByLoginId(userId).get();
         Loans loans=Loans.builder()
                 .children(now_user)
                 .loanName(apply.getLoanName())

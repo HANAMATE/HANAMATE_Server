@@ -18,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     //DataBase에 접근하여 사용자 정보를 가져온다.
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return usersRepository.findById(username)
+        return usersRepository.findByLoginId(username)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("[인증 - SpringSecurity] 해당하는 유저를 찾을 수 없습니다."));
     }
