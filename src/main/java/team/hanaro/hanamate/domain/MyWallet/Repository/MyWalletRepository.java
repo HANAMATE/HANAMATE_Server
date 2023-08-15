@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import team.hanaro.hanamate.entities.MyWallet;
 
-public interface MyWalletRepository<T extends MyWallet>  extends JpaRepository<T,Long> {
-    @Transactional
-    @Modifying
-    @Query("update Wallets w set w.balance=:balance where w.walletId=:walletId")
-    int updateByWalletId(Long walletId, Integer balance);
+import java.util.Optional;
+
+public interface MyWalletRepository  extends JpaRepository<MyWallet,Long> {
+    @Override
+    Optional<MyWallet> findById(Long aLong);
 }

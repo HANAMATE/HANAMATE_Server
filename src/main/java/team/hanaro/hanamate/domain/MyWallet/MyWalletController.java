@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.MyWallet.Dto.RequestDto;
 import team.hanaro.hanamate.global.Response;
@@ -18,7 +19,6 @@ public class MyWalletController {
     private final WalletService walletService;
     private final Response response;
 
-    @Operation(summary = "Healthy Check", description = "API Healthy Check", tags = {"내 지갑"})
     @GetMapping("/healthy")
     public ResponseEntity<?> HealthyCheck() {
         return response.success("healthy");
@@ -26,31 +26,31 @@ public class MyWalletController {
 
     @Operation(summary = "지갑 잔액 조회", description = "내 지갑 잔액 가져오기", tags = {"내 지갑"})
     @GetMapping("")
-    public ResponseEntity<?> myWallet(@RequestBody RequestDto.MyWallet myWallet) {
-        return walletService.myWallet(myWallet);
+    public ResponseEntity<?> myWallet(@Validated @RequestBody RequestDto.User user) {
+        return walletService.myWallet(user);
     }
 
     @Operation(summary = "거래내역 조회", description = "내 지갑 거래내역 가져오기", tags = {"내 지갑"})
     @GetMapping("/transactions")
-    public ResponseEntity<?> myWalletTransactions(@RequestBody RequestDto.MyWallet myWallet) {
-        return walletService.myWalletTransactions(myWallet);
+    public ResponseEntity<?> myWalletTransactions(@Validated @RequestBody RequestDto.User user) {
+        return walletService.myWalletTransactions(user);
     }
 
     @Operation(summary = "계좌 잔액 조회", description = "연결된 은행계좌 잔액 조회", tags = {"내 지갑"})
     @GetMapping("/account")
-    public ResponseEntity<?> GetAccountBalance(@RequestBody RequestDto.AccountBalance account) {
-        return walletService.getAccountBalance(account);
+    public ResponseEntity<?> getAccount(@Validated @RequestBody RequestDto.User user) {
+        return walletService.getAccount(user);
     }
 
     @Operation(summary = "충전하기", description = "연결된 은행계좌에서 돈 가져오기", tags = {"내 지갑"})
     @PostMapping("/account")
-    public ResponseEntity<?> GetMoneyFromAccount(@RequestBody RequestDto.RequestAmount requestAmount) {
-        return walletService.getMoneyFromAccount(requestAmount);
+    public ResponseEntity<?> chargeFromAccount(@RequestBody RequestDto.Charge charge) {
+        return walletService.chargeFromAccount(charge);
     }
 
     @Operation(summary = "계좌 연결", description = "은행 계좌 연결하기", tags = {"내 지갑"})
     @PostMapping("/connect")
-    public ResponseEntity<?> ConnectAccount(@RequestBody RequestDto.ConnectAccount connectAccount) {
-        return walletService.connectAccount(connectAccount);
+    public ResponseEntity<?> connectAccount(@RequestBody RequestDto.AccountInfo accountInfo) {
+        return walletService.connectAccount(accountInfo);
     }
 }

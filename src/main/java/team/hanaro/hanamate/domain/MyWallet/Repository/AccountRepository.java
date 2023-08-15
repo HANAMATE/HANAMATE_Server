@@ -10,12 +10,6 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Optional<Account> findByMemberId(Long aLong);
-
-    @Transactional
-    @Modifying
-    @Query("update Account a set a.balance=:balance where a.memberId=:memberId")
-    int updateByMemberId(Long memberId, Integer balance);
-
+    Optional<Account> findByUserId(Long aLong);
 
 }

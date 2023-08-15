@@ -11,7 +11,6 @@ import team.hanaro.hanamate.domain.MyWallet.Dto.ResponseDto;
 import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
-import team.hanaro.hanamate.domain.MyWallet.Repository.WalletRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
@@ -28,110 +27,133 @@ public class WalletService {
     private final AccountRepository accountRepository;
     private final Response response;
 
-    public ResponseEntity<?> myWallet(RequestDto.MyWallet myWalletReqDto) {
-        Optional<MyWallet> myWalletInfo = walletRepository.findById(myWalletReqDto.getWalletId());
-        if (myWalletInfo.isPresent()) {
-            ResponseDto.MyWallet myWalletResDto = new ResponseDto.MyWallet(myWalletInfo.get());
-            return response.success(myWalletResDto, "내 지갑 잔액 조회에 성공했습니다.", HttpStatus.OK);
-        } else {
-            return response.fail("해당 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> myWallet(RequestDto.User user) {
+        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+
+        if(userInfo.isEmpty()){
+            return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
+
+        MyWallet wallet = userInfo.get().getMyWallet();
+        ResponseDto.Wallet myWalletResDto = new ResponseDto.Wallet(wallet);
+
+        return response.success(myWalletResDto, "내 지갑 잔액 조회에 성공했습니다.", HttpStatus.OK);
+
     }
 
-    public ResponseEntity<?> myWalletTransactions(RequestDto.MyWallet myWalletReqDto) {
+    //TODO : Timestamp -> LocalDateTime 수정 필요
+    public ResponseEntity<?> myWalletTransactions(RequestDto.User user) {
+        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+
+        if(userInfo.isEmpty()){
+            return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
         Integer year;
         Integer month;
 
-        if (myWalletReqDto.getYear() != null && myWalletReqDto.getMonth() != null) {
-            year = myWalletReqDto.getYear();
-            month = myWalletReqDto.getMonth();
+        if (!user.getYear().equals(null) && !user.getMonth().equals(null)) {
+            year = user.getYear();
+            month = user.getMonth();
         } else {
             year = Calendar.getInstance().get(Calendar.YEAR);
             month = Calendar.getInstance().get(Calendar.MONTH) + 1;
         }
-
         HashMap<String, Timestamp> map = getDate(year, month);
-        Optional<List<Transactions>> myTransactionsInfoList = transactionRepository.findAllByWalletIdAndTransactionDateBetween(myWalletReqDto.getWalletId(), map.get("startDate"), map.get("endDate"));
 
-//        Optional<List<Transactions>> myTransactionsInfoList = transactionRepository.findAllByWalletId(myWalletReqDto.getWalletId());
-        if (myTransactionsInfoList.isPresent()) {
-            List<Transactions> transactionsList = myTransactionsInfoList.get();
-            List<ResponseDto.MyTransactions> myWalletTransactionResDtoList = new ArrayList<>();
-            for (Transactions transaction : transactionsList) {
-                ResponseDto.MyTransactions myWalletTransactionResDTO = new ResponseDto.MyTransactions(transaction);
-                myWalletTransactionResDtoList.add(myWalletTransactionResDTO);
-            }
-            return response.success(myWalletTransactionResDtoList, "내 지갑 거래 내역 조회에 성공했습니다.", HttpStatus.OK);
-        } else {
+        List<Transactions> transactionsList = transactionRepository.findAllByWalletIdAndTransactionDateBetween(userInfo.get().getMyWallet().getId(), map.get("startDate"), map.get("endDate"));
+
+        if(transactionsList.isEmpty()){
             return response.fail("거래 내역이 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
+        List<ResponseDto.MyTransactions> transactionResDtoList = new ArrayList<>();
+        for (Transactions transaction : transactionsList) {
+            ResponseDto.MyTransactions myWalletTransactionResDTO = new ResponseDto.MyTransactions(transaction);
+            transactionResDtoList.add(myWalletTransactionResDTO);
+        }
+        return response.success(transactionResDtoList, "내 지갑 거래 내역 조회에 성공했습니다.", HttpStatus.OK);
+
     }
 
-    public ResponseEntity<?> getAccountBalance(RequestDto.AccountBalance accountReqDto) {
-        Optional<Account> account = accountRepository.findByMemberId(accountReqDto.getMemberId());
-        if (account.isPresent()) {
-            ResponseDto.AccountBalance accountResDto = new ResponseDto.AccountBalance(account.get());
-            return response.success(accountResDto, "연결된 계좌 잔액 조회에 성공했습니다.", HttpStatus.OK);
-        } else {
+    public ResponseEntity<?> getAccount(RequestDto.User user) {
+        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+
+        if(userInfo.isEmpty()){
+            return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Account> account = accountRepository.findByUserId(user.getUserId());
+
+        if(account.isEmpty()){
             return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
+        ResponseDto.AccountInfo accountResDto = new ResponseDto.AccountInfo(account.get());
+        return response.success(accountResDto, "연결된 계좌 잔액 조회에 성공했습니다.", HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<?> getMoneyFromAccount(RequestDto.RequestAmount requestAmount) {
-        Optional<Account> account = accountRepository.findByMemberId(requestAmount.getMemberId());
-        Optional<MyWallet> wallet = walletRepository.findById(requestAmount.getWalletId());
-        if (account.isPresent() && wallet.isPresent()) {
+    public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge) {
 
-            if (account.get().getBalance() < requestAmount.getAmount()) {   // 1. 남은 잔액보다 돈이 적을 때
-                return response.fail("계좌 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
-            } else {  // 2. 남은 잔액보다 돈이 많을 때
-                // 2-1. transaction 추가
-                makeTransaction(account.get(), wallet.get(), requestAmount);
-                // 2-2. wallet 잔액 추가
-                wallet.get().setBalance(wallet.get().getBalance() + requestAmount.getAmount());
-                walletRepository.save(wallet.get());
-//                walletRepository.updateByWalletId(wallet.get().getId(), wallet.get().getBalance() + requestAmount.getAmount());
-                // 2-3. account 잔액 차감
-                account.get().setBalance(account.get().getBalance() - requestAmount.getAmount());
-                accountRepository.save(account.get());
-//                accountRepository.updateByMemberId(requestAmount.getMemberId(), account.get().getBalance() - requestAmount.getAmount());
-                return response.success("충전을 완료했습니다.");
-            }
-        } else {
-            return response.fail("계좌가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        Optional<User> userInfo = usersRepository.findById(charge.getUserId());
+
+        if(userInfo.isEmpty()){
+            return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
+
+        Optional<Account> account = accountRepository.findByUserId(charge.getUserId());
+
+        if(account.isEmpty()){
+            return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        MyWallet wallet = userInfo.get().getMyWallet();
+
+
+        // 1. 남은 잔액보다 돈이 적을 때
+        if (account.get().getBalance() < charge.getAmount()) {
+            return response.fail("계좌 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        // 2. 남은 잔액보다 돈이 많을 때
+        // 2-1. wallet 잔액 추가
+        wallet.setBalance(wallet.getBalance() + charge.getAmount());
+        walletRepository.save(wallet);
+        // 2-2. account 잔액 차감
+        account.get().setBalance(account.get().getBalance() - charge.getAmount());
+        accountRepository.save(account.get());
+        // 2-3. transaction 추가
+        makeTransaction(wallet, charge.getAmount());
+        return response.success("충전을 완료했습니다.");
+
     }
 
-    public ResponseEntity<?> connectAccount(RequestDto.ConnectAccount connectAccount) {
-        Optional<Account> account = accountRepository.findByMemberId(connectAccount.getMemberId());
-        // 1. 연결된 계좌가 없을 때
-        if (account.isEmpty()) {// 새로운 계좌 만들어서 save
-            // balance 난수 생성
-            double randomValue = Math.random();
-            int intValue = (int) (randomValue * 100);
-            Account newAccount = Account.builder()
-                    .memberId(connectAccount.getMemberId())
-                    .accountId(connectAccount.getAccountId())
-                    .openDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
-                    .name(connectAccount.getName())
-                    .balance(10000 * intValue)
-                    .build();
-            accountRepository.save(newAccount);
-            return response.success("계좌 연동에 성공했습니다.");
-        } else {
+    public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo) {
+        Optional<Account> account = accountRepository.findByUserId(accountInfo.getUserId());
+
+        if (account.isPresent()){
             return response.fail("연결된 계좌가 존재합니다.", HttpStatus.BAD_REQUEST);
         }
+
+        // 연결된 계좌가 없을 때, 새로 생성 (100만원이 들어있다고 가정)
+        Account newAccount = Account.builder()
+                .userId(accountInfo.getUserId())
+                .accountId(accountInfo.getAccountId())
+                .openDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .name(accountInfo.getName())
+                .balance(1000000)
+                .build();
+        accountRepository.save(newAccount);
+        return response.success("계좌 연동에 성공했습니다.");
     }
 
-    public void makeTransaction(Account account, MyWallet wallet, RequestDto.RequestAmount requestAmount) {
+    public void makeTransaction(MyWallet wallet, Integer amount) {
         Transactions transactions = Transactions.builder()
                 .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
-                .transactionType("충전")
-                .counterId(account.getAccountId())
-                .amount(requestAmount.getAmount())
-                .balance(account.getBalance() - requestAmount.getAmount())
-                .success(true)
+                .transactionType("계좌 충전")
+                .amount(amount)
+                .balance(wallet.getBalance() + amount)
                 .build();
 
         transactions.setWallet(wallet);
