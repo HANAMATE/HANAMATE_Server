@@ -50,7 +50,7 @@ public class MoimWalletService {
     /**
      * 새로운 모임 통장 만들기어서 새로운 모임통장 idx 값 반환하기.
      * */
-    public ResponseEntity<?> createMoimWallet(Long userId,Integer target_amount) {
+    public ResponseEntity<?> createMoimWallet(Long userId,Integer targetAmount) {
 
         Optional<User> savedUser = usersRepository.findById(userId);
         if (savedUser.isEmpty()) {
@@ -58,7 +58,7 @@ public class MoimWalletService {
         }
         //1. 모임 통장 만들기
         MoimWallet moimWallet = MoimWallet.builder()
-                .targetAmount(target_amount)
+                .targetAmount(targetAmount)
                 .build();
         MoimWallet savedMoimWallet = (MoimWallet) walletRepository.save(moimWallet);
         walletRepository.flush();
