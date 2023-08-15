@@ -9,23 +9,23 @@ import java.util.Optional;
 
 @Transactional
 public interface RequestsRepository extends JpaRepository<Requests, Long> {
-    Optional<List<Requests>> findAllByRequesterIdxAndAskAllowanceIsNull(Long aLong);
+    List<Requests> findAllByRequesterIdxAndAskAllowanceIsNull(Long aLong);
 
-    Optional<List<Requests>> findByRequesterIdx(Long aLong);
+    List<Requests> findByRequesterIdx(Long aLong);
 
-    Optional<List<Requests>> findAllByRequesterIdxAndAskAllowanceIsNotNull(Long aLong);
+    List<Requests> findAllByRequesterIdxAndAskAllowanceIsNotNull(Long aLong);
 
-    Optional<List<Requests>> findAllByTargetIdxAndAskAllowanceIsNull(Long aLong);
+    List<Requests> findAllByTargetIdxAndAskAllowanceIsNull(Long aLong);
 
-    Optional<List<Requests>> findAllByTargetIdxAndAskAllowanceIsNotNull(Long aLong);
+    List<Requests> findAllByTargetIdxAndAskAllowanceIsNotNull(Long aLong);
 
-    Optional<List<Requests>> findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByCreateDateDesc(Long aLong);
+    List<Requests> findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByCreateDateDesc(Long aLong);
 
-    Optional<List<Requests>> findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(Long aLong);
+    List<Requests> findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(Long aLong);
 
-    Optional<List<Requests>> findTop20ByTargetIdxAndAskAllowanceIsNullOrderByCreateDateDesc(Long aLong);
+    List<Requests> findTop20ByTargetIdxAndAskAllowanceIsNullOrderByCreateDateDesc(Long aLong);
 
-    Optional<List<Requests>> findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(Long aLong);
+    List<Requests> findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(Long aLong);
 
     Optional<Requests> findByRequestId(Long aLong);
 

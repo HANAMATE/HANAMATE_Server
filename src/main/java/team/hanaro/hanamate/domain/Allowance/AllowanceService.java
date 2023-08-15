@@ -34,34 +34,34 @@ public class AllowanceService {
 
     /* 1. 아이 : 용돈 조르기(대기중) 요청 조회*/
     public ResponseEntity<?> getMyAllowancePendingRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByCreateDateDesc(user.getUserIdx());
+        List<Requests> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNullOrderByCreateDateDesc(user.getUserIdx());
 
-        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
+        if (myRequests.isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        List<Requests> requestList = myRequests.get();
         List<ResponseDto.Request> responseRequestList = new ArrayList<>();
-        for (Requests request : requestList) {
+        for (Requests request : myRequests) {
             ResponseDto.Request responseRequest = new ResponseDto.Request(request);
             responseRequestList.add(responseRequest);
         }
+
         return response.success(responseRequestList, "용돈 조르기(대기중) 요청 리스트 조회에 성공했습니다.", HttpStatus.OK);
     }
 
     /* 2. 아이 : 용돈 조르기(승인/거절) 요청 조회*/
     public ResponseEntity<?> getMyAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(user.getUserIdx());
-        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
+        List<Requests> myRequests = requestsRepository.findTop20ByRequesterIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(user.getUserIdx());
+        if (myRequests.isEmpty()) {
             return response.fail("승인/거절된 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        List<Requests> requestList = myRequests.get();
         List<ResponseDto.Request> responseRequestList = new ArrayList<>();
-        for (Requests request : requestList) {
+        for (Requests request : myRequests) {
             ResponseDto.Request responseRequest = new ResponseDto.Request(request);
             responseRequestList.add(responseRequest);
         }
+
         return response.success(responseRequestList, "용돈 조르기(승인/거절) 요청 리스트 조회에 성공했습니다.", HttpStatus.OK);
     }
 
@@ -103,35 +103,35 @@ public class AllowanceService {
 
     /* 4. 부모 : 용돈 조르기(대기중) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowancePendingRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNullOrderByCreateDateDesc(user.getUserIdx());
+        List<Requests> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNullOrderByCreateDateDesc(user.getUserIdx());
 
-        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
+        if (myRequests.isEmpty()) {
             return response.fail("대기 상태의 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        List<Requests> requestList = myRequests.get();
         List<ResponseDto.Request> responseRequestList = new ArrayList<>();
-        for (Requests request : requestList) {
+        for (Requests request : myRequests) {
             ResponseDto.Request responseRequest = new ResponseDto.Request(request);
             responseRequestList.add(responseRequest);
         }
+
         return response.success(responseRequestList, "용돈 조르기(대기) 리스트 조회에 성공했습니다.", HttpStatus.OK);
     }
 
     /* 5. 부모 : 용돈 조르기(승인,거절) 요청 조회 */
     public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<List<Requests>> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(user.getUserIdx());
+        List<Requests> myRequests = requestsRepository.findTop20ByTargetIdxAndAskAllowanceIsNotNullOrderByModifiedDateDesc(user.getUserIdx());
 
-        if (myRequests.isEmpty() || myRequests.get().isEmpty()) {
+        if (myRequests.isEmpty()) {
             return response.fail("승인/거절된 용돈 조르기 요청이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        List<Requests> requestList = myRequests.get();
         List<ResponseDto.Request> responseRequestList = new ArrayList<>();
-        for (Requests request : requestList) {
+        for (Requests request : myRequests) {
             ResponseDto.Request responseRequest = new ResponseDto.Request(request);
             responseRequestList.add(responseRequest);
         }
+
         return response.success(responseRequestList, "용돈 조르기(성공,실패) 리스트 조회에 성공했습니다.", HttpStatus.OK);
     }
 
@@ -225,15 +225,14 @@ public class AllowanceService {
 
     /* 8. 부모 : 정기 용돈 조회 */
     public ResponseEntity<?> getPeriodicAllowance(RequestDto.User user) {
-        Optional<Allowances> allowances = allowancesRepository.findAllByParentIdxAndValidIsTrue(user.getUserIdx());
+        Optional<Allowances> allowances = allowancesRepository.findByParentIdxAndValidIsTrue(user.getUserIdx());
 
-        if (allowances.isPresent()) {
-            ResponseDto.Allowance responseAllowance = new ResponseDto.Allowance(allowances.get());
-            return response.success(responseAllowance, "정기 용돈 조회에 성공했습니다.", HttpStatus.OK);
-        } else {
+        if (allowances.isEmpty()){
             return response.fail("정기 용돈 리스트가 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
+        ResponseDto.Allowance responseAllowance = new ResponseDto.Allowance(allowances.get());
+        return response.success(responseAllowance, "정기 용돈 조회에 성공했습니다.", HttpStatus.OK);
     }
 
     /* 9. 부모 : 정기 용돈 생성 */

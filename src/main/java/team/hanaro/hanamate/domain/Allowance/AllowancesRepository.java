@@ -12,7 +12,7 @@ public interface AllowancesRepository extends JpaRepository<Allowances, Long> {
 
     Optional<Allowances> findByAllowanceIdAndValidIsTrue(Long aLong);
 
-    Optional<Allowances> findAllByParentIdxAndValidIsTrue(Long aLong);
+    Optional<Allowances> findByParentIdxAndValidIsTrue(Long aLong);
 
     Optional<Allowances> findByChildrenIdxAndParentIdxAndValidIsTrue(Long childId, Long parentId);
 }
