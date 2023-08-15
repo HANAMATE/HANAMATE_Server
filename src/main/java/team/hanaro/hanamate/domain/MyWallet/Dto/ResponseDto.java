@@ -3,8 +3,8 @@ package team.hanaro.hanamate.domain.MyWallet.Dto;
 import lombok.*;
 import team.hanaro.hanamate.entities.Account;
 import team.hanaro.hanamate.entities.MoimWallet;
+import team.hanaro.hanamate.entities.MyWallet;
 import team.hanaro.hanamate.entities.Transactions;
-//import team.hanaro.hanamate.entities.Wallets;
 
 import java.sql.Timestamp;
 
@@ -16,23 +16,21 @@ public class ResponseDto {
     @AllArgsConstructor
     @Builder
     @ToString
-    public static class MyWallet {
+    public static class Wallet {
         private Long walletId;
         private String walletType;
         private Integer balance;
         private Integer targetAmount;
 
-        public MyWallet(team.hanaro.hanamate.entities.MyWallet wallets) {
+        public Wallet(MyWallet wallets) {
             walletId = wallets.getId();
             // TODO: 2023/08/13 아래 부분 wallet ==> Mywallet , MoimWallet으로 바뀌면서 없는 부분임
-//            walletType = wallets.getWalletType();
             walletType=wallets.getDecriminatorValue();
             balance = wallets.getBalance();
             if ("moim".equals(walletType)) {
                 MoimWallet temp = (MoimWallet) wallets;
                 targetAmount = temp.getTargetAmount();
             }
-//            targetAmount = wallets.getTargetAmount();
         }
     }
 
@@ -64,12 +62,12 @@ public class ResponseDto {
     @AllArgsConstructor
     @Builder
     @ToString
-    public static class AccountBalance {
+    public static class AccountInfo {
         private Long accountId;
         private String name;
         private Integer balance;
 
-        public AccountBalance(Account account) {
+        public AccountInfo(Account account) {
             accountId = account.getAccountId();
             name = account.getName();
             balance = account.getBalance();

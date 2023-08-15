@@ -9,7 +9,5 @@ import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transactions, Long> {
 
-    Optional<List<Transactions>> findAllByWalletId(Long aLong);
-
-    Optional<List<Transactions>> findAllByWalletIdAndTransactionDateBetween(Long aLong, Timestamp start, Timestamp end);
+    List<Transactions> findAllByWalletIdAndTransactionDateBetween(Long aLong, Timestamp start, Timestamp end);
 }
