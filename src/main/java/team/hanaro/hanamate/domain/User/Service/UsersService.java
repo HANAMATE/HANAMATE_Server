@@ -3,7 +3,6 @@ package team.hanaro.hanamate.domain.User.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,14 +40,14 @@ public class UsersService {
     private final UserResponse userResponse;
 
     public ResponseEntity<?> signUp(UserRequestDto.SignUp signUp) {
-        if (usersRepository.existsById(signUp.getId())) {
+        if (usersRepository.existsByLoginId(signUp.getId())) {
             return response.fail("이미 회원가입된 아이디입니다.", HttpStatus.BAD_REQUEST);
         }
 
         //DTO(Signup)을 이용하여 User(Entity)로 반환하는 Builder (DTO-> Entity)
         User user = User.builder()
                 .name(signUp.getName())
-                .id(signUp.getId())
+                .loginId(signUp.getId())
                 .password(passwordEncoder.encode(signUp.getPassword()))
                 .identification(signUp.getIdentification())
                 .phoneNumber(signUp.getPhoneNumber())
@@ -63,7 +62,7 @@ public class UsersService {
     public ResponseEntity<?> login(UserRequestDto.Login login) {
 
         //로그인 실패
-        if (usersRepository.findById(login.getId()).orElse(null) == null) {
+        if (usersRepository.findByLoginId(login.getId()).orElse(null) == null) {
             //(ResponseEntity<?>)StatusCode, ResponseMessage, ResponseData를 담아서 클라이언트에게 응답을 보냄
             return response.fail("해당하는 유저가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -129,7 +128,6 @@ public class UsersService {
         // 4. 새로운 토큰 생성
         UserResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
-
         // 5. RefreshToken Redis 업데이트
         redisTemplate.opsForValue()
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
@@ -171,7 +169,7 @@ public class UsersService {
         // SecurityContext에 담겨 있는 authentication userEamil 정보
         String userId = SecurityUtil.getCurrentUserEmail();
 
-        User user = usersRepository.findById(userId)
+        User user = usersRepository.findByLoginId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("No authentication information."));
 
         // add ROLE_ADMIN
