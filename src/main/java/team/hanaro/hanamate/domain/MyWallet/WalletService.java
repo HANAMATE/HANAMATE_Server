@@ -153,7 +153,7 @@ public class WalletService {
                 .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .transactionType("계좌 충전")
                 .amount(amount)
-                .balance(wallet.getBalance() + amount)
+                .balance(wallet.getBalance())
                 .build();
 
         transactions.setWallet(wallet);
