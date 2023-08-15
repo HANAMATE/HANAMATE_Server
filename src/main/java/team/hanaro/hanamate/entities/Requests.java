@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
@@ -12,19 +13,19 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Requests {
+public class Requests extends BaseTime{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long requestId;
 
-    private Long targetId;
-    private Long requesterId;
+    private Long targetIdx;
+    private Long requesterIdx;
     private Long loanId;
     private Long savingsId;
+    @Setter
     private Boolean askAllowance;
     private Integer allowanceAmount;
-    private Timestamp requestDate;
-    private Timestamp expirationDate;
+    private LocalDateTime expirationDate;
     private Integer result;
     private String requestDescription;
 
