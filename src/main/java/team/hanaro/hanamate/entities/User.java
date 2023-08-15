@@ -31,6 +31,10 @@ public class User extends BaseTime implements UserDetails {
     @JoinColumn(name = "my_wallet_id")
     private MyWallet myWallet;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<MoimWalletAndUser> moimWalletAndUsers = new ArrayList<>();
+
     @OneToOne(fetch = FetchType.LAZY)
     private Account account;
 
@@ -52,6 +56,8 @@ public class User extends BaseTime implements UserDetails {
 
     @Column
     private UserType userType;
+
+
 
     //SpringSecurity 관련
     @Column

@@ -21,6 +21,7 @@ public class Images {
     private String fileName;
     private Integer fileSize;
     private String fileType;
+    // TODO: 2023-08-15(015) fileData 전송 방식 알아보기
     @Lob
     private Blob fileData;
     private Timestamp createdAt;
