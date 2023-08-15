@@ -40,7 +40,7 @@ public class MoimWalletController {
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
-        return moimWalletService.createMoimWallet(moimWallet.getUserId(), (moimWallet.getTarget_amount()));
+        return moimWalletService.createMoimWallet(moimWallet.getUserId(), (moimWallet.getTargetAmount()));
     }
 
 }

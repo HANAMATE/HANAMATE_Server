@@ -21,7 +21,7 @@ public class RequestDto {
 
         @Nullable
         @PositiveOrZero(message = "0 이상 양수값을 입력해야 합니다.")
-        private Integer target_amount;
+        private Integer targetAmount;
 
     }
 
