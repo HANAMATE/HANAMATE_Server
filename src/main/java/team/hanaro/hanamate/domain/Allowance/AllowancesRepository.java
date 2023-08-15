@@ -15,4 +15,12 @@ public interface AllowancesRepository extends JpaRepository<Allowances, Long> {
     Optional<Allowances> findByParentIdxAndValidIsTrue(Long aLong);
 
     Optional<Allowances> findByChildrenIdxAndParentIdxAndValidIsTrue(Long childId, Long parentId);
+
+    List<Allowances> findAllByEveryday(Boolean flag);
+
+    List<Allowances> findAllByDayOfWeek(Integer aInt);
+
+    List<Allowances> findAllByTransferDate(Integer aInt);
+
+    List<Allowances> findAllByEverydayOrDayOfWeekOrTransferDateAndValidIsTrue(Boolean everyday, Integer dayOfWeek, Integer transferDate);
 }
