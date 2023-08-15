@@ -33,20 +33,19 @@ public class MoimWalletService {
     private final Response response;
 
     public ResponseEntity<?> findAllByUser(RequestDto.MoimWallet moimWalletDto){
-        Optional<List<MoimWalletAndUser>> savedMoimWallet = moimWalletAndMemberRepository.findAllByUserId(moimWalletDto.getUserId());
-        if (!savedMoimWallet.get().isEmpty()) {
+        List<MoimWalletAndUser> savedMoimWallet = moimWalletAndMemberRepository.findAllByUserId(moimWalletDto.getUserId());
+        if (!savedMoimWallet.isEmpty()) {
             List<ResponseDto.MoimWalletList> moimWalletLists = new ArrayList<>();
-            for (MoimWalletAndUser moimWalletAndUser : savedMoimWallet.get()) {
+            for (MoimWalletAndUser moimWalletAndUser : savedMoimWallet) {
                 Optional<MoimWallet> moimWallet =  moimWalletRepository.findById(moimWalletAndUser.getMoimWalletId());
                 ResponseDto.MoimWalletList moimWalletListDTO = new ResponseDto.MoimWalletList(moimWallet.get());
                 moimWalletLists.add(moimWalletListDTO);
             }
-            return response.success(moimWalletLists, "내 지갑 잔액 조회에 성공했습니다.", HttpStatus.OK);
+            return response.success(moimWalletLists, "내 모임통장 조회에 성공했습니다.", HttpStatus.OK);
         } else {
-            return response.fail("해당 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            return response.fail("내 모임통장이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
     }
-
 
     /**
      * 새로운 모임 통장 만들기어서 새로운 모임통장 idx 값 반환하기.

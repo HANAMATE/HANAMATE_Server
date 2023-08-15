@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface MoimWalletAndMemberRepository extends JpaRepository<MoimWalletAndUser,Long> {
 
-    Optional<List<MoimWalletAndUser>> findAllByUserId(Long userId);
+    List<MoimWalletAndUser> findAllByUserId(Long userId);
 //    boolean existsByWalletIdAndUserId(Long walletId, Long userId);
 }

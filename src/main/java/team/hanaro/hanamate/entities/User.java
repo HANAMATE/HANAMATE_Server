@@ -32,7 +32,8 @@ public class User extends BaseTime implements UserDetails {
     private MyWallet myWallet;
 
     @Builder.Default
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "userId")
+//    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<MoimWalletAndUser> moimWalletAndUsers = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)

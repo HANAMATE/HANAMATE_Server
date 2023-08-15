@@ -27,7 +27,6 @@ public class MoimWalletController {
     public ResponseEntity<?> myWallet(@RequestBody RequestDto.MoimWallet moimWallet) {
         return moimWalletService.findAllByUser(moimWallet);
     }
-
     @PostMapping("")
     public ResponseEntity<?> createMoimWallet(@RequestBody RequestDto.MoimWallet moimWallet){
         return moimWalletService.createMoimWallet(moimWallet.getUserId(), moimWallet.getTarget_amount());
