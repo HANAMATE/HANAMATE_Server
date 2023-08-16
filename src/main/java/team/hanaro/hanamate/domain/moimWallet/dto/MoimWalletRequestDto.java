@@ -5,26 +5,36 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.*;
 
-public class RequestDto {
+public class MoimWalletRequestDto {
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     @ToString
-    public static class MoimWallet {
+    public static class JoinMoimWalletDTO {
         //TODO: 입력값 Validation Check
+        @NotEmpty(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
+        private String userId;
 
-        //userid
-        @NotNull(message = "유저 아이디가 비었습니다.")
-        private Long userId;
+        @NotEmpty(message = "모임통장 이름이 비어있거나 공백문자이면 안됩니다.")
+        private String walletName;
 
         @Nullable
         @PositiveOrZero(message = "0 이상 양수값을 입력해야 합니다.")
         private Integer targetAmount;
-
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class findAllMoimWalletDTO {
+        //TODO: 입력값 Validation Check
+        @NotEmpty(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
+        private String userId;
+    }
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
