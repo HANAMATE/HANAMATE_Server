@@ -12,7 +12,10 @@ import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.entities.*;
+import team.hanaro.hanamate.entities.Account;
+import team.hanaro.hanamate.entities.MyWallet;
+import team.hanaro.hanamate.entities.Transactions;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 
 import java.sql.Timestamp;
@@ -30,7 +33,7 @@ public class WalletService {
     public ResponseEntity<?> myWallet(RequestDto.User user) {
         Optional<User> userInfo = usersRepository.findById(user.getUserId());
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -45,7 +48,7 @@ public class WalletService {
     public ResponseEntity<?> myWalletTransactions(RequestDto.User user) {
         Optional<User> userInfo = usersRepository.findById(user.getUserId());
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -63,7 +66,7 @@ public class WalletService {
 
         List<Transactions> transactionsList = transactionRepository.findAllByWalletIdAndTransactionDateBetween(userInfo.get().getMyWallet().getId(), map.get("startDate"), map.get("endDate"));
 
-        if(transactionsList.isEmpty()){
+        if (transactionsList.isEmpty()) {
             return response.fail("거래 내역이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -79,13 +82,13 @@ public class WalletService {
     public ResponseEntity<?> getAccount(RequestDto.User user) {
         Optional<User> userInfo = usersRepository.findById(user.getUserId());
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
         Optional<Account> account = accountRepository.findByUserId(user.getUserId());
 
-        if(account.isEmpty()){
+        if (account.isEmpty()) {
             return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -98,13 +101,13 @@ public class WalletService {
 
         Optional<User> userInfo = usersRepository.findById(charge.getUserId());
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
         Optional<Account> account = accountRepository.findByUserId(charge.getUserId());
 
-        if(account.isEmpty()){
+        if (account.isEmpty()) {
             return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -132,7 +135,7 @@ public class WalletService {
     public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo) {
         Optional<Account> account = accountRepository.findByUserId(accountInfo.getUserId());
 
-        if (account.isPresent()){
+        if (account.isPresent()) {
             return response.fail("연결된 계좌가 존재합니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -192,33 +195,27 @@ public class WalletService {
     }
 
     /**
-     * <p>회원가입 시 생성된 유저 Id를 바탕으로, 개인지갑 생성</p>
-     * <p>이미 개인 지갑이 존재하는 경우 null</p>
+     * <p>회원가입 시 생성된 유저를 바탕으로, 개인지갑 생성</p>
+     * <p>이미 개인 지갑이 존재하는 경우 false</p>
      *
-     * @param : 유저 ID
-     * @return : 생성된 지갑 ID 또는 null
+     * @param : 유저
+     * @return : 생성 성공, 실패
      */
-    public Long createPrivateWallet(Long userId) {
-//        Optional<MyWallet> wallets = walletRepository.findByUserId(userId);
-//        if (wallets.isPresent()) {
-//            return null;
-//        }
-        User user = usersRepository.findById(userId).get();
+    public Boolean makeMyWallet(User user) {
+
         MyWallet myWallet = user.getMyWallet();
-        if (ObjectUtils.isEmpty(myWallet)) {
-            return null;
+        if (!ObjectUtils.isEmpty(myWallet)) {
+            return false;
         }
+
         MyWallet newWallet = MyWallet.builder()
-//                .userId(userId)
-//                .walletType(false)
                 .balance(0)
                 .build();
 
-//        MyWallet savedWallet = walletRepository.save(newWallet);
+        walletRepository.save(newWallet);
         user.setMyWallet(newWallet);
-        usersRepository.save(user);
 
-        return user.getMyWallet().getId();
+        return true;
     }
 
 
