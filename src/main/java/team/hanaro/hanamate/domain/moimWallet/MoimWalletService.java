@@ -11,7 +11,7 @@ import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletRequestDto;
 import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletResponseDto;
 import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletRepository;
-import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletAndMemberRepository;
+import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletAndUserRepository;
 import team.hanaro.hanamate.entities.MoimWallet;
 import team.hanaro.hanamate.entities.MoimWalletAndUser;
 import team.hanaro.hanamate.entities.User;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class MoimWalletService {
     private final MyWalletRepository walletRepository;
     private final MoimWalletRepository moimWalletRepository;
-    private final MoimWalletAndMemberRepository moimWalletAndMemberRepository;
+    private final MoimWalletAndUserRepository moimWalletAndUserRepository;
     private final UsersRepository usersRepository;
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
@@ -77,8 +77,8 @@ public class MoimWalletService {
         moimWalletAndUser.setUserId(savedUser.get().getIdx());
 
         //4.다대다 매핑 엔티티 저장하기
-        MoimWalletAndUser savedMoimWalletAndUser = moimWalletAndMemberRepository.save(moimWalletAndUser);
-        moimWalletAndMemberRepository.flush();
+        MoimWalletAndUser savedMoimWalletAndUser = moimWalletAndUserRepository.save(moimWalletAndUser);
+        moimWalletAndUserRepository.flush();
 //        moim.save(moimWalletAndUser);
         return response.success(savedMoimWalletAndUser, "모임통장 개설에 성공했습니다.", HttpStatus.OK);
     }
