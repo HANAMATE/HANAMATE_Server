@@ -61,21 +61,4 @@ public class UsersController {
         return usersService.logout(logout);
     }
 
-    @GetMapping("/authority")
-    public ResponseEntity<?> authority() {
-        log.info("ADD ROLE_ADMIN");
-        return usersService.authority();
-    }
-
-    @GetMapping("/userTest")
-    public ResponseEntity<?> userTest() {
-        log.info("ROLE_USER TEST");
-        return response.success();
-    }
-
-    @GetMapping("/adminTest")
-    public ResponseEntity<?> adminTest() {
-        log.info("ROLE_ADMIN TEST");
-        return response.success();
-    }
 }

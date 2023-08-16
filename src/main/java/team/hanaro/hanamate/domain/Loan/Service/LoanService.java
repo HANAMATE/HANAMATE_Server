@@ -1,6 +1,7 @@
 package team.hanaro.hanamate.domain.Loan.Service;
 
 
+import com.sun.tools.jconsole.JConsoleContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,8 +36,8 @@ public class LoanService {
 
         // 1. Access Token 가져오기
         String accessToken = request.getHeader("Authorization"); // Assuming the access token is stored in the "Authorization" header
-        log.info("대출 서비스 들어옴");
 
+        log.info("accessToken={}", accessToken);
         // 2. Access Token 검증
         if (!jwtTokenProvider.validateToken(accessToken)) {
             return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
@@ -62,6 +63,13 @@ public class LoanService {
                 .children(now_user)
                 .loanName(apply.getLoanName())
                 .loanAmount(Integer.valueOf(apply.getLoanAmount()))
+                .interestRate(1)
+                .completed(false)
+//                .parent(to_parent) //TODO : 부모와 아이가 매핑되어있는 DB에서 부모 id 가져오기
+//                .startDate(apply.getStartDate()) //TODO: 부모가 승인해줘야 생김.
+//                .endDate(apply.getEndDate())
+                .duration(apply.getDuration())
+                .loanMessage(apply.getLoanMessage())
                 .build();
 
         loanRepository.save(loans);

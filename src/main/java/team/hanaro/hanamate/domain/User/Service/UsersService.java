@@ -93,13 +93,6 @@ public class UsersService {
         ResponseEntity<?> responseEntity = userResponse.success(accessToken,refreshToken,null, "로그인에 성공했습니다", HttpStatus.OK);
 
         return responseEntity;
-
-
-
-
-
-
-
     }
 
     //토큰 재발급
@@ -165,17 +158,5 @@ public class UsersService {
         return response.success("로그아웃 되었습니다.");
     }
 
-    public ResponseEntity<?> authority() {
-        // SecurityContext에 담겨 있는 authentication userEamil 정보
-        String userId = SecurityUtil.getCurrentUserEmail();
 
-        User user = usersRepository.findByLoginId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("No authentication information."));
-
-        // add ROLE_ADMIN
-        user.getRoles().add(Authority.ROLE_ADMIN.name());
-        usersRepository.save(user);
-
-        return response.success();
-    }
 }
