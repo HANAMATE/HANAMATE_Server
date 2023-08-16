@@ -31,7 +31,7 @@ public class WalletService {
     private final Response response;
 
     public ResponseEntity<?> myWallet(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -46,7 +46,7 @@ public class WalletService {
 
     //TODO : Timestamp -> LocalDateTime 수정 필요
     public ResponseEntity<?> myWalletTransactions(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -80,13 +80,13 @@ public class WalletService {
     }
 
     public ResponseEntity<?> getAccount(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Account> account = accountRepository.findByUserId(user.getUserId());
+        Optional<Account> account = accountRepository.findByUserId(userInfo.get().getIdx());
 
         if (account.isEmpty()) {
             return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
@@ -99,13 +99,13 @@ public class WalletService {
     @Transactional
     public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge) {
 
-        Optional<User> userInfo = usersRepository.findById(charge.getUserId());
+        Optional<User> userInfo = usersRepository.findByLoginId(charge.getUserId());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Account> account = accountRepository.findByUserId(charge.getUserId());
+        Optional<Account> account = accountRepository.findByUserId(userInfo.get().getIdx());
 
         if (account.isEmpty()) {
             return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
@@ -133,7 +133,13 @@ public class WalletService {
     }
 
     public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo) {
-        Optional<Account> account = accountRepository.findByUserId(accountInfo.getUserId());
+        Optional<User> userInfo = usersRepository.findByLoginId(accountInfo.getUserId());
+
+        if (userInfo.isEmpty()) {
+            return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Account> account = accountRepository.findByUserId(userInfo.get().getIdx());
 
         if (account.isPresent()) {
             return response.fail("연결된 계좌가 존재합니다.", HttpStatus.BAD_REQUEST);
@@ -141,7 +147,7 @@ public class WalletService {
 
         // 연결된 계좌가 없을 때, 새로 생성 (100만원이 들어있다고 가정)
         Account newAccount = Account.builder()
-                .userId(accountInfo.getUserId())
+                .userId(userInfo.get().getIdx())
                 .accountId(accountInfo.getAccountId())
                 .openDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .name(accountInfo.getName())
@@ -212,7 +218,7 @@ public class WalletService {
                 .balance(0)
                 .build();
 
-        walletRepository.save(newWallet);
+        //walletRepository.save(newWallet);
         user.setMyWallet(newWallet);
 
         return true;
