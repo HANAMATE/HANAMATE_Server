@@ -21,8 +21,12 @@ public class MoimWallet extends MyWallet {
     @Column(name = "target_amount")
     private Integer targetAmount;
 
+    @Setter
+    @Column(name = "wallet_name")
+    private String walletName;
+
     @Builder.Default
-    @OneToMany(mappedBy = "moimWalletId",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "moimWalletId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MoimWalletAndUser> moimWalletAndUsers = new ArrayList<>();
 
     //비즈니스 로직

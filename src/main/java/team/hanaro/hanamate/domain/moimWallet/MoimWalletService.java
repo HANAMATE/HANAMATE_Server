@@ -8,8 +8,8 @@ import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.domain.moimWallet.dto.RequestDto;
-import team.hanaro.hanamate.domain.moimWallet.dto.ResponseDto;
+import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletRequestDto;
+import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletResponseDto;
 import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletRepository;
 import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletAndMemberRepository;
 import team.hanaro.hanamate.entities.MoimWallet;
@@ -32,13 +32,17 @@ public class MoimWalletService {
     private final AccountRepository accountRepository;
     private final Response response;
 
-    public ResponseEntity<?> findAllByUser(RequestDto.MoimWallet moimWalletDto){
-        List<MoimWalletAndUser> savedMoimWallet = moimWalletAndMemberRepository.findAllByUserId(moimWalletDto.getUserId());
-        if (!savedMoimWallet.isEmpty()) {
-            List<ResponseDto.MoimWalletList> moimWalletLists = new ArrayList<>();
-            for (MoimWalletAndUser moimWalletAndUser : savedMoimWallet) {
+    public ResponseEntity<?> getMoimWalletByLoginId(MoimWalletRequestDto.findAllMoimWalletDTO moimWalletDto){
+        Optional<User> byLoginId = usersRepository.findByLoginId(moimWalletDto.getUserId());
+        if (byLoginId.isEmpty()) {
+            return response.fail("해당하는 유저 아이디가 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        List<MoimWalletAndUser> moimWalletAndUsers = byLoginId.get().getMoimWalletAndUsers();
+        if (!moimWalletAndUsers.isEmpty()) {
+            List<MoimWalletResponseDto.MoimWalletList> moimWalletLists = new ArrayList<>();
+            for (MoimWalletAndUser moimWalletAndUser : moimWalletAndUsers) {
                 Optional<MoimWallet> moimWallet =  moimWalletRepository.findById(moimWalletAndUser.getMoimWalletId());
-                ResponseDto.MoimWalletList moimWalletListDTO = new ResponseDto.MoimWalletList(moimWallet.get());
+                MoimWalletResponseDto.MoimWalletList moimWalletListDTO = new MoimWalletResponseDto.MoimWalletList(moimWallet.get());
                 moimWalletLists.add(moimWalletListDTO);
             }
             return response.success(moimWalletLists, "내 모임통장 조회에 성공했습니다.", HttpStatus.OK);
@@ -50,16 +54,18 @@ public class MoimWalletService {
     /**
      * 새로운 모임 통장 만들기어서 새로운 모임통장 idx 값 반환하기.
      * */
-    public ResponseEntity<?> createMoimWallet(Long userId,Integer targetAmount) {
+    public ResponseEntity<?> createMoimWallet(MoimWalletRequestDto.JoinMoimWalletDTO joinMoimWalletDTO) {
 
-        Optional<User> savedUser = usersRepository.findById(userId);
+        Optional<User> savedUser = usersRepository.findByLoginId(joinMoimWalletDTO.getUserId());
         if (savedUser.isEmpty()) {
             return response.fail("모임통장 개설 실패 - 잘못된 유저 ID 입니다.", HttpStatus.BAD_REQUEST);
         }
         //1. 모임 통장 만들기
         MoimWallet moimWallet = MoimWallet.builder()
-                .targetAmount(targetAmount)
+                .targetAmount(joinMoimWalletDTO.getTargetAmount())
+                .walletName(joinMoimWalletDTO.getWalletName())
                 .build();
+
         MoimWallet savedMoimWallet = (MoimWallet) walletRepository.save(moimWallet);
         walletRepository.flush();
         //2.모임&유저 매핑용 엔티티 만들기
