@@ -357,7 +357,7 @@ public class AllowanceService {
         // 부모 -> 아이 거래내역
         Transactions parentToChildTransaction = Transactions.builder()
                 .wallet(parent.getMyWallet())
-                .counterId(child.getIdx())
+                .counterId(child.getMyWallet().getId())
                 .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .transactionType("용돈 이체")
                 .amount(amount)
@@ -366,7 +366,7 @@ public class AllowanceService {
         // 아이 -> 부모 거래내역
         Transactions childToParentTransaction = Transactions.builder()
                 .wallet(child.getMyWallet())
-                .counterId(parent.getIdx())
+                .counterId(parent.getMyWallet().getId())
                 .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .transactionType("용돈 입금")
                 .amount(amount)
