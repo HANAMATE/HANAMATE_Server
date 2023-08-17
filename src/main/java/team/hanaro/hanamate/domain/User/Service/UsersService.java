@@ -25,6 +25,7 @@ import team.hanaro.hanamate.security.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -91,9 +92,13 @@ public class UsersService {
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
 
+        Optional<User> user = usersRepository.findByLoginId(login.getId());
+        UserResponseDto.UserInfo userInfo = new UserResponseDto.UserInfo(user.get());
+
+
         // 헤더를 포함하여 ResponseEntity 생성
         // userResponse.success()를 호출하여 ResponseEntity 생성
-        ResponseEntity<?> responseEntity = userResponse.success(accessToken, refreshToken, null, "로그인에 성공했습니다", HttpStatus.OK);
+        ResponseEntity<?> responseEntity = userResponse.success(accessToken, refreshToken, userInfo, "로그인에 성공했습니다", HttpStatus.OK);
 
         return responseEntity;
 
