@@ -17,7 +17,6 @@ import java.sql.SQLException;
 
 @Tag(name = "모임 통장", description = "모임통장 컨트롤러")
 @RequiredArgsConstructor
-@RequestMapping("/moim")
 @RestController
 public class MoimWalletController {
 
@@ -30,15 +29,15 @@ public class MoimWalletController {
     }
     @Operation(summary = "지갑 잔액 조회", description = "내 지갑 잔액 가져오기", tags = {"내 지갑"})
 
-    @GetMapping("")
-    public ResponseEntity<?> myWallet(@Validated @RequestBody MoimWalletRequestDto.findAllMoimWalletDTO moimWallet, Errors errors) {
+    @PostMapping("/moims")
+    public ResponseEntity<?> myMoimWallet(@Validated @RequestBody MoimWalletRequestDto.findAllMoimWalletDTO moimWallet, Errors errors) {
         // validation check
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
         return moimWalletService.getMoimWalletByLoginId(moimWallet);
     }
-    @PostMapping("")
+    @PostMapping("/moim/create")
     public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet, Errors errors){
         // validation check
         if (errors.hasErrors()) {
@@ -46,24 +45,16 @@ public class MoimWalletController {
         }
         return moimWalletService.createMoimWallet(moimWallet);
     }
-    @DeleteMapping
-    public ResponseEntity<?> deleteWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
+    @DeleteMapping("/moim")
+    public ResponseEntity<?> deleteMoimWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
 
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
         return moimWalletService.deleteMoimWallet(deleteRequestDTO);
     }
-    @DeleteMapping("/article")
-    public ResponseEntity<?> deleteArticle(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
 
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
-        return moimWalletService.deleteArticle(deleteRequestDTO);
-    }
-
-    @PostMapping("/article")
+    @PostMapping("/moim/article")
     public ResponseEntity<?> writeArticle(@Validated @RequestBody MoimWalletRequestDto.WriteArticleRequestDTO articleDTO, Errors errors){
         // validation check
         if (errors.hasErrors()) {
@@ -80,4 +71,15 @@ public class MoimWalletController {
             return response.fail(articleDTO, e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping("/moim/article")
+    public ResponseEntity<?> deleteArticle(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
+
+        if (errors.hasErrors()) {
+            return response.invalidFields(Helper.refineErrors(errors));
+        }
+        return moimWalletService.deleteArticle(deleteRequestDTO);
+    }
+
+
 }
