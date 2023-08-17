@@ -35,7 +35,7 @@ public class MoimWalletRequestDto {
     @ToString
     public static class findAllMoimWalletDTO {
         //TODO: 입력값 Validation Check
-        @NotEmpty(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
+        @NotBlank(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
         private String userId;
     }
 
