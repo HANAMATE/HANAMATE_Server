@@ -113,7 +113,6 @@ public class WalletService {
 
         MyWallet wallet = userInfo.get().getMyWallet();
 
-
         // 1. 남은 잔액보다 돈이 적을 때
         if (account.get().getBalance() < charge.getAmount()) {
             return response.fail("계좌 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
@@ -224,5 +223,37 @@ public class WalletService {
         return true;
     }
 
+    public List<Transactions> getTransactionsByWallet(MyWallet myWallet) {
+        List<Transactions> transactions = transactionRepository.findAllByWalletId(myWallet.getId());
+        return transactions;
+    }
 
+    @Transactional
+    public void transfer(MyWallet sendWallet, MyWallet receiveWallet, int amount, String senderComment, String receiveComment) {
+        // 1. sendWallet 잔액 차감
+        sendWallet.setBalance(sendWallet.getBalance() - amount);
+        walletRepository.save(sendWallet);
+        // 2. receiverWallet 잔액 추가
+        receiveWallet.setBalance(receiveWallet.getBalance() + amount);
+        walletRepository.save(receiveWallet);
+
+        // 3. transaction 생성
+        Transactions sendTransaction = makeTransaction(sendWallet, receiveWallet, amount, senderComment);
+        Transactions receiveTransaction = makeTransaction(receiveWallet, sendWallet, amount, receiveComment);
+
+        transactionRepository.save(sendTransaction);
+        transactionRepository.save(receiveTransaction);
+    }
+
+    private static Transactions makeTransaction(MyWallet sendWallet, MyWallet receiveWallet, int amount, String type) {
+        Transactions sendTransaction = Transactions.builder()
+                .wallet(sendWallet)
+                .counterId(receiveWallet.getId())
+                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .transactionType(type)
+                .amount(amount)
+                .balance(sendWallet.getBalance())
+                .build();
+        return sendTransaction;
+    }
 }

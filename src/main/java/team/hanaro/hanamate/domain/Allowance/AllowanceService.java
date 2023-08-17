@@ -7,17 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.hanaro.hanamate.domain.Allowance.Dto.RequestDto;
 import team.hanaro.hanamate.domain.Allowance.Dto.ResponseDto;
-import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
-import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
+import team.hanaro.hanamate.domain.MyWallet.WalletService;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.entities.*;
+import team.hanaro.hanamate.entities.Allowances;
+import team.hanaro.hanamate.entities.MyWallet;
+import team.hanaro.hanamate.entities.Requests;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,11 +26,10 @@ import java.util.Optional;
 public class AllowanceService {
 
     private final RequestsRepository requestsRepository;
-    private final MyWalletRepository myWalletRepository;
-    private final TransactionRepository transactionRepository;
     private final AllowancesRepository allowancesRepository;
     private final UsersRepository usersRepository;
     private final Response response;
+    private final WalletService walletService;
 
     /* 1. 아이 : 용돈 조르기(대기중) 요청 조회*/
     public ResponseEntity<?> getMyAllowancePendingRequestList(RequestDto.User user) {
@@ -211,19 +210,11 @@ public class AllowanceService {
                 response.fail("용돈 조르기 요청의 아이Id가 올바르지 않습니다.", HttpStatus.BAD_REQUEST);
             }
 
-            // 2-1. 아이 지갑 +
-            childWallet.setBalance(childWallet.getBalance() + request.get().getAllowanceAmount());
-            myWalletRepository.save(childWallet);
-            // 2-2. 부모 지갑 -
-            parentWallet.setBalance(parentWallet.getBalance() - request.get().getAllowanceAmount());
-            myWalletRepository.save(parentWallet);
-            // 2-3. Transaction 작성
-            makeTransaction(parent.get(), child.get(), request.get().getAllowanceAmount());
-            // 2-4. request 변경
+            walletService.transfer(parentWallet, childWallet, request.get().getAllowanceAmount(), "용돈 조르기 출금", "용돈 조르기 입금");
+            
             request.get().setAskAllowance(approve.getAskAllowance());
             requestsRepository.save(request.get());
 
-            myWalletRepository.flush();
             requestsRepository.flush();
             return response.success("용돈 조르기 요청을 승인했습니다.");
         }
@@ -245,15 +236,7 @@ public class AllowanceService {
         MyWallet childWallet = child.get().getMyWallet();
         MyWallet parentWallet = parent.get().getMyWallet();
 
-        // 1. 아이 지갑 +
-        childWallet.setBalance(childWallet.getBalance() + request.getAllowanceAmount());
-        myWalletRepository.save(childWallet);
-        // 2. 부모 지갑 -
-        parentWallet.setBalance(parentWallet.getBalance() - request.getAllowanceAmount());
-        myWalletRepository.save(parentWallet);
-        // 3. Transaction 작성
-        makeTransaction(parent.get(), child.get(), request.getAllowanceAmount());
-        myWalletRepository.flush();
+        walletService.transfer(parentWallet, childWallet, request.getAllowanceAmount(), "용돈 출금", "용돈 입금");
 
         return response.success("용돈 이체에 성공했습니다.");
     }
@@ -351,31 +334,6 @@ public class AllowanceService {
         allowance.get().setValid(false);
         allowancesRepository.save(allowance.get());
         return response.success("정기 용돈을 삭제했습니다.");
-    }
-
-    private void makeTransaction(User parent, User child, Integer amount) {
-        // 부모 -> 아이 거래내역
-        Transactions parentToChildTransaction = Transactions.builder()
-                .wallet(parent.getMyWallet())
-                .counterId(child.getMyWallet().getId())
-                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
-                .transactionType("용돈 이체")
-                .amount(amount)
-                .balance(parent.getMyWallet().getBalance())
-                .build();
-        // 아이 -> 부모 거래내역
-        Transactions childToParentTransaction = Transactions.builder()
-                .wallet(child.getMyWallet())
-                .counterId(parent.getMyWallet().getId())
-                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
-                .transactionType("용돈 입금")
-                .amount(amount)
-                .balance(child.getMyWallet().getBalance())
-                .build();
-
-        transactionRepository.save(parentToChildTransaction);
-        transactionRepository.save(childToParentTransaction);
-        transactionRepository.flush();
     }
 
     private boolean isValidPeriodicCondition(Boolean everyday, Integer dayOfWeek, Integer transferDate) {

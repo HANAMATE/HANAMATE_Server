@@ -36,7 +36,7 @@ public class RequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Approve {
-        @NotBlank(message = "용돈 조르기 요청 Id를 입력해주세요.")
+        @NotNull(message = "용돈 조르기 요청 Id를 입력해주세요.")
         private Long requestId;
         @NotNull(message = "업데이트 할 상태값이(승인/거절) 비었습니다.")
         private Boolean askAllowance;
