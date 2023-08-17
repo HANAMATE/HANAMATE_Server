@@ -3,7 +3,10 @@ package team.hanaro.hanamate.domain.moimWallet.dto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 public class MoimWalletRequestDto {
 
@@ -35,6 +38,7 @@ public class MoimWalletRequestDto {
         @NotEmpty(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
         private String userId;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -60,6 +64,38 @@ public class MoimWalletRequestDto {
         private Integer amount;
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class WriteArticleRequestDTO {
+        //        @NotBlank
+        //private String userId;
+        @NotNull
+        private Long transactionId;
+        @Nullable
+        private byte[] image;
+
+        @NotBlank
+        private String title;
+        @NotBlank
+        private String content;
+
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class DeleteRequestDTO {
+        @NotNull
+        private Long requestId;
+    }
+//    public static class DeleteArticleRequestDTO{
+//        @NotNull
+//        private Long ArticleId;
+//    }
 
 
 }
