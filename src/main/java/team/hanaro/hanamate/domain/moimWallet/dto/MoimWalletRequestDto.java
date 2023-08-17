@@ -45,7 +45,7 @@ public class MoimWalletRequestDto {
     @Builder
     @ToString
     public static class AccountBalance {
-        @NotBlank
+        @NotNull
         private Long memberId;
     }
 
@@ -55,12 +55,12 @@ public class MoimWalletRequestDto {
     @Builder
     @ToString
     public static class RequestAmount {
-        @NotBlank
+        @NotNull
         private Long memberId;
 
-        @NotBlank
+        @NotNull
         private Long walletId;
-        @NotBlank
+        @NotNull
         private Integer amount;
     }
 
