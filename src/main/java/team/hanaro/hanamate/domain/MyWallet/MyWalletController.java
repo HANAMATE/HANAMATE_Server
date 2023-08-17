@@ -27,7 +27,7 @@ public class MyWalletController {
     }
 
     @Operation(summary = "지갑 잔액 조회", description = "내 지갑 잔액 가져오기", tags = {"내 지갑"})
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<?> myWallet(@Validated @RequestBody RequestDto.User user, Errors errors) {
         // validation check
         if (errors.hasErrors()) {
@@ -37,7 +37,7 @@ public class MyWalletController {
     }
 
     @Operation(summary = "거래내역 조회", description = "내 지갑 거래내역 가져오기", tags = {"내 지갑"})
-    @GetMapping("/transactions")
+    @PostMapping("/transactions")
     public ResponseEntity<?> myWalletTransactions(@Validated @RequestBody RequestDto.User user, Errors errors) {
         // validation check
         if (errors.hasErrors()) {
