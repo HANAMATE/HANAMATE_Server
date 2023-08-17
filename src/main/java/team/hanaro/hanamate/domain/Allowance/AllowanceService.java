@@ -211,16 +211,7 @@ public class AllowanceService {
             }
 
             walletService.transfer(parentWallet, childWallet, request.get().getAllowanceAmount(), "용돈 조르기 출금", "용돈 조르기 입금");
-
-//            // 2-1. 아이 지갑 +
-//            childWallet.setBalance(childWallet.getBalance() + request.get().getAllowanceAmount());
-//            myWalletRepository.save(childWallet);
-//            // 2-2. 부모 지갑 -
-//            parentWallet.setBalance(parentWallet.getBalance() - request.get().getAllowanceAmount());
-//            myWalletRepository.save(parentWallet);
-//            // 2-3. Transaction 작성
-//            makeTransaction(parent.get(), child.get(), request.get().getAllowanceAmount());
-            // 2-4. request 변경
+            
             request.get().setAskAllowance(approve.getAskAllowance());
             requestsRepository.save(request.get());
 
