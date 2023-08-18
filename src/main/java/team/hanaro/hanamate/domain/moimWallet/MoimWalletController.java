@@ -27,16 +27,7 @@ public class MoimWalletController {
     public ResponseEntity<?> HealthyCheck() {
         return response.success("moimWallet is healthy");
     }
-    @Operation(summary = "지갑 잔액 조회", description = "내 지갑 잔액 가져오기", tags = {"내 지갑"})
-
-    @PostMapping("/moims")
-    public ResponseEntity<?> myMoimWallet(@Validated @RequestBody MoimWalletRequestDto.findAllMoimWalletDTO moimWallet, Errors errors) {
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
-        return moimWalletService.getMoimWalletByLoginId(moimWallet);
-    }
+    @Operation(summary = "내 모임통장 만들기", description = "내 모임통장 만들기", tags = {"모임통장"})
     @PostMapping("/moim/create")
     public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet, Errors errors){
         // validation check
@@ -44,6 +35,23 @@ public class MoimWalletController {
             return response.invalidFields(Helper.refineErrors(errors));
         }
         return moimWalletService.createMoimWallet(moimWallet);
+    }
+
+    @GetMapping("/moim/{id}")
+    @Operation(summary = "모임통장 내용 가져오기", description = "지정한 모임통장의 세부내역(거래내역, 글, 댓글) 등을 모두 가져옵니다.)", tags = {"모임통장"})
+    public ResponseEntity<?> getMoimWallet( @Validated @PathVariable("id")Long id) {
+        return moimWalletService.getMoimWallet(id);
+    }
+
+
+    @Operation(summary = "내 모임통장 전부 가져오기", description = "내 모임통장 전부 가져오기", tags = {"모임통장"})
+    @PostMapping("/moims")
+    public ResponseEntity<?> myMoimWallet(@Validated @RequestBody MoimWalletRequestDto.findAllMoimWalletDTO moimWallet, Errors errors) {
+        // validation check
+        if (errors.hasErrors()) {
+            return response.invalidFields(Helper.refineErrors(errors));
+        }
+        return moimWalletService.getMoimWalletListByLoginId(moimWallet);
     }
     @DeleteMapping("/moim")
     public ResponseEntity<?> deleteMoimWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {

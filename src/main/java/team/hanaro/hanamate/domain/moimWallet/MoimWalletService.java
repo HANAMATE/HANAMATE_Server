@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class MoimWalletService {
     private final ArticleRepository articleRepository;
     private final Response response;
 
-    public ResponseEntity<?> getMoimWalletByLoginId(MoimWalletRequestDto.findAllMoimWalletDTO moimWalletDto) {
+    public ResponseEntity<?> getMoimWalletListByLoginId(MoimWalletRequestDto.findAllMoimWalletDTO moimWalletDto) {
         Optional<User> byLoginId = usersRepository.findByLoginId(moimWalletDto.getUserId());
         if (byLoginId.isEmpty()) {
             return response.fail("해당하는 유저 아이디가 없습니다.", HttpStatus.BAD_REQUEST);
@@ -85,17 +86,46 @@ public class MoimWalletService {
         return response.success(savedMoimWalletAndUser, "모임통장 개설에 성공했습니다.", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> deleteMoimWallet(MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO) {
-        Optional<MoimWallet> savedMoimwallet = moimWalletRepository.findById(deleteRequestDTO.getRequestId());
-        if (savedMoimwallet.isEmpty()) {
-            return response.fail("삭제 실패 : 잘못된 모임통장 ID 입니다.", HttpStatus.BAD_REQUEST);
+    //모임통장 내역 가져오기(모임통장 번호, 모임통장 이름, 모임통장 목표 금액 ,트랜잭션, 글, 댓글 3개)
+    public ResponseEntity<?> getMoimWallet(Long moimWalletId) {
+        Optional<MoimWallet> savedMoimWallet = moimWalletRepository.findById(moimWalletId);
+        if (savedMoimWallet.isEmpty()) {
+            return response.fail("없는 모임통장 ID 입니다.", HttpStatus.BAD_REQUEST);
+        } else {
+            //2-1. 모임통장의 트랜잭션들을 모두 가져온다.
+            List<Transactions> transactions = savedMoimWallet.get().getTransactions();
+            //2-2. 모임통장 트랜잭션들을 Response DTO에 모두 담아준다.
+            List<MoimWalletResponseDto.MoimWalletTransactionsDTO> transactionDTOList = transactions.stream()
+                    .map(transaction -> {
+                        MoimWalletResponseDto.MoimWalletTransactionsDTO moimTransactionResponseDTO = new MoimWalletResponseDto.MoimWalletTransactionsDTO(transaction);
+                        Optional<Article> optionalArticle = Optional.ofNullable(transaction.getArticle());
+                        optionalArticle.map(article -> {
+                            MoimWalletResponseDto.ArticleResponseDTO dto = new MoimWalletResponseDto.ArticleResponseDTO(article);
+                            List<MoimWalletResponseDto.CommentResponseDTO> commentResponseDTOList = article.getComments()
+                                    .stream()
+                                    .map(MoimWalletResponseDto.CommentResponseDTO::new)
+                                    .collect(Collectors.toList());
+                            dto.setCommentList(commentResponseDTOList);
+                            return dto;
+                        }).ifPresent(moimTransactionResponseDTO::setArticle);
+                        return moimTransactionResponseDTO;
+                    }).collect(Collectors.toList());
+            MoimWalletResponseDto.MoimWalletDTO moimWalletDTO = new MoimWalletResponseDto.MoimWalletDTO(savedMoimWallet.get());
+            moimWalletDTO.setTransactionList(transactionDTOList);
+            return response.success(moimWalletDTO, "성공", HttpStatus.OK);
         }
-        else{
-            moimWalletRepository.delete(savedMoimwallet.get());
+    }
+
+    public ResponseEntity<?> deleteMoimWallet(MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO) {
+        Optional<MoimWallet> savedMoimWallet = moimWalletRepository.findById(deleteRequestDTO.getRequestId());
+        if (savedMoimWallet.isEmpty()) {
+            Comment comment = new Comment();
+            return response.fail("삭제 실패 : 잘못된 모임통장 ID 입니다.", HttpStatus.BAD_REQUEST);
+        } else {
+            moimWalletRepository.delete(savedMoimWallet.get());
             if (walletRepository.findById(deleteRequestDTO.getRequestId()).isEmpty()) {
                 return response.success(deleteRequestDTO.getRequestId() + "번 통장이 성공적으로 삭제되었습니다.");
-            }
-            else{
+            } else {
                 return response.fail("삭제에 실패 했습니다.", HttpStatus.BAD_REQUEST);
             }
         }
@@ -121,7 +151,7 @@ public class MoimWalletService {
                     .transaction(savedTransaction.get()).build();
             articleRepository.save(article);
             articleResponseDTO = new MoimWalletResponseDto.ArticleResponseDTO(article);
-            return response.success(articleResponseDTO,"성공적으로 글이 작성되었습니다.",HttpStatus.OK);
+            return response.success(articleResponseDTO, "성공적으로 글이 작성되었습니다.", HttpStatus.OK);
         } else {
             //존재하면 수정
             Article savedArticle = savedTransaction.get().getArticle();
@@ -130,31 +160,28 @@ public class MoimWalletService {
             savedArticle.setImageId(articleDTO.getImage());
             articleRepository.save(savedArticle);
             articleResponseDTO = new MoimWalletResponseDto.ArticleResponseDTO(savedArticle);
-            List<MoimWalletResponseDto.ArticleResponseDTO.CommentDTO> commentDTOList = new ArrayList<>();
+            List<MoimWalletResponseDto.CommentResponseDTO> commentDTOList = new ArrayList<>();
             for (Comment comment : savedArticle.getComments()) {
-                MoimWalletResponseDto.ArticleResponseDTO.CommentDTO temp = new MoimWalletResponseDto.ArticleResponseDTO.CommentDTO(comment);
+                MoimWalletResponseDto.CommentResponseDTO temp = new MoimWalletResponseDto.CommentResponseDTO(comment);
                 commentDTOList.add(temp);
             }
-            articleResponseDTO.setComments(commentDTOList);
-            return response.success(articleResponseDTO,"글이 수정되었습니다.",HttpStatus.OK);
+            articleResponseDTO.setCommentList(commentDTOList);
+            return response.success(articleResponseDTO, "글이 수정되었습니다.", HttpStatus.OK);
         }
         //2. 받아온 작성글(Article)을 DTO에서 새 엔티티로 반환
     }
-
 
 
     public ResponseEntity<?> deleteArticle(MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO) {
         Optional<Article> savedArticle = articleRepository.findById(deleteRequestDTO.getRequestId());
         if (savedArticle.isEmpty()) {
             return response.fail("존재하지 않는 글입니다.", HttpStatus.BAD_REQUEST);
-        }
-        else{
+        } else {
             articleRepository.delete(savedArticle.get());
             articleRepository.flush();
             if (articleRepository.findById(deleteRequestDTO.getRequestId()).isEmpty()) {
                 return response.success(deleteRequestDTO.getRequestId() + "글이 성공적으로 삭제되었습니다.");
-            }
-            else{
+            } else {
                 return response.fail("글 삭제에 실패 했습니다.", HttpStatus.BAD_REQUEST);
             }
         }
