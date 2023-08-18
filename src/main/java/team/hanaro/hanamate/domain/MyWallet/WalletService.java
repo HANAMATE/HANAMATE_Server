@@ -229,7 +229,12 @@ public class WalletService {
     }
 
     @Transactional
-    public void transfer(MyWallet sendWallet, MyWallet receiveWallet, int amount, String senderComment, String receiveComment) {
+    public boolean transfer(MyWallet sendWallet, MyWallet receiveWallet, int amount, String senderComment, String receiveComment) {
+        if(sendWallet.getBalance() < amount){
+            System.out.println("보내는 사람의 지갑 잔액이 부족합니다.");
+            return false;
+        }
+
         // 1. sendWallet 잔액 차감
         sendWallet.setBalance(sendWallet.getBalance() - amount);
         walletRepository.save(sendWallet);
@@ -243,6 +248,29 @@ public class WalletService {
 
         transactionRepository.save(sendTransaction);
         transactionRepository.save(receiveTransaction);
+
+        return true;
+    }
+
+    public ResponseEntity<?> transfer(RequestDto.Transfer transfer) {
+        Optional<MyWallet> sendWallet = walletRepository.findById(transfer.getSendWalletId());
+        Optional<MyWallet> receiveWallet = walletRepository.findById(transfer.getReceiveWalletId());
+
+        if(sendWallet.isEmpty()){
+            return response.fail("보내는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if(receiveWallet.isEmpty()){
+            return response.fail("받는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean result = transfer(sendWallet.get(), receiveWallet.get(), transfer.getAmount(), "출금", "입금");
+
+        if(!result){
+            return response.fail("보내는 사람의 지갑 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        return response.success("이체를 성공했습니다.");
     }
 
     private static Transactions makeTransaction(MyWallet sendWallet, MyWallet receiveWallet, int amount, String type) {
