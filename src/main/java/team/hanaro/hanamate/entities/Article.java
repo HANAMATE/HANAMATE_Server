@@ -1,11 +1,13 @@
 package team.hanaro.hanamate.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "article")
@@ -30,6 +32,7 @@ public class Article extends BaseTime {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transaction_id")
+    @JsonIgnore
     private Transactions transaction;
 
     @Builder.Default
