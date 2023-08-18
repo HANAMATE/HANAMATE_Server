@@ -11,6 +11,8 @@ import java.util.Collections;
 @Component
 public class UserResponse {
 
+
+
     @Getter
     @Builder
     private static class Header {
@@ -55,6 +57,8 @@ public class UserResponse {
                 .headers(headers)
                 .body(body);
     }
+
+
 
 
 }

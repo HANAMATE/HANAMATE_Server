@@ -29,10 +29,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/users/sign-up", "/users/login", "/users/authority",
-                        "/users/reissue", "/users/logout",
-                        "/loan/apply").permitAll()
+                        "/users/reissue", "/users/logout", "/users/init"
+                ).permitAll()
+                .antMatchers("/loan/apply").authenticated()
 //                .antMatchers("/api/v1/users/userTest").hasRole("USER")
-//                .antMatchers("/api/v1/users/adminTest").hasRole("ADMIN")
+//                .antMatchers("/loan/apply").hasRole("ADMIN")
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter를 UsernamePasswordAuthentictaionFilter 전에 적용시킨다.

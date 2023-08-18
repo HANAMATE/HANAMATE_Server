@@ -63,6 +63,11 @@ public class UserRequestDto {
     public static class Reissue {
 
     }
+    @Getter
+    @Setter
+    public static class Init {
+
+    }
 
     @Getter
     @Setter
