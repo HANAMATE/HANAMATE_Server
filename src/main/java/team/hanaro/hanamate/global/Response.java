@@ -25,7 +25,7 @@ public class Response {
         private Object error;
     }
 
-    public ResponseEntity<?> success(Object data, String msg, HttpStatus status) {
+    public static ResponseEntity<?> success(Object data, String msg, HttpStatus status) {
         Body body = Body.builder()
                 .state(status.value())
                 .data(data)

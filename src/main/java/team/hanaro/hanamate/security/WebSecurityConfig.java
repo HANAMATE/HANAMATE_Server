@@ -29,9 +29,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/users/sign-up", "/users/login", "/users/authority",
-                        "/users/reissue", "/users/logout"
+                        "/users/reissue", "/users/logout", "/users/init"
                 ).permitAll()
-                .antMatchers("loan/apply").authenticated()
+                .antMatchers("/loan/apply").authenticated()
 //                .antMatchers("/api/v1/users/userTest").hasRole("USER")
 //                .antMatchers("/loan/apply").hasRole("ADMIN")
                 .and()

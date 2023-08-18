@@ -181,4 +181,22 @@ public class UsersService {
 
         return response.success();
     }
+
+
+    public ResponseEntity<?> init(HttpServletRequest request) {
+        //앞에서 토큰 처리를 해주기때문에 WebSecurityConfig에서는 permitAll로 둬야함.
+        // 토큰 넣을때도 Bearer는 없애고 들어가야함.
+        String accessToken = request.getHeader("Authorization");
+        if (!jwtTokenProvider.validateToken(accessToken)) {
+            //유효하지 않은 토큰
+            return response.fail("유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST);
+        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        String userId = authentication.getName(); // User Id를 가져옵니다
+
+        ResponseEntity<?> responseEntity = Response.success(userId, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
+
+        return responseEntity;
+
+    }
 }
