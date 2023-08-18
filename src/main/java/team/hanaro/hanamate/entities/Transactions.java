@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 @Table(name = "transactions")
 @Getter
 @Setter
-//@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

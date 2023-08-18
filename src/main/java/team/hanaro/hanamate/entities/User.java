@@ -25,20 +25,20 @@ public class User extends BaseTime implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long idx;
-    
+
     //xxToOne 관계는 모두 FetchType.LAZY를 걸어줘야 함.
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "my_wallet_id")
     private MyWallet myWallet;
 
     @Builder.Default
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MoimWalletAndUser> moimWalletAndUsers = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     private Account account;
 
-    @Column(name="login_id",unique = true)
+    @Column(name = "login_id", unique = true)
     private String loginId;
 
     @Column
@@ -54,9 +54,9 @@ public class User extends BaseTime implements UserDetails {
     @Column
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private UserType userType;
-
 
 
     //SpringSecurity 관련

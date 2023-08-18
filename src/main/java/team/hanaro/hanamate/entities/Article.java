@@ -15,14 +15,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Article {
+public class Article extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "article_id")
     private Long id;
 
-    private Long walletId;
-    private Long imageId;
+    @Builder.Default
+    private byte[] imageId = new byte[]{};
+    private String title;
+    private String content;
+    @Builder.Default
+    private Long likes = 0L; //TODO: likes 관련 요구사항 다시 확인하기
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transaction_id")
@@ -42,8 +46,5 @@ public class Article {
 //        this.comments.add(comment);
 //        comment.setArticle(this);
 //    }
-//    private String title;
-//    private String content;
-//    private Timestamp postedDate;
-//    private Long likes; //TODO: likes 관련 요구사항 다시 확인하기
+
 }

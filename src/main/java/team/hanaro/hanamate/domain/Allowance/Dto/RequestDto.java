@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -14,18 +15,18 @@ public class RequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class User {
-        @NotNull(message = "유저 아이디가 비었습니다.")
-        private Long userIdx;
+        @NotBlank(message = "유저 아이디가 비었습니다.")
+        private String userId;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
-        @NotNull(message = "아이 아이디가 비었습니다.")
-        private Long childIdx;
-        @NotNull(message = "부모 아이디가 비었습니다.") // ansik: 2023/08/11 parentId 추가
-        private Long parentIdx;
+        @NotBlank(message = "아이 아이디가 비었습니다.")
+        private String childId;
+        @NotBlank(message = "부모 아이디가 비었습니다.") // ansik: 2023/08/11 parentId 추가
+        private String parentId;
         @Positive(message = "요청 금액은 1이상의 양수 값을 입력해주세요.")
         private Integer allowanceAmount;
         private String requestDescription;
@@ -45,10 +46,10 @@ public class RequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Periodic {
-        @NotNull(message = "부모 Id를 입력해주세요.")
-        private Long parentIdx;
-        @NotNull(message = "아이 Id를 입력해주세요.")
-        private Long childIdx;
+        @NotBlank(message = "부모 Id를 입력해주세요.")
+        private String parentId;
+        @NotBlank(message = "아이 Id를 입력해주세요.")
+        private String childId;
         @Positive(message = "요청 금액은 1이상의 양수 값을 입력해주세요.")
         private Integer allowanceAmount;
 
