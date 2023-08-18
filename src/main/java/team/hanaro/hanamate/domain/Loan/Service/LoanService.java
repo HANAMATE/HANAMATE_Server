@@ -10,6 +10,7 @@ import team.hanaro.hanamate.domain.Loan.Dto.LoanRequestDto;
 import team.hanaro.hanamate.domain.Loan.Repository.LoanRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.User.Service.CustomUserDetailsService;
+import team.hanaro.hanamate.entities.Child;
 import team.hanaro.hanamate.entities.Loans;
 import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
@@ -33,9 +34,9 @@ public class LoanService {
         String userId = authentication.getName(); // Assuming the access token is stored in the "Authorization" header
         log.info("userId={}", userId); //test 회원 아이디를 가져오게 됨.
         User now_user = usersRepository.findByLoginId(userId).get();
-
+        // TODO: 2023/08/19 now_user가 어떤 클래스를 사용할지 정해야 합니다.
         Loans loans=Loans.builder()
-                .children(now_user)
+                .child(now_user)
                 .loanName(apply.getLoanName())
                 .loanAmount(Integer.valueOf(apply.getLoanAmount()))
                 .interestRate(1)
