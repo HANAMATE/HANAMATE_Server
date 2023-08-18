@@ -28,5 +28,4 @@ public class Comment extends BaseTime{
     private User user;
 
     private String content;
-    private Timestamp postedDate;
 }
