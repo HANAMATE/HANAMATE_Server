@@ -76,7 +76,6 @@ public class User extends BaseTime implements UserDetails {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public String getUsername() {
         return loginId;

@@ -8,11 +8,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanRequestDto;
 import team.hanaro.hanamate.domain.Loan.Repository.LoanRepository;
+import team.hanaro.hanamate.domain.User.Repository.ChildRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.User.Service.CustomUserDetailsService;
 import team.hanaro.hanamate.entities.Child;
 import team.hanaro.hanamate.entities.Loans;
-import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
@@ -27,13 +27,14 @@ public class LoanService {
     private final CustomUserDetailsService customUserDetailsService;
 
     private final UsersRepository usersRepository;
+    private final ChildRepository childRepository;
 
     public ResponseEntity<?> apply(LoanRequestDto.Apply apply, Authentication authentication) {
 
         log.info("대출 서비스 들어옴");
         String userId = authentication.getName(); // Assuming the access token is stored in the "Authorization" header
         log.info("userId={}", userId); //test 회원 아이디를 가져오게 됨.
-        User now_user = usersRepository.findByLoginId(userId).get();
+        Child now_user = childRepository.findByLoginId(userId).get();
         // TODO: 2023/08/19 now_user가 어떤 클래스를 사용할지 정해야 합니다.
         Loans loans=Loans.builder()
                 .child(now_user)
