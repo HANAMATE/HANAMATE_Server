@@ -116,7 +116,7 @@ public class ParentAndChildService {
         List<ParentAndChild> allParentByChildLoginId = parentAndChildRepository.findAllParentByChildLoginId(requestDTO.getUserId());
         List<UserResponseDto.findMyListDTO> parentDTOList = getUserDTOListByParentAndChild(
                 allParentByChildLoginId, ParentAndChild::getParent);
-        return response.success(parentDTOList, "성공", HttpStatus.OK);
+        return response.success(parentDTOList, "요청 성공", HttpStatus.OK);
     }
 
     @Transactional
