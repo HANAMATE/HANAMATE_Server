@@ -19,6 +19,7 @@ public class Child extends User{
     @OneToMany(mappedBy = "childrenId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParentAndChild> myParentList = new ArrayList<>();
 
+
     @Builder.Default
     @OneToMany(mappedBy = "child", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Loans> LoansRequestList = new ArrayList<>();
