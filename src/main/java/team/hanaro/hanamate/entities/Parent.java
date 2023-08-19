@@ -18,4 +18,8 @@ public class Parent extends User {
     @Builder.Default
     @OneToMany(mappedBy = "parentId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParentAndChild> myChildList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Loans> LoansRequestList = new ArrayList<>();
 }
