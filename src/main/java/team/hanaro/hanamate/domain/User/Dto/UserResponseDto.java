@@ -23,7 +23,7 @@ public class UserResponseDto {
     @AllArgsConstructor
     public static class UserInfo {
         private String userId;
-        private UserType userType;
+        private String userType;
 
         private String userName;
         private Long myWalletId;

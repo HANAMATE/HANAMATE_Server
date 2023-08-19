@@ -1,10 +1,10 @@
 package team.hanaro.hanamate.entities;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import team.hanaro.hanamate.domain.User.UserType;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,13 +12,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter //TEST 용도 Setter 사용
 @Entity
 @Table(name = "Users")
+@DiscriminatorColumn(name = "userType")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class User extends BaseTime implements UserDetails {
 
     @Id
@@ -54,9 +56,10 @@ public class User extends BaseTime implements UserDetails {
     @Column
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column
-    private UserType userType;
+    @Transient
+    public String getUserType(){
+        return this.getClass().getAnnotation(DiscriminatorValue.class).value();
+    }
 
 
     //SpringSecurity 관련
@@ -64,6 +67,7 @@ public class User extends BaseTime implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -18,12 +18,15 @@ import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
 import team.hanaro.hanamate.domain.User.Dto.UserResponse;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+import team.hanaro.hanamate.entities.Child;
+import team.hanaro.hanamate.entities.Parent;
 import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 import team.hanaro.hanamate.security.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -48,21 +51,46 @@ public class UsersService {
         }
 
         //DTO(Signup)을 이용하여 User(Entity)로 반환하는 Builder (DTO-> Entity)
-        User user = User.builder()
-                .name(signUp.getName())
-                .loginId(signUp.getId())
-                .password(passwordEncoder.encode(signUp.getPassword()))
-                .identification(signUp.getIdentification())
-                .phoneNumber(signUp.getPhoneNumber())
-                .userType(signUp.getUserType())
-                .roles(Collections.singletonList(Authority.ROLE_USER.name())) //SpringSecurity 관련
-                .build();
 
-        walletService.makeMyWallet(user);
-        usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
+        if ("Child".equals(signUp.getUserType().toString())) {
+            Child user =makeUserByType(Child.class, signUp);
+            walletService.makeMyWallet(user);
+            usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
+        }else {
+            Parent user = makeUserByType(Parent.class, signUp);
+            walletService.makeMyWallet(user);
+            usersRepository.save(user);
+            Parent byId = (Parent) usersRepository.getById(1L);
+        }
         return response.success("회원가입에 성공했습니다.");
     }
 
+    public <T extends User> T makeUserByType(Class<T> tClass, UserRequestDto.SignUp signUp){
+        T user;
+        try {
+            user = tClass.getDeclaredConstructor().newInstance();
+            user.setName(signUp.getName());
+            user.setLoginId(signUp.getId());
+            user.setPassword(passwordEncoder.encode(signUp.getPassword()));
+            user.setIdentification(signUp.getIdentification());
+            user.setPhoneNumber(signUp.getPhoneNumber());
+            user.setRoles(Collections.singletonList(Authority.ROLE_USER.name()));
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return user;
+//        T user;
+//        te
+//        T user = (T) T.builder()
+//                .name(signUp.getName())
+//                .loginId(signUp.getId())
+//                .password(passwordEncoder.encode(signUp.getPassword()))
+//                .identification(signUp.getIdentification())
+//                .phoneNumber(signUp.getPhoneNumber())
+//                .roles(Collections.singletonList(Authority.ROLE_USER.name())) //SpringSecurity 관련
+//                .build();
+    }
     public ResponseEntity<?> login(UserRequestDto.Login login) {
 
         //로그인 실패
