@@ -3,6 +3,8 @@ package team.hanaro.hanamate.domain.Loan.Dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 public class LoanResponseDto {
     @Getter
     @Setter
@@ -11,15 +13,21 @@ public class LoanResponseDto {
         private Integer interestRate;
         private String paymentMethod;
 
+        private Integer canAmount_3month;
+
+        private Integer canAmount_6month;
+
+        private Integer canAmount_12month;
     }
 
-//    @Builder
-//    @Getter
-//    @AllArgsConstructor
-//    public static class TokenInfo {
-//        private String grantType;
-//        private String accessToken;
-//        private String refreshToken;
-//        private Long refreshTokenExpirationTime;
-//    }
+    @Getter
+    @Setter
+    public static class CalculateResult{
+        private ArrayList<Integer> loanAmountList;
+        private Integer total_interestRate;
+        private Integer total_loanAmount;
+
+
+    }
+
 }

@@ -27,7 +27,6 @@ public class LoanController {
 
         return loanService.initLoanInfo();
     }
-
     @PostMapping("/apply")
     public ResponseEntity<?> apply(@Validated @RequestBody LoanRequestDto.Apply apply, Errors errors, Authentication authentication) {
 //        log.info("대출 컨트롤러 들어옴");
@@ -38,6 +37,15 @@ public class LoanController {
         }
         return loanService.apply(apply, authentication);
     }
+
+    @PostMapping("/calculate")
+    //TODO: Authentication 추가하기
+    public ResponseEntity<?> calculate( @RequestBody LoanRequestDto.Calculate calculate){
+        return loanService.calculate(calculate);
+
+    }
+
+
 
 
 //    @GetMapping("/loan/apply")
