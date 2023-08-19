@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanRequestDto;
 import team.hanaro.hanamate.domain.Loan.Service.LoanService;
 import team.hanaro.hanamate.domain.User.Helper;
@@ -23,6 +20,10 @@ import team.hanaro.hanamate.global.Response;
 public class LoanController {
     private final LoanService loanService;
     private final Response response;
+
+//    //고정이자, 균등상환방식 사용자에게 정보 미리 전달
+//    @GetMapping("/apply")
+//    public
 
     @PostMapping("/apply")
     public ResponseEntity<?> apply(@Validated @RequestBody LoanRequestDto.Apply apply, Errors errors, Authentication authentication) {

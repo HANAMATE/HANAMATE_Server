@@ -43,7 +43,7 @@ public class LoanService {
 //                .parent(to_parent) //TODO : 부모와 아이가 매핑되어있는 DB에서 부모 id 가져오기
 //                .startDate(apply.getStartDate()) //TODO: 부모가 승인해줘야 생김.
 //                .endDate(apply.getEndDate())
-//                .duration(apply.getDuration())
+                .duration(apply.getDuration())
                 .loanMessage(apply.getLoanMessage())
                 .build();
 

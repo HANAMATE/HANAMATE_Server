@@ -35,8 +35,9 @@ public class Loans {
     private Integer balance; //잔액
     private Integer repaymentAmount; //상환금액 TODO: 어떤 컬럼인지 확인
 
-    /*private String paymentMethod;*/ // TODO: 원리금균등상환만 하는데 컬럼 따로 필요한지 확인
+    private String paymentMethod; // TODO: 원리금균등상환만 하는데 컬럼 따로 필요한지 확인
     private Integer interestRate;// 고정 이자 /* 5%면 5 */
+    private Integer allowanceRate; //총 상환 이자 금액
     private Integer delinquentAmount; /* 연체 금액 */
 //    private Integer delinquentCount; //연체횟수 TODO: ? 연체 횟수인지 확인 => 정기 용돈에서 상환되어 연체될 상황 X
     private Integer sequence; /* 상환 회차 */
