@@ -1,10 +1,17 @@
 package team.hanaro.hanamate.domain.Loan.Dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 public class LoanResponseDto {
+    @Getter
+    @Setter
+//    @AllArgsConstructor
+    public static class initInfo {
+        private Integer interestRate;
+        private String paymentMethod;
+
+    }
 
 //    @Builder
 //    @Getter

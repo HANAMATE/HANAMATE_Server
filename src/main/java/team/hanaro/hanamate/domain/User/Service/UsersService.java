@@ -72,7 +72,7 @@ public class UsersService {
             user.setName(signUp.getName());
             user.setLoginId(signUp.getId());
             user.setPassword(passwordEncoder.encode(signUp.getPassword()));
-            user.setIdentification(signUp.getIdentification());
+            user.setRnn(signUp.getRnn());
             user.setPhoneNumber(signUp.getPhoneNumber());
             user.setRoles(Collections.singletonList(Authority.ROLE_USER.name()));
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {

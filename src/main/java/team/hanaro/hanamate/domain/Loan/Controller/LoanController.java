@@ -21,14 +21,17 @@ public class LoanController {
     private final LoanService loanService;
     private final Response response;
 
-//    //고정이자, 균등상환방식 사용자에게 정보 미리 전달
-//    @GetMapping("/apply")
-//    public
+    //고정이자, 균등상환방식 사용자에게 정보 미리 전달
+    @GetMapping("/apply")
+    public ResponseEntity<?> initLoanInfo(){
+
+        return loanService.initLoanInfo();
+    }
 
     @PostMapping("/apply")
     public ResponseEntity<?> apply(@Validated @RequestBody LoanRequestDto.Apply apply, Errors errors, Authentication authentication) {
-        log.info("대출 컨트롤러 들어옴");
-        log.info("authentication={}", authentication);
+//        log.info("대출 컨트롤러 들어옴");
+//        log.info("authentication={}", authentication);
         // validation check
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));

@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
-import java.sql.Time;
-import java.sql.Timestamp;
 
 
 public class LoanRequestDto {
@@ -32,6 +30,8 @@ public class LoanRequestDto {
 //
 //        private Timestamp startDate; //시작 날짜는 부모쪽에서 승인해주면 그떄부터이기 때문에 제거
 //        private Timestamp endDate;
+
+        private String paymentMethod;
 
         private Integer duration; //기한
 

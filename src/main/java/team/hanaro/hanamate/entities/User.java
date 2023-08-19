@@ -49,9 +49,8 @@ public class User extends BaseTime implements UserDetails {
     @Column
     private String name;
 
-    // TODO: 2023/08/09 identification -> rrn 으로 변수명 변경 요청 
     @Column
-    private String identification;
+    private String rnn;
 
     @Column
     private String phoneNumber;
