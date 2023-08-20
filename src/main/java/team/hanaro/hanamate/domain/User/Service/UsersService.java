@@ -215,6 +215,6 @@ public class UsersService {
         ResponseEntity<?> responseEntity = response.success(userId, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
 
         return responseEntity;
-
     }
+
 }

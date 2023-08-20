@@ -24,8 +24,12 @@ public class LoanController {
     //고정이자, 균등상환방식 사용자에게 정보 미리 전달
     @GetMapping("/applyForm")
     public ResponseEntity<?> initLoanInfo(){
-
         return loanService.initLoanInfo();
+    }
+
+    @PostMapping("/calculate")
+    public ResponseEntity<?> calculate( @RequestBody LoanRequestDto.Calculate calculate, Authentication authentication){
+        return loanService.calculate(calculate, authentication);
     }
     @PostMapping("/apply")
     public ResponseEntity<?> apply(@Validated @RequestBody LoanRequestDto.Apply apply, Errors errors, Authentication authentication) {
@@ -38,24 +42,27 @@ public class LoanController {
         return loanService.apply(apply, authentication);
     }
 
-    @PostMapping("/calculate")
-    //TODO: Authentication 추가하기
-    public ResponseEntity<?> calculate( @RequestBody LoanRequestDto.Calculate calculate, Authentication authentication){
-        return loanService.calculate(calculate, authentication);
+
+
+    //부모, 아이 - 대출 신청 정보 보기
+    @GetMapping("/applyInfo")
+    public ResponseEntity<?> applyInfo( Authentication authentication){
+        return loanService.applyInfo(authentication);
 
     }
 
-    //부모, 아이 - 대출 신청 정보 보기
-//    @GetMapping("/applyInfo")
-//    public ResponseEntity<?>
 
+    //대출 승인 - 부모
+    @PostMapping("/approve")
+    public ResponseEntity<?> approve(@Validated @RequestBody LoanRequestDto.Approve approve, Authentication authentication){
+        return loanService.approve(approve, authentication);
+    }
 
-
-
-//    @GetMapping("/loan/apply")
-//    public ResponseEntity<?> apply(@ResponseBody LoanRequestDto.Apply apply, Errors errors){
-//
-//    }
+    //대출 거절 => 삭제 - 부모
+    @PostMapping("/refuse")
+    public ResponseEntity<?> approve(Authentication authentication){
+        return loanService.refuse(authentication);
+    }
 
 
 }

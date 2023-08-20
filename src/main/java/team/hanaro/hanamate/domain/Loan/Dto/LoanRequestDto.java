@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 
@@ -22,10 +23,9 @@ public class LoanRequestDto {
         private Integer interestRate; //고정 이자로 1 들어감
 //        private Boolean valid; // 일단 신청할떄는 null로
         private Boolean completed; //처음 들어갈 때는 0의 값으로
-//        private Timestamp startDate; //시작 날짜는 부모쪽에서 승인해주면 그떄부터이기 때문에 제거
-//        private Timestamp endDate;
+
         private String paymentMethod;
-        private Integer duration; //기한
+//        private Integer duration; //기한
         private String loanMessage;
         private Integer sequence; /* 상환 회차 */
         private Integer total_interestRate;
@@ -46,5 +46,14 @@ public class LoanRequestDto {
         private double balance;
 
     }
+    @Getter
+    @Setter
+    public static class Approve{
+
+        private Integer duration; //기한
+        private Timestamp startDate; //
+        private Timestamp endDate;
+    }
+
 
 }

@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 public class Loans {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

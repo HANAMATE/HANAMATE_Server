@@ -16,13 +16,17 @@ import team.hanaro.hanamate.domain.User.Repository.ChildRepository;
 import team.hanaro.hanamate.domain.User.Repository.ParentRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.User.Service.CustomUserDetailsService;
+import team.hanaro.hanamate.domain.User.Service.UsersService;
 import team.hanaro.hanamate.entities.Child;
 import team.hanaro.hanamate.entities.Loans;
+import team.hanaro.hanamate.entities.Parent;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,43 +44,7 @@ public class LoanService {
     private final MyWalletRepository myWalletRepository;
 
     private final AllowanceService allowanceService;
-
-    public ResponseEntity<?> apply(LoanRequestDto.Apply apply, Authentication authentication) {
-
-        log.info("대출 서비스 들어옴");
-        String userId = authentication.getName(); // Assuming the access token is stored in the "Authorization" header
-        log.info("userId={}", userId); //test 회원 아이디를 가져오게 됨.
-        Child now_user = childRepository.findByLoginId(userId).get();
-
-        Loans loans=Loans.builder()
-                .child(now_user)
-                //부모가 아닌 값이 들어가면 500 오류가 뜸 TODO: 오류 처리해줘야함
-                .parent(now_user.getMyParentList().get(0).getParent())
-                .walletId(now_user.getMyWallet().getId())
-                .loanName(apply.getLoanName())
-                .loanAmount(Integer.valueOf(apply.getLoanAmount()))
-                .duration(apply.getDuration()) //기한은 프론트에서 일단위로 빼서 나올 수 있게
-                .loanMessage(apply.getLoanMessage())
-                .interestRate(1)
-                .paymentMethod("원금균등상환")
-                .completed(false)
-//TODO : 총이자, 총 상환금액, 월별 상환금액(납입원금+이자)  dto에 없으면 추가하기
-                .total_interestRate(apply.getTotal_interestRate())
-                .total_repaymentAmount(apply.getTotal_repaymentAmount())
-                .sequence(apply.getSequence())
-                //승인해주면 history에는 미리 각 월별 들어가는 금액을 넣어주는 식으로 해야될듯..
-//                .startDate(apply.getStartDate()) //TODO: 부모가 승인해줘야 생김.
-//                .endDate(apply.getEndDate())
-//                .duration(apply.getDuration())
-
-                .loanMessage(apply.getLoanMessage())
-                .build();
-
-        loanRepository.save(loans);
-        return response.success("대출 신청이 완료되었습니다.");
-
-    }
-
+    private final UsersService usersService;
 
     public ResponseEntity<?> initLoanInfo() {
         LoanResponseDto.initInfo initInfo = new LoanResponseDto.initInfo();
@@ -89,6 +57,40 @@ public class LoanService {
         ResponseEntity<?> responseEntity= response.success(initInfo,"정상적으로 대출 초기 정보를 가져왔습니다.", HttpStatus.OK);
         return responseEntity;
     }
+
+    public ResponseEntity<?> apply(LoanRequestDto.Apply apply, Authentication authentication) {
+
+        log.info("대출 서비스 들어옴");
+        String userId = authentication.getName();
+        Child now_user = childRepository.findByLoginId(userId).get();
+
+        Loans loans=Loans.builder()
+                .child(now_user)
+                //부모가 아닌 값이 들어가면 500 오류가 뜸 TODO: 오류 처리해줘야함
+                .parent(now_user.getMyParentList().get(0).getParent())
+                .walletId(now_user.getMyWallet().getId())
+                .loanName(apply.getLoanName())
+                .loanAmount(Integer.valueOf(apply.getLoanAmount()))
+                .loanMessage(apply.getLoanMessage())
+                .interestRate(1)
+                .paymentMethod("원금균등상환")
+                .completed(false)
+                .total_interestRate(apply.getTotal_interestRate())
+                .total_repaymentAmount(apply.getTotal_repaymentAmount())
+                .sequence(apply.getSequence())
+                //승인해주면 history에는 미리 각 월별 들어가는 금액을 넣어주는 식으로 해야될듯..
+//                .startDate(apply.getStartDate()) //TODO: 부모가 승인해줘야 생김.
+//                .endDate(apply.getEndDate())
+//                .duration(apply.getDuration())
+                .build();
+
+
+        loanRepository.save(loans);
+
+
+        return response.success("대출 신청이 완료되었습니다.");
+    }
+
 
     public ResponseEntity<?> calculate(LoanRequestDto.Calculate calculate, Authentication authentication) {
 
@@ -135,5 +137,67 @@ public class LoanService {
         return responseEntity;
 
 
+    }
+
+    //부모 - 아이 화면에서 대출 신청 정보 가져오기 (대출에 관련된 부모, 아이만 해당 정보를 가져올 수 있음 아니면 에러남)
+    public ResponseEntity<?> applyInfo(Authentication authentication) {
+        String userId = authentication.getName();
+        User now_user = usersRepository.findByLoginId(userId).get();
+        LoanResponseDto.applyInfo applyInfo = new LoanResponseDto.applyInfo();
+        if(now_user.getUserType().equals("Child")){
+            Child now_child = childRepository.findByLoginId(userId).get();
+            Loans now_loan = loanRepository.findByChild(now_child).get();
+            applyInfo.setLoanName(now_loan.getLoanName());
+            applyInfo.setLoanAmount(now_loan.getLoanAmount());
+            applyInfo.setLoanMessage(now_loan.getLoanMessage());
+        }
+        else{
+            Parent now_parent = parentRepository.findByLoginId(userId).get();
+            Loans now_loan = loanRepository.findByParent(now_parent).get();
+            applyInfo.setLoanName(now_loan.getLoanName());
+            applyInfo.setLoanAmount(now_loan.getLoanAmount());
+            applyInfo.setLoanMessage(now_loan.getLoanMessage());
+        }
+
+        ResponseEntity<?> responseEntity= response.success(applyInfo,"정상적으로 대출 신청 정보를 가져왔습니다.", HttpStatus.OK);
+        return responseEntity;
+
+    }
+
+    public ResponseEntity<?> approve(LoanRequestDto.Approve approve, Authentication authentication) {
+        String userId = authentication.getName();
+        Parent now_parent = parentRepository.findByLoginId(userId).get();
+        Optional<Loans> optionalLoans = loanRepository.findByParent(now_parent);
+
+        if (optionalLoans.isPresent()) {
+            Loans existingLoan = optionalLoans.get();
+
+            //TODO: Setter를 어쩔수 없이 썼는데 이래도 되는건지..
+            existingLoan.setValid(true);
+            existingLoan.setStartDate(approve.getStartDate());
+            existingLoan.setEndDate(approve.getEndDate());
+            existingLoan.setDuration(approve.getDuration());
+            loanRepository.save(existingLoan); // 새로운 객체로 업데이트
+        }
+
+        //TODO 0821 고민
+        //이때 history값을 다 넣어주고 용돈 안내면 false로 하고, 내면 true로 하고, 프론트에서 보여줄때는 true인것만 보여주는 식으로.. 하면 될거 같은데
+        //용돈을 낼때 history값이 들어가게 하는게 로직으로는 맞아서 고민 중
+
+        ResponseEntity<?> responseEntity= response.success(null,"정상적으로 대출을 승인했습니다.", HttpStatus.OK);
+        return responseEntity;
+
+    }
+
+
+    public ResponseEntity<?> refuse(Authentication authentication) {
+        String userId = authentication.getName();
+        Parent now_parent = parentRepository.findByLoginId(userId).get();
+        Long now_loanId = loanRepository.findByParent(now_parent).get().getLoanId();
+
+        loanRepository.deleteById(now_loanId);
+
+        ResponseEntity<?> responseEntity= response.success(null,"정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
+        return responseEntity;
     }
 }

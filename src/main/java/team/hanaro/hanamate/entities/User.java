@@ -33,6 +33,10 @@ public class User extends BaseTime implements UserDetails {
     @JoinColumn(name = "my_wallet_id")
     private MyWallet myWallet;
 
+//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "loan_id")
+//    private Loans loan;
+
     @Builder.Default
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MoimWalletAndUser> moimWalletAndUsers = new ArrayList<>();
