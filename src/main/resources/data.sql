@@ -26,7 +26,9 @@ insert into moim_wallet (target_amount, wallet_id) values (100, 6);
 insert into moim_wallet (target_amount, wallet_id) values (10000, 7);
 insert into moim_wallet (target_amount, wallet_id) values (1000000, 8);
 
-insert into parent_and_child (id ,children_id, parent_id) values (1, 3, 1);
-insert into parent_and_child (id ,children_id, parent_id) values (2, 5, 4);
+insert into parent_and_child (id ,child_idx, parent_idx) values (1, 3, 1);
+insert into parent_and_child (id ,child_idx, parent_idx) values (2, 5, 4);
 
 -- insert into wallets_and_users (moim_wallet_id, user_id) values (1, 1);
+
+insert into allowances (allowance_id, allowance_amount, children_idx, parent_idx, valid) values (1, 20000, 3, 1, true);

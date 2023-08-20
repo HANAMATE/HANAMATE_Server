@@ -24,6 +24,7 @@ public class LoanResponseDto {
     @Setter
     public static class CalculateResult{
         private ArrayList<Integer> loanAmountList;
+        private ArrayList<Integer> repaymentList;
         private Integer total_interestRate;
         private Integer total_loanAmount;
 
