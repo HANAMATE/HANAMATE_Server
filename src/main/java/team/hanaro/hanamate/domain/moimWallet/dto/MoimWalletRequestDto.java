@@ -3,10 +3,7 @@ package team.hanaro.hanamate.domain.moimWallet.dto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 
 public class MoimWalletRequestDto {
 
@@ -25,6 +22,7 @@ public class MoimWalletRequestDto {
 
         @Nullable
         @PositiveOrZero(message = "0 이상 양수값을 입력해야 합니다.")
+        @Max(value = Integer.MAX_VALUE, message = "숫자가 너무 큽니다! 21억 이하를 입력하세요.")
         private Integer targetAmount;
     }
 
@@ -33,10 +31,21 @@ public class MoimWalletRequestDto {
     @AllArgsConstructor
     @Builder
     @ToString
-    public static class findAllMoimWalletDTO {
+    public static class UpdateMoimWalletInfoRequestDTO {
         //TODO: 입력값 Validation Check
         @NotBlank(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
         private String userId;
+
+        @NotNull(message = "모임통장 번호가 입력되어야 합니다.")
+        private Long moimWalletId;
+
+        @NotBlank(message = "모임통장 이름이 비어있거나 공백문자이면 안됩니다.")
+        private String walletName;
+
+        @Nullable
+        @PositiveOrZero(message = "0 이상 양수값을 입력해야 합니다.")
+        @Max(value = Integer.MAX_VALUE, message = "숫자가 너무 큽니다! 21억 이하를 입력하세요.")
+        private Integer targetAmount;
     }
 
     @Getter

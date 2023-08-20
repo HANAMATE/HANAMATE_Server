@@ -51,10 +51,15 @@ public class MoimWalletController {
         }
         return moimWalletService.getMoimWalletListByLoginId(moimWallet);
     }
+    @Operation(summary = "모임 통장 정보 수정하기", description = "모임 통장 정보 수정하기", tags = {"모임통장"})
+    @PutMapping("/moim")
+    public ResponseEntity<?> updateMoimWalletInfo(@Validated @RequestBody MoimWalletRequestDto.UpdateMoimWalletInfoRequestDTO updateRequestDTO) {
+        return moimWalletService.updateMoimWalletInfo(updateRequestDTO);
+    }
+
     @Operation(summary = "모임 통장 삭제하기", description = "모임통장 삭제하기", tags = {"모임통장"})
     @DeleteMapping("/moim")
     public ResponseEntity<?> deleteMoimWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
-
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
