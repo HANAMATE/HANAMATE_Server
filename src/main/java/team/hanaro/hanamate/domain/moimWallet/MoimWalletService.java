@@ -31,7 +31,6 @@ public class MoimWalletService {
     private final MoimWalletAndUserRepository moimWalletAndUserRepository;
     private final UsersRepository usersRepository;
     private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
     private final ArticleRepository articleRepository;
     private final Response response;
 

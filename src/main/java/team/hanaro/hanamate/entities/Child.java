@@ -16,7 +16,7 @@ import java.util.List;
 @Table(name = "childs")
 public class Child extends User{
     @Builder.Default
-    @OneToMany(mappedBy = "childrenId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "child", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParentAndChild> myParentList = new ArrayList<>();
 
 
