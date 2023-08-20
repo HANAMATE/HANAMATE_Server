@@ -27,6 +27,10 @@ public class LoanRequestDto {
         private String paymentMethod;
         private Integer duration; //기한
         private String loanMessage;
+        private Integer sequence; /* 상환 회차 */
+        private Integer total_interestRate;
+        private Integer total_repaymentAmount;
+        private ArrayList<Integer> repaymentList;
 
     }
 

@@ -61,9 +61,14 @@ public class LoanService {
                 .paymentMethod("원금균등상환")
                 .completed(false)
 //TODO : 총이자, 총 상환금액, 월별 상환금액(납입원금+이자)  dto에 없으면 추가하기
+                .total_interestRate(apply.getTotal_interestRate())
+                .total_repaymentAmount(apply.getTotal_repaymentAmount())
+                .sequence(apply.getSequence())
+                //승인해주면 history에는 미리 각 월별 들어가는 금액을 넣어주는 식으로 해야될듯..
 //                .startDate(apply.getStartDate()) //TODO: 부모가 승인해줘야 생김.
 //                .endDate(apply.getEndDate())
 //                .duration(apply.getDuration())
+
                 .loanMessage(apply.getLoanMessage())
                 .build();
 
@@ -124,7 +129,7 @@ public class LoanService {
         calculateResult.setLoanAmountList(loanAmountList);
         calculateResult.setRepaymentList(repaymentList);
         calculateResult.setTotal_interestRate(total_interestRate);
-        calculateResult.setTotal_loanAmount(total_loanAmount);
+        calculateResult.setTotal_repaymentAmount(total_loanAmount);
 
         ResponseEntity<?> responseEntity= response.success(calculateResult,"정상적으로 대출 맞춤 정보를 계산하였습니다.", HttpStatus.OK);
         return responseEntity;

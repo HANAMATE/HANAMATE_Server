@@ -26,7 +26,7 @@ public class LoanResponseDto {
         private ArrayList<Integer> loanAmountList;
         private ArrayList<Integer> repaymentList;
         private Integer total_interestRate;
-        private Integer total_loanAmount;
+        private Integer total_repaymentAmount;
 
 
     }
