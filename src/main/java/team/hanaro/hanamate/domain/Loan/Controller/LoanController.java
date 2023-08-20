@@ -22,7 +22,7 @@ public class LoanController {
     private final Response response;
 
     //고정이자, 균등상환방식 사용자에게 정보 미리 전달
-    @GetMapping("/apply")
+    @GetMapping("/applyForm")
     public ResponseEntity<?> initLoanInfo(){
 
         return loanService.initLoanInfo();
@@ -44,6 +44,10 @@ public class LoanController {
         return loanService.calculate(calculate);
 
     }
+
+    //부모, 아이 - 대출 신청 정보 보기
+//    @GetMapping("/applyInfo")
+//    public ResponseEntity<?>
 
 
 
