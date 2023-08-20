@@ -44,9 +44,10 @@ public class MoimWalletRequestDto {
     @AllArgsConstructor
     @Builder
     @ToString
-    public static class AccountBalance {
-        @NotNull
-        private Long memberId;
+    public static class findAllMoimWalletDTO {
+        //TODO: 입력값 Validation Check
+        @NotBlank(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
+        private String userId;
     }
 
     @Getter

@@ -20,4 +20,9 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult = ex.getBindingResult();
         return response.invalidFields(Helper.refineErrors(bindingResult));
     }
+
+    @ExceptionHandler(JsonMappingException.class)
+    public ResponseEntity<?> handleJsonMappingException(JsonMappingException ex) {
+        return response.fail("Invalid JSON format or data", HttpStatus.BAD_REQUEST);
+    }
 }

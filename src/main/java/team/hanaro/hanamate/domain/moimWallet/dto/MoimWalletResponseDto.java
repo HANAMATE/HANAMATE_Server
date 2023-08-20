@@ -128,15 +128,5 @@ public class MoimWalletResponseDto {
         }
 
         }
-        //내가 가입한 모든 모임 월렛 조회용
-//        public satatic class MoimWalletList(MoimWallet wallets) {
-//            walletId = wallets.getId();
-//            walletName = wallets.getWalletName();
-//            walletType = wallets.getDecriminatorValue();
-//            balance = wallets.getBalance();
-//            if ("moim".equals(walletType)) {
-//                targetAmount = ((MoimWallet) wallets).getTargetAmount();
-//            }
-//        }
 
 }

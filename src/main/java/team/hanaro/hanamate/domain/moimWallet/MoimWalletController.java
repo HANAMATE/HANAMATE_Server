@@ -30,12 +30,8 @@ public class MoimWalletController {
         return response.success("moimWallet is healthy");
     }
     @Operation(summary = "내 모임통장 만들기", description = "내 모임통장 만들기", tags = {"모임통장"})
-    @PostMapping("/moim/create")
-    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet, Errors errors){
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    @PostMapping("/moim")
+    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet){
         return moimWalletService.createMoimWallet(moimWallet);
     }
 
