@@ -80,16 +80,6 @@ public class UsersService {
             return null;
         }
         return user;
-//        T user;
-//        te
-//        T user = (T) T.builder()
-//                .name(signUp.getName())
-//                .loginId(signUp.getId())
-//                .password(passwordEncoder.encode(signUp.getPassword()))
-//                .identification(signUp.getIdentification())
-//                .phoneNumber(signUp.getPhoneNumber())
-//                .roles(Collections.singletonList(Authority.ROLE_USER.name())) //SpringSecurity 관련
-//                .build();
     }
     public ResponseEntity<?> login(UserRequestDto.Login login) {
 
@@ -222,7 +212,7 @@ public class UsersService {
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         String userId = authentication.getName(); // User Id를 가져옵니다
 
-        ResponseEntity<?> responseEntity = Response.success(userId, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
+        ResponseEntity<?> responseEntity = response.success(userId, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
 
         return responseEntity;
 

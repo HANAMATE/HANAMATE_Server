@@ -11,13 +11,11 @@ import team.hanaro.hanamate.domain.Allowance.AllowanceService;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanRequestDto;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanResponseDto;
 import team.hanaro.hanamate.domain.Loan.Repository.LoanRepository;
-import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
-import team.hanaro.hanamate.domain.User.Repository.ChildRepository;
-import team.hanaro.hanamate.domain.User.Repository.ParentRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.User.Service.CustomUserDetailsService;
 import team.hanaro.hanamate.entities.Child;
 import team.hanaro.hanamate.entities.Loans;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
@@ -62,6 +60,8 @@ public class LoanService {
 //TODO : 총이자, 총 상환금액, 월별 상환금액(납입원금+이자)  dto에 없으면 추가하기
 //                .startDate(apply.getStartDate()) //TODO: 부모가 승인해줘야 생김.
 //                .endDate(apply.getEndDate())
+//                .duration(apply.getDuration())
+                .loanMessage(apply.getLoanMessage())
                 .build();
 
         loanRepository.save(loans);

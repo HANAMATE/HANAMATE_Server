@@ -1,5 +1,6 @@
 package team.hanaro.hanamate.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,18 +13,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 public class ParentAndChild {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @Column(name = "parent_id")
-//    private Long parentId;
-//    @Column(name = "children_id")
-//    private Long childrenId;
-
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Parent parentId;
-    @ManyToOne
-    @JoinColumn(name = "children_id")
-    private Child childrenId;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
+    @JoinColumn(name="parent_idx")
+    @JsonIgnore
+    private Parent parent;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
+    @JoinColumn(name="child_idx")
+    @JsonIgnore
+    private Child child;
 
 }
