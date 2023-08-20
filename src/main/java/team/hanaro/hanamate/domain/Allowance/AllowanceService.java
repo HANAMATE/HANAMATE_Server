@@ -349,4 +349,14 @@ public class AllowanceService {
         }
         return true;
     }
+
+    public Integer getPeriodicAllowanceByChildId(User child){
+        Optional<Allowances> allowances = allowancesRepository.findByChildrenIdxAndValidIsTrue(child.getIdx());
+
+        if (allowances.isEmpty()) {
+            return null;
+        }
+
+        return allowances.get().getAllowanceAmount();
+    }
 }
