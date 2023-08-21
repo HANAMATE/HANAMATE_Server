@@ -271,7 +271,6 @@ public class LoanService {
             Child now_child = childRepository.findByLoginId(userId).get();
             Optional<Loans> loans = loanRepository.findByChild(now_child);
 
-//            Optional<List<Loans>> loans = loanRepository.findAllByChildAndValidIsTrue(now_child);
             Optional<List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
 
 
@@ -287,26 +286,26 @@ public class LoanService {
                 return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
             }
         }
-//        else{
-//            Parent now_parent = parentRepository.findByLoginId(userId).get();
-//            Optional<List<Loans>> loans = loanRepository.findAllByParentAndValidIsTrue(now_parent);
-//            Optional<List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
+        else{
+            Parent now_parent = parentRepository.findByLoginId(userId).get();
+            Optional<Loans> loans = loanRepository.findByParent(now_parent);
+
+            Optional<List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
+
+            if (optionalLoans.isPresent()) {
+                List<LoanHistory> loanHistories = optionalLoans.get();
+                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
+                for (LoanHistory loanHistory : loanHistories) {
+                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
+                    historydetailInfoList.add(historydetailInfo);
+                }
+                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
+            } else {
+                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
+            }
+        }
 //
-//            if (optionalLoans.isPresent()) {
-//                List<LoanHistory> loanHistories = optionalLoans.get();
-//                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
-//                for (LoanHistory loanHistory : loanHistories) {
-//                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
-//                    historydetailInfoList.add(historydetailInfo);
-//                }
-//                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
-//            } else {
-//                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
-//            }
-//        }
 //
-//
-        return response.success(null, "대출 조회 내역이 없습니다", HttpStatus.OK);
 
     }
 }
