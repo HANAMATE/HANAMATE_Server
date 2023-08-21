@@ -1,11 +1,13 @@
 package team.hanaro.hanamate.domain.moimWallet.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.lang.Nullable;
 import team.hanaro.hanamate.entities.Article;
 import team.hanaro.hanamate.entities.Comment;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,12 +29,14 @@ public class SNSResponseDTO {
     @NoArgsConstructor
     public static class WriteCommentResponseDTO {
         Long articleId;
+        Long commentId;
         String userId;
         String userName;
         String content;
 
         public WriteCommentResponseDTO(Comment comment) {
             articleId = comment.getArticle().getId();
+            commentId = comment.getCommentId();
             userId = comment.getUser().getLoginId();
             userName = comment.getUser().getName();
             content = comment.getContent();
