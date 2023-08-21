@@ -74,26 +74,6 @@ public class MoimWalletRequestDto {
         private Integer amount;
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @ToString
-    public static class WriteArticleRequestDTO {
-        //        @NotBlank
-        //private String userId;
-        @NotNull
-        private Long transactionId;
-        @Nullable
-        private byte[] image;
-
-        @NotBlank
-        private String title;
-        @NotBlank
-        private String content;
-
-    }
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -102,6 +82,7 @@ public class MoimWalletRequestDto {
         @NotNull
         private Long requestId;
     }
+
 //    public static class DeleteArticleRequestDTO{
 //        @NotNull
 //        private Long ArticleId;
