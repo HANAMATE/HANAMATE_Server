@@ -197,7 +197,7 @@ public class LoanService {
 
         if (now_user.getUserType().equals("Child")) {
             Child now_child = childRepository.findByLoginId(userId).get();
-            Optional<List<Loans>> optionalLoans = loanRepository.findAllByChild(now_child);
+            Optional<List<Loans>> optionalLoans = loanRepository.findAllByChildAndValidIsTrue(now_child);
 
             if (optionalLoans.isPresent()) {
                 List<Loans> loanHistories = optionalLoans.get();
@@ -211,7 +211,7 @@ public class LoanService {
                 return response.fail("나의 대출 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
             }
         }
-        return response.success(null, "나의 대출 내역 조회에 성공했습니다", HttpStatus.OK);
+        return response.success(null, "대출 조회 내역이 없습니다", HttpStatus.OK);
     }
 
 

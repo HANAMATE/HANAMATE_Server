@@ -19,4 +19,6 @@ public interface LoanRepository extends JpaRepository<Loans, Long> {
     void deleteById(Long loanId);
 
     Optional<List<Loans>> findAllByChild(Child nowChild);
+    Optional<List<Loans>> findAllByChildAndValidIsTrue(Child child);
+
 }
