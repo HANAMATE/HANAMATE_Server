@@ -3,13 +3,19 @@ package team.hanaro.hanamate.domain.MyWallet;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.MyWallet.Dto.RequestDto;
-import team.hanaro.hanamate.domain.User.Helper;
+import team.hanaro.hanamate.domain.MyWallet.Dto.ResponseDto;
+import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+import team.hanaro.hanamate.entities.MyWallet;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
+import team.hanaro.hanamate.global.TResponse;
+
+import java.util.Optional;
 
 
 @Tag(name = "내 지갑", description = "내 지갑과 관련된 기능")
@@ -20,6 +26,8 @@ public class MyWalletController {
 
     private final WalletService walletService;
     private final Response response;
+    private final TResponse tResponse;
+    private final UsersRepository usersRepository;
 
     @GetMapping("/healthy")
     public ResponseEntity<?> HealthyCheck() {
@@ -60,5 +68,20 @@ public class MyWalletController {
     @PostMapping("/transfer")
     public ResponseEntity<?> transfer(@Validated @RequestBody RequestDto.Transfer transfer) {
         return walletService.transfer(transfer);
+    }
+
+    @Operation(summary = "TEST", description = "테스트", tags = {"내 지갑"})
+    @PostMapping("/test")
+    public ResponseEntity<TResponse.Body<ResponseDto.Wallet>> test(@Validated @RequestBody RequestDto.User user) {
+        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+
+        if (userInfo.isEmpty()) {
+            return tResponse.fail("실패", HttpStatus.BAD_REQUEST);
+        }
+
+        MyWallet wallet = userInfo.get().getMyWallet();
+        ResponseDto.Wallet myWalletResDto = new ResponseDto.Wallet(wallet);
+
+        return tResponse.success(myWalletResDto);
     }
 }
