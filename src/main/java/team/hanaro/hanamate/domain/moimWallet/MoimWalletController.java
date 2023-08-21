@@ -30,12 +30,8 @@ public class MoimWalletController {
         return response.success("moimWallet is healthy");
     }
     @Operation(summary = "내 모임통장 만들기", description = "내 모임통장 만들기", tags = {"모임통장"})
-    @PostMapping("/moim/create")
-    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet, Errors errors){
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    @PostMapping("/moim")
+    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet){
         return moimWalletService.createMoimWallet(moimWallet);
     }
 
@@ -55,10 +51,15 @@ public class MoimWalletController {
         }
         return moimWalletService.getMoimWalletListByLoginId(moimWallet);
     }
+    @Operation(summary = "모임 통장 정보 수정하기", description = "모임 통장 정보 수정하기", tags = {"모임통장"})
+    @PutMapping("/moim")
+    public ResponseEntity<?> updateMoimWalletInfo(@Validated @RequestBody MoimWalletRequestDto.UpdateMoimWalletInfoRequestDTO updateRequestDTO) {
+        return moimWalletService.updateMoimWalletInfo(updateRequestDTO);
+    }
+
     @Operation(summary = "모임 통장 삭제하기", description = "모임통장 삭제하기", tags = {"모임통장"})
     @DeleteMapping("/moim")
     public ResponseEntity<?> deleteMoimWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
-
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }

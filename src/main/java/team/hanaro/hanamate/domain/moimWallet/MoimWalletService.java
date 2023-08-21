@@ -1,10 +1,10 @@
 package team.hanaro.hanamate.domain.moimWallet;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
@@ -112,6 +112,25 @@ public class MoimWalletService {
             MoimWalletResponseDto.MoimWalletDTO moimWalletDTO = new MoimWalletResponseDto.MoimWalletDTO(savedMoimWallet.get());
             moimWalletDTO.setTransactionList(transactionDTOList);
             return response.success(moimWalletDTO, "성공", HttpStatus.OK);
+        }
+    }
+
+    public ResponseEntity<?> updateMoimWalletInfo(MoimWalletRequestDto.UpdateMoimWalletInfoRequestDTO updateMoimWalletDTO) {
+        Optional<MoimWallet> optionalMoimWallet = moimWalletRepository.findById(updateMoimWalletDTO.getMoimWalletId());
+        if (optionalMoimWallet.isEmpty()) {
+            return response.fail("수정 요청 실패 : 잘못된 모임통장 ID 입니다.", HttpStatus.NOT_FOUND);
+        } else {
+            MoimWallet moimWallet = optionalMoimWallet.get();
+            moimWallet.setWalletName(updateMoimWalletDTO.getWalletName());
+            moimWallet.setTargetAmount(updateMoimWalletDTO.getTargetAmount());
+            try {
+                MoimWallet savedMoimWallet = moimWalletRepository.save(moimWallet);
+                MoimWalletResponseDto.UpdateMoimWalletInfoResponseDTO moimWalletUpdateResponseDTO =
+                        new MoimWalletResponseDto.UpdateMoimWalletInfoResponseDTO(savedMoimWallet);
+                return response.success("모임 통장 정보를 수정했습니다.");
+            } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
+                return response.fail("모임통장 정보 수정을 실패했습니다." + e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
         }
     }
 

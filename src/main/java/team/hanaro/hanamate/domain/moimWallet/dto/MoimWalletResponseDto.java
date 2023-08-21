@@ -2,7 +2,6 @@ package team.hanaro.hanamate.domain.moimWallet.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import net.bytebuddy.implementation.bind.annotation.Super;
 import team.hanaro.hanamate.entities.Article;
 import team.hanaro.hanamate.entities.Comment;
 import team.hanaro.hanamate.entities.MoimWallet;
@@ -126,17 +125,18 @@ public class MoimWalletResponseDto {
             balance = moimWallet.getBalance();
             targetAmount = moimWallet.getTargetAmount();
         }
-
         }
-        //내가 가입한 모든 모임 월렛 조회용
-//        public satatic class MoimWalletList(MoimWallet wallets) {
-//            walletId = wallets.getId();
-//            walletName = wallets.getWalletName();
-//            walletType = wallets.getDecriminatorValue();
-//            balance = wallets.getBalance();
-//            if ("moim".equals(walletType)) {
-//                targetAmount = ((MoimWallet) wallets).getTargetAmount();
-//            }
-//        }
+    @Data
+    public static class UpdateMoimWalletInfoResponseDTO {
+        private Long walletId;
+        private String walletName;
+        private String walletType;
+
+        public UpdateMoimWalletInfoResponseDTO(MoimWallet moimWallet) {
+            walletId = moimWallet.getId();
+            walletName = moimWallet.getWalletName();
+            walletType = moimWallet.getDecriminatorValue();
+        }
+    }
 
 }
