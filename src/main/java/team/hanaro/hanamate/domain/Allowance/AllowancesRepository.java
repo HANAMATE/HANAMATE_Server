@@ -15,4 +15,6 @@ public interface AllowancesRepository extends JpaRepository<Allowances, Long> {
     Optional<Allowances> findByParentIdxAndValidIsTrue(Long aLong);
 
     Optional<Allowances> findByChildrenIdxAndParentIdxAndValidIsTrue(Long childId, Long parentId);
+
+    Optional<Allowances> findByChildrenIdxAndValidIsTrue(Long aLong);
 }

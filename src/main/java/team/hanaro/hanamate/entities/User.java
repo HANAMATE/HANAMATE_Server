@@ -1,10 +1,10 @@
 package team.hanaro.hanamate.entities;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import team.hanaro.hanamate.domain.User.UserType;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,13 +12,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter //TEST 용도 Setter 사용
 @Entity
 @Table(name = "Users")
+@DiscriminatorColumn(name = "userType")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class User extends BaseTime implements UserDetails {
 
     @Id
@@ -30,6 +32,10 @@ public class User extends BaseTime implements UserDetails {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "my_wallet_id")
     private MyWallet myWallet;
+
+//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "loan_id")
+//    private Loans loan;
 
     @Builder.Default
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -47,15 +53,16 @@ public class User extends BaseTime implements UserDetails {
     @Column
     private String name;
 
-    // TODO: 2023/08/09 identification -> rrn 으로 변수명 변경 요청 
     @Column
-    private String identification;
+    private String rnn;
 
     @Column
     private String phoneNumber;
 
-    @Column
-    private UserType userType;
+    @Transient
+    public String getUserType(){
+        return this.getClass().getAnnotation(DiscriminatorValue.class).value();
+    }
 
 
     //SpringSecurity 관련
@@ -64,13 +71,13 @@ public class User extends BaseTime implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public String getUsername() {

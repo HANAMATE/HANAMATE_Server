@@ -12,18 +12,23 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import team.hanaro.hanamate.domain.MyWallet.WalletService;
 import team.hanaro.hanamate.domain.User.Authority;
-import team.hanaro.hanamate.domain.User.Dto.UserResponse;
-import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.domain.User.Dto.UserRequestDto;
+import team.hanaro.hanamate.domain.User.Dto.UserResponse;
 import team.hanaro.hanamate.domain.User.Dto.UserResponseDto;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+import team.hanaro.hanamate.entities.Child;
+import team.hanaro.hanamate.entities.Parent;
 import team.hanaro.hanamate.entities.User;
+import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 import team.hanaro.hanamate.security.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -38,6 +43,7 @@ public class UsersService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisTemplate redisTemplate;
     private final UserResponse userResponse;
+    private final WalletService walletService;
 
     public ResponseEntity<?> signUp(UserRequestDto.SignUp signUp) {
         if (usersRepository.existsByLoginId(signUp.getId())) {
@@ -45,20 +51,36 @@ public class UsersService {
         }
 
         //DTO(Signup)을 이용하여 User(Entity)로 반환하는 Builder (DTO-> Entity)
-        User user = User.builder()
-                .name(signUp.getName())
-                .loginId(signUp.getId())
-                .password(passwordEncoder.encode(signUp.getPassword()))
-                .identification(signUp.getIdentification())
-                .phoneNumber(signUp.getPhoneNumber())
-                .userType(signUp.getUserType())
-                .roles(Collections.singletonList(Authority.ROLE_USER.name())) //SpringSecurity 관련
-                .build();
-        usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
 
+        if ("Child".equals(signUp.getUserType().toString())) {
+            Child user =makeUserByType(Child.class, signUp);
+            walletService.makeMyWallet(user);
+            usersRepository.save(user); //repository의 save 메서드 호출 (조건. entity객체를 넘겨줘야 함)
+        }else {
+            Parent user = makeUserByType(Parent.class, signUp);
+            walletService.makeMyWallet(user);
+            usersRepository.save(user);
+            Parent byId = (Parent) usersRepository.getById(1L);
+        }
         return response.success("회원가입에 성공했습니다.");
     }
 
+    public <T extends User> T makeUserByType(Class<T> tClass, UserRequestDto.SignUp signUp){
+        T user;
+        try {
+            user = tClass.getDeclaredConstructor().newInstance();
+            user.setName(signUp.getName());
+            user.setLoginId(signUp.getId());
+            user.setPassword(passwordEncoder.encode(signUp.getPassword()));
+            user.setRnn(signUp.getRnn());
+            user.setPhoneNumber(signUp.getPhoneNumber());
+            user.setRoles(Collections.singletonList(Authority.ROLE_USER.name()));
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return user;
+    }
     public ResponseEntity<?> login(UserRequestDto.Login login) {
 
         //로그인 실패
@@ -88,16 +110,15 @@ public class UsersService {
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
 
+        Optional<User> user = usersRepository.findByLoginId(login.getId());
+        UserResponseDto.UserInfo userInfo = new UserResponseDto.UserInfo(user.get());
+
+
         // 헤더를 포함하여 ResponseEntity 생성
         // userResponse.success()를 호출하여 ResponseEntity 생성
-        ResponseEntity<?> responseEntity = userResponse.success(accessToken,refreshToken,null, "로그인에 성공했습니다", HttpStatus.OK);
+        ResponseEntity<?> responseEntity = userResponse.success(accessToken, refreshToken, userInfo, "로그인에 성공했습니다", HttpStatus.OK);
 
         return responseEntity;
-
-
-
-
-
 
 
     }
@@ -116,12 +137,12 @@ public class UsersService {
         Authentication authentication = jwtTokenProvider.getAuthentication(get_accessToken);
 
         // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
-        String redisRefreshToken = (String)redisTemplate.opsForValue().get("RT:" + authentication.getName());
+        String redisRefreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
         // (추가) 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
-        if(ObjectUtils.isEmpty(redisRefreshToken)) {
+        if (ObjectUtils.isEmpty(redisRefreshToken)) {
             return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
         }
-        if(!redisRefreshToken.equals(get_refreshToken)) {
+        if (!redisRefreshToken.equals(get_refreshToken)) {
             return response.fail("Refresh Token 정보가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -135,7 +156,7 @@ public class UsersService {
         String refreshToken = tokenInfo.getRefreshToken();
         String accessToken = tokenInfo.getAccessToken();
 
-        ResponseEntity<?> responseEntity = userResponse.success(accessToken,refreshToken,null, "Token 정보가 갱신되었습니다.", HttpStatus.OK);
+        ResponseEntity<?> responseEntity = userResponse.success(accessToken, refreshToken, null, "Token 정보가 갱신되었습니다.", HttpStatus.OK);
 
         return responseEntity;
 
@@ -178,4 +199,22 @@ public class UsersService {
 
         return response.success();
     }
+
+
+    public ResponseEntity<?> init(HttpServletRequest request) {
+        //앞에서 토큰 처리를 해주기때문에 WebSecurityConfig에서는 permitAll로 둬야함.
+        // 토큰 넣을때도 Bearer는 없애고 들어가야함.
+        String accessToken = request.getHeader("Authorization");
+        if (!jwtTokenProvider.validateToken(accessToken)) {
+            //유효하지 않은 토큰
+            return response.fail("유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST);
+        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        String userId = authentication.getName(); // User Id를 가져옵니다
+
+        ResponseEntity<?> responseEntity = response.success(userId, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
+
+        return responseEntity;
+    }
+
 }

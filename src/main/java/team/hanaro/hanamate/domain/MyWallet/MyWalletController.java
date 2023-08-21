@@ -27,52 +27,38 @@ public class MyWalletController {
     }
 
     @Operation(summary = "지갑 잔액 조회", description = "내 지갑 잔액 가져오기", tags = {"내 지갑"})
-    @GetMapping("")
-    public ResponseEntity<?> myWallet(@Validated @RequestBody RequestDto.User user, Errors errors) {
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    @PostMapping("")
+    public ResponseEntity<?> myWallet(@Validated @RequestBody RequestDto.User user) {
         return walletService.myWallet(user);
     }
 
     @Operation(summary = "거래내역 조회", description = "내 지갑 거래내역 가져오기", tags = {"내 지갑"})
-    @GetMapping("/transactions")
-    public ResponseEntity<?> myWalletTransactions(@Validated @RequestBody RequestDto.User user, Errors errors) {
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    @PostMapping("/transactions")
+    public ResponseEntity<?> myWalletTransactions(@Validated @RequestBody RequestDto.User user) {
         return walletService.myWalletTransactions(user);
     }
 
     @Operation(summary = "계좌 잔액 조회", description = "연결된 은행계좌 잔액 조회", tags = {"내 지갑"})
     @GetMapping("/account")
-    public ResponseEntity<?> getAccount(@Validated @RequestBody RequestDto.User user, Errors errors) {
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    public ResponseEntity<?> getAccount(@Validated @RequestBody RequestDto.User user) {
         return walletService.getAccount(user);
     }
 
     @Operation(summary = "충전하기", description = "연결된 은행계좌에서 돈 가져오기", tags = {"내 지갑"})
     @PostMapping("/account")
-    public ResponseEntity<?> chargeFromAccount(@RequestBody RequestDto.Charge charge, Errors errors) {
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    public ResponseEntity<?> chargeFromAccount(@Validated @RequestBody RequestDto.Charge charge) {
         return walletService.chargeFromAccount(charge);
     }
 
     @Operation(summary = "계좌 연결", description = "은행 계좌 연결하기", tags = {"내 지갑"})
     @PostMapping("/connect")
-    public ResponseEntity<?> connectAccount(@RequestBody RequestDto.AccountInfo accountInfo, Errors errors) {
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    public ResponseEntity<?> connectAccount(@Validated @RequestBody RequestDto.AccountInfo accountInfo) {
         return walletService.connectAccount(accountInfo);
+    }
+
+    @Operation(summary = "지갑 to 지갑 이체", description = "지갑에서 지갑으로 이체하기", tags = {"내 지갑"})
+    @PostMapping("/transfer")
+    public ResponseEntity<?> transfer(@Validated @RequestBody RequestDto.Transfer transfer) {
+        return walletService.transfer(transfer);
     }
 }
