@@ -2,6 +2,7 @@ package team.hanaro.hanamate.domain.Loan.Dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import team.hanaro.hanamate.entities.LoanHistory;
 import team.hanaro.hanamate.entities.Loans;
 
 import java.sql.Timestamp;
@@ -61,10 +62,21 @@ public class LoanResponseDto {
             endDate=loans.getEndDate();
 
         }
+    }
 
+    @Getter
+    @Setter
+    public static class historydetailInfo{
+        private Integer sequence_time;
+        private Timestamp transactionDate;
+        private Integer repaymentAmount;
 
-//        private ArrayList<Integer> loanAmountList;
-//        private ArrayList<Integer> repaymentList;
+        public historydetailInfo(LoanHistory loanHistory){
 
+            sequence_time = loanHistory.getSequence_time();
+            transactionDate=loanHistory.getTransactionDate();
+            repaymentAmount=loanHistory.getRepaymentAmount();
+
+        }
     }
 }
