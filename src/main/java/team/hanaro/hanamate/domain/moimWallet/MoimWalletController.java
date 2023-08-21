@@ -66,34 +66,6 @@ public class MoimWalletController {
         return moimWalletService.deleteMoimWallet(deleteRequestDTO);
     }
 
-    @Operation(summary = "거래내역 글쓰기", description = "거래내역 1개에 대해서 1개의 글을 쓸 수 있습니다.", tags = {"모임통장"})
-    @PostMapping("/moim/article")
-    public ResponseEntity<?> writeArticle(@Validated @RequestBody MoimWalletRequestDto.WriteArticleRequestDTO articleDTO, Errors errors){
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
-        try {//이미지 안들어왔으면 그냥 초기화해서 넣어둠
-            if (articleDTO.getImage() == null) {
-                articleDTO.setImage(new byte[]{});
-            }
-            return moimWalletService.writeArticle(articleDTO);
-        } catch (SQLException e) {
-            return response.fail(articleDTO, e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (IOException e) {
-            return response.fail(articleDTO, e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Operation(summary = "거래내역 글 삭제하기", description = "거래내역 글을 삭제합니다.", tags = {"모임통장"})
-    @DeleteMapping("/moim/article")
-    public ResponseEntity<?> deleteArticle(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
-
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
-        return moimWalletService.deleteArticle(deleteRequestDTO);
-    }
 
 
 }

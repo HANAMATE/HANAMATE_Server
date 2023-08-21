@@ -2,13 +2,11 @@ package team.hanaro.hanamate.domain.moimWallet.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import team.hanaro.hanamate.entities.Article;
-import team.hanaro.hanamate.entities.Comment;
+import team.hanaro.hanamate.domain.moimWallet.dto.SNSResponseDTO.ArticleResponseDTO;
 import team.hanaro.hanamate.entities.MoimWallet;
 import team.hanaro.hanamate.entities.Transactions;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -62,49 +60,8 @@ public class MoimWalletResponseDto {
         }
     }
 
-    @SuperBuilder
-    @Data
-    public static class CommentResponseDTO {
-        private Long commentId;
-        private Long userIdx;
-        private String writerId;
-        private String commentContent;
-        private LocalDateTime createDate;
-        private LocalDateTime modifiedDate;
 
-        public CommentResponseDTO(Comment comment) {
-            this.commentId = comment.getCommentId();
-            this.userIdx = comment.getUser().getIdx();
-            this.writerId = comment.getUser().getLoginId();
-            this.commentContent = comment.getContent();
-            this.createDate = comment.getCreateDate();
-            this.modifiedDate = comment.getModifiedDate();
-        }
-    }
 
-    @NoArgsConstructor
-    @Data
-    public static class ArticleResponseDTO {
-        private String transactionMessage;
-        private Long articleId;
-        private List<CommentResponseDTO> commentList;
-        private byte[] imageId;
-        private String title;
-        private String content;
-        private Long like;
-
-        public void addCommentList(List<CommentResponseDTO> commentResponseDTOList){
-            this.commentList = commentResponseDTOList;
-        }
-        public ArticleResponseDTO(Article article) {
-            articleId = article.getId();
-            imageId = article.getImageId();
-            title = article.getTitle();
-            content = article.getContent();
-            like = article.getLikes();
-            transactionMessage = article.getTransaction().getMessage();
-        }
-    }
 
     @Data
     @SuperBuilder
