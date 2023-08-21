@@ -31,7 +31,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/sign-up", "/users/login", "/users/authority",
                         "/users/reissue", "/users/logout", "/users/init", "/loan/applyForm"
                 ).permitAll()
-                .antMatchers("/loan/apply", "/loan/calculate", "/loan/approve", "/loan/refuse").authenticated()
+                .antMatchers("/loan/apply", "/loan/calculate", "/loan/approve", "/loan/refuse", "/loan/applyInfo", "/loan/historyInfo",
+                        "/loan/historydetailInfo").authenticated()
 //                .antMatchers("/api/v1/users/userTest").hasRole("USER")
 //                .antMatchers("/loan/apply").hasRole("ADMIN")
                 .and()
