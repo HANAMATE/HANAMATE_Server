@@ -64,5 +64,10 @@ public class LoanController {
         return loanService.refuse(authentication);
     }
 
+    @GetMapping("/historyInfo")
+    public ResponseEntity<?> historyInfo(Authentication authentication){
+        return loanService.historyInfo(authentication);
+    }
+
 
 }

@@ -3,6 +3,7 @@ package team.hanaro.hanamate.domain.Loan.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,15 +18,13 @@ import team.hanaro.hanamate.domain.User.Repository.ParentRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.User.Service.CustomUserDetailsService;
 import team.hanaro.hanamate.domain.User.Service.UsersService;
-import team.hanaro.hanamate.entities.Child;
-import team.hanaro.hanamate.entities.Loans;
-import team.hanaro.hanamate.entities.Parent;
-import team.hanaro.hanamate.entities.User;
+import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
 import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -54,8 +53,7 @@ public class LoanService {
         //개인의 정기 용돈의 금액을 id를 통해 가져와서 빌릴 수 있는 값을 보냄
 //        initInfo.setCanAmount_3month();
 
-        ResponseEntity<?> responseEntity= response.success(initInfo,"정상적으로 대출 초기 정보를 가져왔습니다.", HttpStatus.OK);
-        return responseEntity;
+        return response.success(initInfo,"정상적으로 대출 초기 정보를 가져왔습니다.", HttpStatus.OK);
     }
 
     public ResponseEntity<?> apply(LoanRequestDto.Apply apply, Authentication authentication) {
@@ -78,10 +76,6 @@ public class LoanService {
                 .total_interestRate(apply.getTotal_interestRate())
                 .total_repaymentAmount(apply.getTotal_repaymentAmount())
                 .sequence(apply.getSequence())
-                //승인해주면 history에는 미리 각 월별 들어가는 금액을 넣어주는 식으로 해야될듯..
-//                .startDate(apply.getStartDate()) //TODO: 부모가 승인해줘야 생김.
-//                .endDate(apply.getEndDate())
-//                .duration(apply.getDuration())
                 .build();
 
 
@@ -99,8 +93,7 @@ public class LoanService {
         Integer allowance=  allowanceService.getPeriodicAllowanceByChildId(now_user);// ByChildID라는 함수를 가져왔다는 가정으로
 
             if (allowance==null){
-                  ResponseEntity<?> responseEntity = response.fail("정기용돈이 존재하지 않아 대출 신청을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
-                  return responseEntity;
+                return response.fail("정기용돈이 존재하지 않아 대출 신청을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
               }
             ArrayList<Integer> loanAmountList = new ArrayList<>();
             ArrayList<Integer> repaymentList = new ArrayList<>();
@@ -133,8 +126,7 @@ public class LoanService {
         calculateResult.setTotal_interestRate(total_interestRate);
         calculateResult.setTotal_repaymentAmount(total_loanAmount);
 
-        ResponseEntity<?> responseEntity= response.success(calculateResult,"정상적으로 대출 맞춤 정보를 계산하였습니다.", HttpStatus.OK);
-        return responseEntity;
+        return response.success(calculateResult,"정상적으로 대출 맞춤 정보를 계산하였습니다.", HttpStatus.OK);
 
 
     }
@@ -159,8 +151,7 @@ public class LoanService {
             applyInfo.setLoanMessage(now_loan.getLoanMessage());
         }
 
-        ResponseEntity<?> responseEntity= response.success(applyInfo,"정상적으로 대출 신청 정보를 가져왔습니다.", HttpStatus.OK);
-        return responseEntity;
+        return response.success(applyInfo,"정상적으로 대출 신청 정보를 가져왔습니다.", HttpStatus.OK);
 
     }
 
@@ -183,9 +174,9 @@ public class LoanService {
         //TODO 0821 고민
         //이때 history값을 다 넣어주고 용돈 안내면 false로 하고, 내면 true로 하고, 프론트에서 보여줄때는 true인것만 보여주는 식으로.. 하면 될거 같은데
         //용돈을 낼때 history값이 들어가게 하는게 로직으로는 맞아서 고민 중
+//        calculate()
 
-        ResponseEntity<?> responseEntity= response.success(null,"정상적으로 대출을 승인했습니다.", HttpStatus.OK);
-        return responseEntity;
+        return response.success(null,"정상적으로 대출을 승인했습니다.", HttpStatus.OK);
 
     }
 
@@ -197,7 +188,35 @@ public class LoanService {
 
         loanRepository.deleteById(now_loanId);
 
-        ResponseEntity<?> responseEntity= response.success(null,"정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
-        return responseEntity;
+        return response.success(null,"정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
     }
+
+    public ResponseEntity<?> historyInfo(Authentication authentication) {
+        String userId = authentication.getName();
+        User now_user = usersRepository.findByLoginId(userId).get();
+
+        if (now_user.getUserType().equals("Child")) {
+            Child now_child = childRepository.findByLoginId(userId).get();
+            Optional<List<Loans>> optionalLoans = loanRepository.findAllByChild(now_child);
+
+            if (optionalLoans.isPresent()) {
+                List<Loans> loanHistories = optionalLoans.get();
+                List<LoanResponseDto.historyInfo> historyInfoList = new ArrayList<>();
+                for (Loans loanHistory : loanHistories) {
+                    LoanResponseDto.historyInfo historyInfoDto = new LoanResponseDto.historyInfo(loanHistory);
+                    historyInfoList.add(historyInfoDto);
+                }
+                return response.success(historyInfoList, "나의 대출 내역 조회에 성공했습니다", HttpStatus.OK);
+            } else {
+                return response.fail("나의 대출 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return response.success(null, "나의 대출 내역 조회에 성공했습니다", HttpStatus.OK);
+    }
+
+
+
+
+
+
 }

@@ -2,7 +2,9 @@ package team.hanaro.hanamate.domain.Loan.Dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import team.hanaro.hanamate.entities.Loans;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class LoanResponseDto {
@@ -43,5 +45,26 @@ public class LoanResponseDto {
     @Setter
     public static class approve{
         private Boolean valid;
+    }
+
+    @Getter
+    @Setter
+    public static class historyInfo{
+        private String loanName;
+        private Integer loanAmount;
+        private Timestamp endDate;
+
+        public historyInfo(Loans loans){
+
+            loanName = loans.getLoanName();
+            loanAmount=loans.getLoanAmount();
+            endDate=loans.getEndDate();
+
+        }
+
+
+//        private ArrayList<Integer> loanAmountList;
+//        private ArrayList<Integer> repaymentList;
+
     }
 }
