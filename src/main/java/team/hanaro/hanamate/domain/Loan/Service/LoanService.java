@@ -12,15 +12,11 @@ import team.hanaro.hanamate.domain.Loan.Dto.LoanRequestDto;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanResponseDto;
 import team.hanaro.hanamate.domain.Loan.Repository.LoanHistoryRepository;
 import team.hanaro.hanamate.domain.Loan.Repository.LoanRepository;
-import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.User.Repository.ChildRepository;
 import team.hanaro.hanamate.domain.User.Repository.ParentRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.domain.User.Service.CustomUserDetailsService;
-import team.hanaro.hanamate.domain.User.Service.UsersService;
 import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
-import team.hanaro.hanamate.jwt.JwtTokenProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,16 +30,11 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final Response response;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final CustomUserDetailsService customUserDetailsService;
-
     private final UsersRepository usersRepository;
     private final ChildRepository childRepository;
     private final ParentRepository parentRepository;
-    private final MyWalletRepository myWalletRepository;
-
     private final AllowanceService allowanceService;
-    private final UsersService usersService;
+
     private final LoanHistoryRepository loanHistoryRepository;
 
     public ResponseEntity<?> initLoanInfo() {

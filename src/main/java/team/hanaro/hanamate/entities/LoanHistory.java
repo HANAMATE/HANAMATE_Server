@@ -17,7 +17,7 @@ public class LoanHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="loanId")
     private Loans loans;
     private Integer sequence_time;
