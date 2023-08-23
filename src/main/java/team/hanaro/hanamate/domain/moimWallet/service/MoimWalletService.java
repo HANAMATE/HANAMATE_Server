@@ -6,13 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
-import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletRequestDto;
 import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletResponseDto;
-import team.hanaro.hanamate.domain.moimWallet.repository.ArticleRepository;
-import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletRepository;
 import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletAndUserRepository;
+import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletRepository;
 import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
 
@@ -28,8 +26,6 @@ public class MoimWalletService {
     private final MoimWalletRepository moimWalletRepository;
     private final MoimWalletAndUserRepository moimWalletAndUserRepository;
     private final UsersRepository usersRepository;
-    private final TransactionRepository transactionRepository;
-    private final ArticleRepository articleRepository;
     private final Response response;
 
     private final SNSService snsService;

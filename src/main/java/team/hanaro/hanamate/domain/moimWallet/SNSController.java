@@ -1,6 +1,5 @@
 package team.hanaro.hanamate.domain.moimWallet;
 
-import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +31,7 @@ import static team.hanaro.hanamate.domain.moimWallet.dto.SNSRequestDTO.*;
 public class SNSController {
 
     private final SNSService snsService;
-    private final MoimWalletService moimWalletService;
     private final Response response;
-    private final AwsS3Service awsS3Service;
 
     @Operation(summary = "거래내역 글쓰기", description = "거래내역 1개에 대해서 1개의 글을 쓸 수 있습니다.", tags = {"모임통장"})
     @PostMapping("/article")
@@ -49,6 +46,7 @@ public class SNSController {
         }
     }
 
+    @Operation(summary = "이미지 삭제하기", description = "Response로 넘어온 fileName 을 이용해서 이미지를 삭제할 수 있습니다.", tags = {"모임통장"})
     @DeleteMapping("/image")
     public ResponseEntity<?> deleteImage(@RequestBody Map<String,String> param) {
         if (param.get("fileName").isEmpty() || param.isEmpty()) {
@@ -57,66 +55,48 @@ public class SNSController {
         return snsService.deleteImage(param.get("fileName"));
     }
 
-    @Operation(summary = "거래내역 글 삭제하기", description = "거래내역 글을 삭제합니다.", tags = {"모임통장"})
+    @Operation(summary = "글 삭제하기", description = "거래내역에 연결된 글을 삭제합니다.", tags = {"모임통장"})
     @DeleteMapping("/article")
     public ResponseEntity<?> deleteArticle(@Validated @RequestBody GetOrDeleteArticleRequestDTO deleteRequestDTO) {
         return snsService.deleteArticle(deleteRequestDTO);
     }
 
     //3.글 및 댓글 읽어오기 기능 (Read)
+    @Operation(summary = "글 작성하기", description = "거래내역에 연결된 글을 작성합니다.", tags = {"모임통장"})
     @PostMapping("/article/detail")
     public ResponseEntity<?> getArticleAndAllComment(@Validated @RequestBody GetOrDeleteArticleRequestDTO getRequestDTO) {
         return snsService.getArticleAndAllComment(getRequestDTO);
     }
 
     //글에 좋아요 클릭 기능
+    @Operation(summary = "글 좋아요 누르기", description = "거래내역에 연결된 글의 좋아요를 클릭, 증가시킵니다.", tags = {"모임통장"})
     @PostMapping("/article/like")
     public ResponseEntity<?> addLike(@Validated @RequestBody AddLikeRequestDTO requestDTO) {
         return snsService.addLike(requestDTO);
     }
 
     //댓글 작성 기능
+    @Operation(summary = "댓글 작성하기", description = "거래내역에 연결된 글에 댓글을 작성합니다.", tags = {"모임통장"})
     @PostMapping("/article/comment")
     public ResponseEntity<?> writeComment(@Validated @RequestBody WriteCommentRequestDTO requestDTO) {
         return snsService.writeComment(requestDTO);
     }
 
     //댓글 수정 기능
+    @Operation(summary = "댓글 수정하기", description = "거래내역에 연결된 글의 댓글을 수정합니다.", tags = {"모임통장"})
     @PutMapping("/article/comment")
     public ResponseEntity<?> writeComment(@Validated @RequestBody UpdateCommentRequestDTO requestDTO) {
         return snsService.updateComment(requestDTO);
     }
 
     //댓글 삭제 기능
+    @Operation(summary = "댓글 삭제하기", description = "거래내역에 연결된 글의 댓글을 삭제합니다.", tags = {"모임통장"})
     @DeleteMapping("/article/comment")
     public ResponseEntity<?> deleteCommnet(@Validated @RequestBody UpdateCommentRequestDTO requestDTO) {
         return snsService.deleteComment(requestDTO);
     }
 
-    @Autowired
-    private ArticleRepository articleRepository;
 
-//    @PostMapping("/article/upload")
-//    @Transactional
-//    public ResponseEntity<String> uploadArticleWithImage(
-//            @RequestParam("title") String title,
-//            @RequestParam("content") String content,
-//            @RequestParam("image") MultipartFile image) {
-//
-//        try {
-//            Article article = new Article();
-//            article.setTitle(title);
-//            article.setContent(content);
-////            article.setImage(image.getBytes()); // 이미지 바이트 데이터 저장
-//
-//            articleRepository.save(article);
-//
-//            return ResponseEntity.ok("Article with image uploaded successfully.");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Error uploading article with image.");
-//        }
-//    }
+
 
 }

@@ -22,9 +22,9 @@ public class SNSRequestDTO {
     public static class WriteCommentRequestDTO {
         @NotNull(message = "글 번호는 반드시 입력되어야 합니다.")
         Long articleId;
-        @NotEmpty(message = "유저 아이디는 반드시 입력되어야 합니다.")
+        @NotBlank(message = "유저 아이디는 반드시 입력되어야 합니다.")
         String userId;
-        @NotEmpty(message = "공백은 허용하지 않으며 한글자 이상 입력되어야 합니다.")
+        @NotBlank(message = "공백은 허용하지 않으며 한글자 이상 입력되어야 합니다.")
         String content;
     }
 
@@ -58,7 +58,7 @@ public class SNSRequestDTO {
     public static class UpdateCommentRequestDTO {
         @NotNull(message = "글 번호는 반드시 입력되어야 합니다.")
         Long commentId;
-        @NotEmpty(message = "공백은 허용하지 않으며 한글자 이상 입력되어야 합니다.")
+        @NotBlank(message = "공백은 허용하지 않으며 한글자 이상 입력되어야 합니다.")
         String content;
     }
     @Data
