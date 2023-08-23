@@ -72,7 +72,7 @@ public class UsersService {
             user.setName(signUp.getName());
             user.setLoginId(signUp.getId());
             user.setPassword(passwordEncoder.encode(signUp.getPassword()));
-            user.setIdentification(signUp.getIdentification());
+            user.setRnn(signUp.getRnn());
             user.setPhoneNumber(signUp.getPhoneNumber());
             user.setRoles(Collections.singletonList(Authority.ROLE_USER.name()));
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -215,6 +215,6 @@ public class UsersService {
         ResponseEntity<?> responseEntity = response.success(userId, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
 
         return responseEntity;
-
     }
+
 }
