@@ -2,15 +2,13 @@ package team.hanaro.hanamate.domain.moimWallet.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.lang.Nullable;
 import team.hanaro.hanamate.entities.Article;
 import team.hanaro.hanamate.entities.Comment;
+import team.hanaro.hanamate.entities.Images;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SNSResponseDTO {
 
@@ -49,7 +47,8 @@ public class SNSResponseDTO {
         private String transactionMessage;
         private Long articleId;
         private List<CommentResponseDTO> commentList;
-        private byte[] imageId;
+        private List<String> fileName;
+        private List<String> imageUrl;
         private String title;
         private String content;
         private Long like;
@@ -59,7 +58,10 @@ public class SNSResponseDTO {
         }
         public ArticleResponseDTO(Article article) {
             articleId = article.getId();
-            imageId = article.getImageId();
+            //n+1터지겠다 무조건 서비스단에서 빼서 처리
+            this.fileName = article.getImagesList().stream().map(Images::getSavedName).collect(Collectors.toList());
+            this.imageUrl = article.getImagesList().stream()
+                    .map(Images::getSavedPath).collect(Collectors.toList());
             title = article.getTitle();
             content = article.getContent();
             like = article.getLikes();

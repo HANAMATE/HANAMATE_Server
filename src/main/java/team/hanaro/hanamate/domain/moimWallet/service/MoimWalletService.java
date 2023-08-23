@@ -1,4 +1,4 @@
-package team.hanaro.hanamate.domain.moimWallet;
+package team.hanaro.hanamate.domain.moimWallet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -10,15 +10,12 @@ import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
 import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletRequestDto;
 import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletResponseDto;
-import team.hanaro.hanamate.domain.moimWallet.dto.SNSResponseDTO;
 import team.hanaro.hanamate.domain.moimWallet.repository.ArticleRepository;
 import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletRepository;
 import team.hanaro.hanamate.domain.moimWallet.repository.MoimWalletAndUserRepository;
 import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

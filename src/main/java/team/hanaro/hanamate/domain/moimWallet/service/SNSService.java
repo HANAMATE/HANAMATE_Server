@@ -1,20 +1,21 @@
-package team.hanaro.hanamate.domain.moimWallet;
+package team.hanaro.hanamate.domain.moimWallet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
+import team.hanaro.hanamate.domain.moimWallet.AwsS3Service;
 import team.hanaro.hanamate.domain.moimWallet.dto.SNSRequestDTO;
 import team.hanaro.hanamate.domain.moimWallet.dto.SNSResponseDTO;
 import team.hanaro.hanamate.domain.moimWallet.dto.SNSResponseDTO.AddLikeResponseDTO;
 import team.hanaro.hanamate.domain.moimWallet.repository.ArticleRepository;
 import team.hanaro.hanamate.domain.moimWallet.repository.CommentRepository;
-import team.hanaro.hanamate.entities.Article;
-import team.hanaro.hanamate.entities.Comment;
-import team.hanaro.hanamate.entities.Transactions;
-import team.hanaro.hanamate.entities.User;
+import team.hanaro.hanamate.domain.moimWallet.repository.ImageRepository;
+import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
 
 import java.io.IOException;
@@ -35,11 +36,13 @@ public class SNSService {
     private final CommentRepository commentRepository;
     private final UsersRepository usersRepository;
     private final TransactionRepository transactionRepository;
+    private final ImageRepository imageRepository;
     private final Response response;
-
+    private final AwsS3Service awsS3Service;
 
     //1. 글 작성/수정 기능 (Create,Update)
-    public ResponseEntity<?> writeArticle(SNSRequestDTO.WriteArticleRequestDTO articleDTO) throws SQLException, IOException {
+    public ResponseEntity<?> writeArticle(SNSRequestDTO.WriteArticleRequestDTO articleDTO,
+                                          List<MultipartFile> multipartFile) throws SQLException, IOException {
         //1-1. 트랜잭션 id로 해당 트랜잭션 찾아온다.
         Optional<Transactions> savedTransaction = transactionRepository.findById(articleDTO.getTransactionId());
         if (savedTransaction.isEmpty()) {
@@ -51,17 +54,25 @@ public class SNSService {
             Article article = Article.builder()
                     .content(articleDTO.getContent())
                     .title(articleDTO.getTitle())
-                    .imageId(articleDTO.getImage())
                     .transaction(savedTransaction.get()).build();
-            articleRepository.save(article);
-            articleResponseDTO = new SNSResponseDTO.ArticleResponseDTO(article);
+            boolean fileIsEmpty = false;
+            for (MultipartFile file : multipartFile) {
+                if(!file.isEmpty()){
+                    fileIsEmpty=true;
+                }
+            }
+            if (fileIsEmpty) {
+                article.setImagesList(awsS3Service.uploadImage(multipartFile,article));
+            }
+            Article savedArticle = articleRepository.save(article);
+            articleResponseDTO = new SNSResponseDTO.ArticleResponseDTO(savedArticle);
             return response.success(articleResponseDTO, "성공적으로 글이 작성되었습니다.", HttpStatus.OK);
         } else {
             //1-3존재하면 수정
             Article savedArticle = savedTransaction.get().getArticle();
             savedArticle.setContent(articleDTO.getContent());
             savedArticle.setTitle(articleDTO.getTitle());
-            savedArticle.setImageId(articleDTO.getImage());
+            //글의 사진 수정은 입력, 삭제만 하도록 하여서 여기에서는 수정 X
             articleRepository.save(savedArticle);
             articleResponseDTO = new SNSResponseDTO.ArticleResponseDTO(savedArticle);
             List<SNSResponseDTO.CommentResponseDTO> commentDTOList = new ArrayList<>();
@@ -90,6 +101,18 @@ public class SNSService {
         }
     }
 
+    @Transactional
+    public ResponseEntity<?> deleteImage(String fileName){
+        Optional<Images> optionalImage = imageRepository.findBySavedName(fileName);
+        if (optionalImage.isEmpty()) {
+            return response.fail("없는 이미지 입니다.",HttpStatus.NOT_FOUND);
+        }
+        else{
+            awsS3Service.deleteImage(fileName);
+            imageRepository.delete(optionalImage.get());
+            return response.success("삭제 되었습니다.");
+        }
+    }
     //3.글 및 댓글 읽어오기 기능 (Read)
     public ResponseEntity<?> getArticleAndAllComment(GetOrDeleteArticleRequestDTO requestDTO) {
         Optional<Article> optionalArticle = articleRepository.findFetchById(requestDTO.getArticleId());

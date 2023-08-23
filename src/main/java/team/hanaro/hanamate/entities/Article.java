@@ -2,18 +2,16 @@ package team.hanaro.hanamate.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "article")
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -23,8 +21,13 @@ public class Article extends BaseTime {
     @Column(name = "article_id")
     private Long id;
 
-    @Builder.Default
-    private byte[] imageId = new byte[]{};
+    //    @Builder.Default
+//    @Lob
+//    private byte[] image;
+    @Nullable
+    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Images> imagesList = new ArrayList<>();
+
     private String title;
     private String content;
     @Builder.Default
