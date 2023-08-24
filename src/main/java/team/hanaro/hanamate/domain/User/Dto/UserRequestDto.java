@@ -31,7 +31,7 @@ public class UserRequestDto {
 
         @NotEmpty(message = "주민등록번호는 필수 입력값입니다.")
         @Pattern(regexp = "^(?:[0-9]{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[1,2][0-9]|3[0,1]))-[1-4][0-9]{6}$", message = "주민등록번호 형식에 맞게 입력해주세요.")
-        private String identification;
+        private String rnn;
 
         @NotEmpty(message = "전화번호는 필수 입력값입니다.")
         @Pattern(regexp = "^0\\d{1,2}(-|\\))\\d{3,4}-\\d{4}$", message = "전화번호 형식에 맞게 입력해주세요")

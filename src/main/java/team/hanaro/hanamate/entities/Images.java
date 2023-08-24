@@ -9,20 +9,26 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "images")
 @Getter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Images {
+public class Images extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long imageId;
+    @Column(name="image_id")
+    private Long id;
     private String fileName;
-    private Integer fileSize;
-    private String fileType;
-    // TODO: 2023-08-15(015) fileData 전송 방식 알아보기
-    @Lob
-    private Blob fileData;
-    private Timestamp createdAt;
+    //UUID로 저장된 실제 이름
+    private String savedName;
+    private Long fileSize;
+    //S3에 저장된 실제 위치
+    private String savedPath;
+    //저장된 파일 형식 전부
+    private String fullFileType;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "article_id")
+    Article article;
+
 }
