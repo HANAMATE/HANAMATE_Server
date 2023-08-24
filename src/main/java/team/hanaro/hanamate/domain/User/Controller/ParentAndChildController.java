@@ -10,9 +10,7 @@ import team.hanaro.hanamate.global.Response;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("/parent")
 public class ParentAndChildController {
-    private final Response response;
     private final ParentAndChildService parentAndChildService;
 
     @PostMapping("/parent/children")

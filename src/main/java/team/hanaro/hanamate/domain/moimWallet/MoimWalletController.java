@@ -3,7 +3,6 @@ package team.hanaro.hanamate.domain.moimWallet;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -11,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import team.hanaro.hanamate.domain.User.Helper;
 import team.hanaro.hanamate.domain.moimWallet.dto.MoimWalletRequestDto;
+import team.hanaro.hanamate.domain.moimWallet.service.MoimWalletService;
 import team.hanaro.hanamate.global.Response;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 @Tag(name = "모임통장", description = "모임통장 컨트롤러")
 @RequiredArgsConstructor
@@ -30,12 +27,8 @@ public class MoimWalletController {
         return response.success("moimWallet is healthy");
     }
     @Operation(summary = "내 모임통장 만들기", description = "내 모임통장 만들기", tags = {"모임통장"})
-    @PostMapping("/moim/create")
-    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet, Errors errors){
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    @PostMapping("/moim")
+    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet){
         return moimWalletService.createMoimWallet(moimWallet);
     }
 
@@ -55,44 +48,21 @@ public class MoimWalletController {
         }
         return moimWalletService.getMoimWalletListByLoginId(moimWallet);
     }
+    @Operation(summary = "모임 통장 정보 수정하기", description = "모임 통장 정보 수정하기", tags = {"모임통장"})
+    @PutMapping("/moim")
+    public ResponseEntity<?> updateMoimWalletInfo(@Validated @RequestBody MoimWalletRequestDto.UpdateMoimWalletInfoRequestDTO updateRequestDTO) {
+        return moimWalletService.updateMoimWalletInfo(updateRequestDTO);
+    }
+
     @Operation(summary = "모임 통장 삭제하기", description = "모임통장 삭제하기", tags = {"모임통장"})
     @DeleteMapping("/moim")
     public ResponseEntity<?> deleteMoimWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
-
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
         return moimWalletService.deleteMoimWallet(deleteRequestDTO);
     }
 
-    @Operation(summary = "거래내역 글쓰기", description = "거래내역 1개에 대해서 1개의 글을 쓸 수 있습니다.", tags = {"모임통장"})
-    @PostMapping("/moim/article")
-    public ResponseEntity<?> writeArticle(@Validated @RequestBody MoimWalletRequestDto.WriteArticleRequestDTO articleDTO, Errors errors){
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
-        try {//이미지 안들어왔으면 그냥 초기화해서 넣어둠
-            if (articleDTO.getImage() == null) {
-                articleDTO.setImage(new byte[]{});
-            }
-            return moimWalletService.writeArticle(articleDTO);
-        } catch (SQLException e) {
-            return response.fail(articleDTO, e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (IOException e) {
-            return response.fail(articleDTO, e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Operation(summary = "거래내역 글 삭제하기", description = "거래내역 글을 삭제합니다.", tags = {"모임통장"})
-    @DeleteMapping("/moim/article")
-    public ResponseEntity<?> deleteArticle(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
-
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
-        return moimWalletService.deleteArticle(deleteRequestDTO);
-    }
 
 
 }
