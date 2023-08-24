@@ -3,6 +3,7 @@ package team.hanaro.hanamate.domain.MyWallet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -30,8 +31,8 @@ public class WalletService {
     private final AccountRepository accountRepository;
     private final Response response;
 
-    public ResponseEntity<?> myWallet(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> myWallet(UserDetails userDetails) {
+        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -45,23 +46,25 @@ public class WalletService {
     }
 
     //TODO : Timestamp -> LocalDateTime 수정 필요
-    public ResponseEntity<?> myWalletTransactions(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> myWalletTransactions(UserDetails userDetails) {
+        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        Integer year;
-        Integer month;
+        Integer year = Calendar.getInstance().get(Calendar.YEAR);
+        Integer month = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
+        /*
         if (!user.getYear().equals(null) && !user.getMonth().equals(null)) {
             year = user.getYear();
             month = user.getMonth();
         } else {
             year = Calendar.getInstance().get(Calendar.YEAR);
             month = Calendar.getInstance().get(Calendar.MONTH) + 1;
-        }
+        }*/
+
         HashMap<String, Timestamp> map = getDate(year, month);
 
         List<Transactions> transactionsList = transactionRepository.findAllByWalletIdAndTransactionDateBetween(userInfo.get().getMyWallet().getId(), map.get("startDate"), map.get("endDate"));
@@ -79,8 +82,8 @@ public class WalletService {
 
     }
 
-    public ResponseEntity<?> getAccount(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> getAccount(UserDetails userDetails) {
+        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -97,9 +100,9 @@ public class WalletService {
     }
 
     @Transactional
-    public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge) {
+    public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge, UserDetails userDetails) {
 
-        Optional<User> userInfo = usersRepository.findByLoginId(charge.getUserId());
+        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -131,8 +134,8 @@ public class WalletService {
 
     }
 
-    public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo) {
-        Optional<User> userInfo = usersRepository.findByLoginId(accountInfo.getUserId());
+    public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo, UserDetails userDetails) {
+        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);

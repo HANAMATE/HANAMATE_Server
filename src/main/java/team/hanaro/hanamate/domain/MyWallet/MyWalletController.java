@@ -3,19 +3,15 @@ package team.hanaro.hanamate.domain.MyWallet;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.hanaro.hanamate.domain.MyWallet.Dto.RequestDto;
-import team.hanaro.hanamate.domain.MyWallet.Dto.ResponseDto;
-import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.entities.MyWallet;
-import team.hanaro.hanamate.entities.User;
+import team.hanaro.hanamate.domain.User.Helper;
 import team.hanaro.hanamate.global.Response;
-import team.hanaro.hanamate.global.TResponse;
-
-import java.util.Optional;
 
 
 @Tag(name = "내 지갑", description = "내 지갑과 관련된 기능")
@@ -26,62 +22,40 @@ public class MyWalletController {
 
     private final WalletService walletService;
     private final Response response;
-    private final TResponse tResponse;
-    private final UsersRepository usersRepository;
-
-    @GetMapping("/healthy")
-    public ResponseEntity<?> HealthyCheck() {
-        return response.success("healthy");
-    }
 
     @Operation(summary = "지갑 잔액 조회", description = "내 지갑 잔액 가져오기", tags = {"내 지갑"})
-    @PostMapping("")
-    public ResponseEntity<?> myWallet(@Validated @RequestBody RequestDto.User user) {
-        return walletService.myWallet(user);
+    @GetMapping("")
+    public ResponseEntity<?> myWallet(@AuthenticationPrincipal UserDetails userDetails) {
+        return walletService.myWallet(userDetails);
     }
 
     @Operation(summary = "거래내역 조회", description = "내 지갑 거래내역 가져오기", tags = {"내 지갑"})
-    @PostMapping("/transactions")
-    public ResponseEntity<?> myWalletTransactions(@Validated @RequestBody RequestDto.User user) {
-        return walletService.myWalletTransactions(user);
+    @GetMapping("/transactions")
+    public ResponseEntity<?> myWalletTransactions(@AuthenticationPrincipal UserDetails userDetails) {
+        return walletService.myWalletTransactions(userDetails);
     }
 
     @Operation(summary = "계좌 잔액 조회", description = "연결된 은행계좌 잔액 조회", tags = {"내 지갑"})
     @GetMapping("/account")
-    public ResponseEntity<?> getAccount(@Validated @RequestBody RequestDto.User user) {
-        return walletService.getAccount(user);
+    public ResponseEntity<?> getAccount(@AuthenticationPrincipal UserDetails userDetails) {
+        return walletService.getAccount(userDetails);
     }
 
     @Operation(summary = "충전하기", description = "연결된 은행계좌에서 돈 가져오기", tags = {"내 지갑"})
     @PostMapping("/account")
-    public ResponseEntity<?> chargeFromAccount(@Validated @RequestBody RequestDto.Charge charge) {
-        return walletService.chargeFromAccount(charge);
+    public ResponseEntity<?> chargeFromAccount(@Validated @RequestBody RequestDto.Charge charge, @AuthenticationPrincipal UserDetails userDetails) {
+        return walletService.chargeFromAccount(charge, userDetails);
     }
 
     @Operation(summary = "계좌 연결", description = "은행 계좌 연결하기", tags = {"내 지갑"})
     @PostMapping("/connect")
-    public ResponseEntity<?> connectAccount(@Validated @RequestBody RequestDto.AccountInfo accountInfo) {
-        return walletService.connectAccount(accountInfo);
+    public ResponseEntity<?> connectAccount(@Validated @RequestBody RequestDto.AccountInfo accountInfo, @AuthenticationPrincipal UserDetails userDetails) {
+        return walletService.connectAccount(accountInfo, userDetails);
     }
 
     @Operation(summary = "지갑 to 지갑 이체", description = "지갑에서 지갑으로 이체하기", tags = {"내 지갑"})
     @PostMapping("/transfer")
     public ResponseEntity<?> transfer(@Validated @RequestBody RequestDto.Transfer transfer) {
         return walletService.transfer(transfer);
-    }
-
-    @Operation(summary = "TEST", description = "테스트", tags = {"내 지갑"})
-    @PostMapping("/test")
-    public ResponseEntity<TResponse.Body<ResponseDto.Wallet>> test(@Validated @RequestBody RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
-
-        if (userInfo.isEmpty()) {
-            return tResponse.fail("실패", HttpStatus.BAD_REQUEST);
-        }
-
-        MyWallet wallet = userInfo.get().getMyWallet();
-        ResponseDto.Wallet myWalletResDto = new ResponseDto.Wallet(wallet);
-
-        return tResponse.success(myWalletResDto);
     }
 }
