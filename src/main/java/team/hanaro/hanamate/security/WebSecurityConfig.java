@@ -35,6 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/users/**"
                 ).permitAll()
                 .mvcMatchers("/my-wallet/**").authenticated()
+                .mvcMatchers("/allowance/**").authenticated()
                 .mvcMatchers("/loan/**").authenticated()
 //                .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .and()
