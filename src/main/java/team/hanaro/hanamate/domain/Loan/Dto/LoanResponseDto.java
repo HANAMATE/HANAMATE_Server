@@ -36,6 +36,7 @@ public class LoanResponseDto {
     @Getter
     @Setter
     public static class applyInfo {
+        private String userType;
         private String loanName;
         private Integer loanAmount;
         private String loanMessage;
