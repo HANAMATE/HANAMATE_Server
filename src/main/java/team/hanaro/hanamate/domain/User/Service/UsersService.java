@@ -210,9 +210,11 @@ public class UsersService {
             return response.fail("유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST);
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        String userId = authentication.getName(); // User Id를 가져옵니다
+//        String userId = authentication.getName(); // User Id를 가져옵니다
+        Optional<User> user = usersRepository.findByLoginId(authentication.getName());
+        UserResponseDto.UserInfo userInfo = new UserResponseDto.UserInfo(user.get());
 
-        ResponseEntity<?> responseEntity = response.success(userId, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
+        ResponseEntity<?> responseEntity = response.success(userInfo, "토큰 검증에 성공하였습니다.", HttpStatus.OK);
 
         return responseEntity;
     }
