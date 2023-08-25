@@ -45,6 +45,12 @@ public class LoanResponseDto {
 
     @Getter
     @Setter
+    public static class applyNotInfo {
+        private String userType;
+    }
+
+    @Getter
+    @Setter
     public static class approve{
         private Boolean valid;
     }

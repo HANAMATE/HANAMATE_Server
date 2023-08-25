@@ -122,13 +122,16 @@ public class LoanService {
     public ResponseEntity<?> applyInfo(String userId) {
         User now_user = usersRepository.findByLoginId(userId).get();
         LoanResponseDto.applyInfo applyInfo = new LoanResponseDto.applyInfo();
+        LoanResponseDto.applyNotInfo applyNotInfo = new LoanResponseDto.applyNotInfo();
+
         if (now_user.getUserType().equals("Child")) {
             if (childRepository.findByLoginId(userId).isEmpty()) {
                 return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
             }
             Child now_child = childRepository.findByLoginId(userId).get();
             if (loanRepository.findByChild(now_child).isEmpty()){
-                return response.fail("신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
+                applyNotInfo.setUserType(now_user.getUserType());
+                return response.fail(applyNotInfo, "신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
             }
             Loans now_loan = loanRepository.findByChild(now_child).get();
             applyInfo.setUserType(now_user.getUserType());
@@ -141,7 +144,8 @@ public class LoanService {
             }
             Parent now_parent = parentRepository.findByLoginId(userId).get();
             if (loanRepository.findByParent(now_parent).isEmpty()){
-                return response.fail("아이가 신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
+                applyNotInfo.setUserType(now_user.getUserType());
+                return response.fail(applyNotInfo,"아이가 신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
             }
             Loans now_loan = loanRepository.findByParent(now_parent).get();
             applyInfo.setUserType(now_user.getUserType());
