@@ -42,7 +42,7 @@ public class ParentAndChildController {
         return parentAndChildService.getMyParentList(dto);
     }
 
-    @Operation(summary = "[부모] 내 아이 삭제", description = "부모가 내 아이를 삭제한다.", tags = {"부모아이관계"})
+    @Operation(summary = "[All] 부모-아이 관계 삭제", description = "부모가 내 아이를 삭제한다.", tags = {"부모아이관계"})
     @DeleteMapping("/parent-child")
     public ResponseEntity<?> deleteMapping(@Validated @RequestBody UserRequestDto.ParentAddOrDeleteChildRequestDTO dto) {
         return parentAndChildService.deleteMyChild(dto);
