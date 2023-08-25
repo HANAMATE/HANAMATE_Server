@@ -3,7 +3,6 @@ package team.hanaro.hanamate.domain.MyWallet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -31,8 +30,8 @@ public class WalletService {
     private final AccountRepository accountRepository;
     private final Response response;
 
-    public ResponseEntity<?> myWallet(UserDetails userDetails) {
-        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
+    public ResponseEntity<?> myWallet(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -46,8 +45,8 @@ public class WalletService {
     }
 
     //TODO : Timestamp -> LocalDateTime 수정 필요
-    public ResponseEntity<?> myWalletTransactions(UserDetails userDetails) {
-        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
+    public ResponseEntity<?> myWalletTransactions(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -82,8 +81,8 @@ public class WalletService {
 
     }
 
-    public ResponseEntity<?> getAccount(UserDetails userDetails) {
-        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
+    public ResponseEntity<?> getAccount(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -100,9 +99,9 @@ public class WalletService {
     }
 
     @Transactional
-    public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge, UserDetails userDetails) {
+    public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge, String loginId) {
 
-        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -134,8 +133,8 @@ public class WalletService {
 
     }
 
-    public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo, UserDetails userDetails) {
-        Optional<User> userInfo = usersRepository.findByLoginId(userDetails.getUsername());
+    public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo, String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -233,7 +232,7 @@ public class WalletService {
 
     @Transactional
     public boolean transfer(MyWallet sendWallet, MyWallet receiveWallet, int amount, String senderComment, String receiveComment) {
-        if(sendWallet.getBalance() < amount){
+        if (sendWallet.getBalance() < amount) {
             System.out.println("보내는 사람의 지갑 잔액이 부족합니다.");
             return false;
         }
@@ -259,17 +258,17 @@ public class WalletService {
         Optional<MyWallet> sendWallet = walletRepository.findById(transfer.getSendWalletId());
         Optional<MyWallet> receiveWallet = walletRepository.findById(transfer.getReceiveWalletId());
 
-        if(sendWallet.isEmpty()){
+        if (sendWallet.isEmpty()) {
             return response.fail("보내는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        if(receiveWallet.isEmpty()){
+        if (receiveWallet.isEmpty()) {
             return response.fail("받는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
         boolean result = transfer(sendWallet.get(), receiveWallet.get(), transfer.getAmount(), "출금", "입금");
 
-        if(!result){
+        if (!result) {
             return response.fail("보내는 사람의 지갑 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
         }
 
