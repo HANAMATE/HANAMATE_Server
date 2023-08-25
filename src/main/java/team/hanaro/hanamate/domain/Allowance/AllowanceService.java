@@ -32,8 +32,8 @@ public class AllowanceService {
     private final WalletService walletService;
 
     /* 1. 아이 : 용돈 조르기(대기중) 요청 조회*/
-    public ResponseEntity<?> getMyAllowancePendingRequestList(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> getMyAllowancePendingRequestList(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -57,8 +57,8 @@ public class AllowanceService {
     }
 
     /* 2. 아이 : 용돈 조르기(승인/거절) 요청 조회*/
-    public ResponseEntity<?> getMyAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> getMyAllowanceApprovedRequestList(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -82,11 +82,11 @@ public class AllowanceService {
     }
 
     /* 3. 아이 : 용돈 조르기 생성 */
-    public ResponseEntity<?> makeAllowanceRequest(RequestDto.Request request) {
+    public ResponseEntity<?> makeAllowanceRequest(RequestDto.ChildRequest request, String loginId) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiredDate = now.plus(7, ChronoUnit.DAYS);
 
-        Optional<User> child = usersRepository.findByLoginId(request.getChildId());
+        Optional<User> child = usersRepository.findByLoginId(loginId);
         Optional<User> parent = usersRepository.findByLoginId(request.getParentId());
 
         if (child.isEmpty()) {
@@ -118,8 +118,8 @@ public class AllowanceService {
     }
 
     /* 4. 부모 : 용돈 조르기(대기중) 요청 조회 */
-    public ResponseEntity<?> getMyChildAllowancePendingRequestList(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> getMyChildAllowancePendingRequestList(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -144,8 +144,8 @@ public class AllowanceService {
     }
 
     /* 5. 부모 : 용돈 조르기(승인,거절) 요청 조회 */
-    public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> getMyChildAllowanceApprovedRequestList(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -211,7 +211,7 @@ public class AllowanceService {
             }
 
             walletService.transfer(parentWallet, childWallet, request.get().getAllowanceAmount(), "용돈 조르기 출금", "용돈 조르기 입금");
-            
+
             request.get().setAskAllowance(approve.getAskAllowance());
             requestsRepository.save(request.get());
 
@@ -222,9 +222,9 @@ public class AllowanceService {
 
     /* 7. 부모 : 용돈 보내기 */
     @Transactional
-    public ResponseEntity<?> sendAllowance(RequestDto.Request request) {
+    public ResponseEntity<?> sendAllowance(RequestDto.ParentRequest request, String loginId) {
         Optional<User> child = usersRepository.findByLoginId(request.getChildId());
-        Optional<User> parent = usersRepository.findByLoginId(request.getParentId());
+        Optional<User> parent = usersRepository.findByLoginId(loginId);
 
         if (child.isEmpty()) {
             response.fail("아이Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -242,8 +242,8 @@ public class AllowanceService {
     }
 
     /* 8. 부모 : 정기 용돈 조회 */
-    public ResponseEntity<?> getPeriodicAllowance(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findByLoginId(user.getUserId());
+    public ResponseEntity<?> getPeriodicAllowance(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
         if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -264,9 +264,9 @@ public class AllowanceService {
     }
 
     /* 9. 부모 : 정기 용돈 생성 */
-    public ResponseEntity<?> makePeriodicAllowance(RequestDto.Periodic periodic) {
+    public ResponseEntity<?> makePeriodicAllowance(RequestDto.Periodic periodic, String loginId) {
         Optional<User> child = usersRepository.findByLoginId(periodic.getChildId());
-        Optional<User> parent = usersRepository.findByLoginId(periodic.getParentId());
+        Optional<User> parent = usersRepository.findByLoginId(loginId);
 
         if (child.isEmpty()) {
             response.fail("아이Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
@@ -350,7 +350,7 @@ public class AllowanceService {
         return true;
     }
 
-    public Integer getPeriodicAllowanceByChildId(User child){
+    public Integer getPeriodicAllowanceByChildId(User child) {
         Optional<Allowances> allowances = allowancesRepository.findByChildrenIdxAndValidIsTrue(child.getIdx());
 
         if (allowances.isEmpty()) {
