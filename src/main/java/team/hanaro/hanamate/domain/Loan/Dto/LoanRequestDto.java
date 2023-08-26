@@ -31,6 +31,7 @@ public class LoanRequestDto {
         private Integer total_interestRate;
         private Integer total_repaymentAmount;
         private ArrayList<Integer> repaymentList;
+        private Integer balance;
 
     }
 

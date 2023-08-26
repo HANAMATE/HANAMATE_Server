@@ -20,13 +20,13 @@ public class Loans {
     @Column(name = "loan_id")
     private Long loanId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "parent_id")
     @JsonIgnore //순환참조 문제 해결을 위한 JsonIgnore -> 해당 값을 DTO에 반환하기 위해서 get으로 값을 꺼내서 직접 넣어주세요.
     private Parent parent;
 
     // TODO: 2023/08/19 cascade 옵션 테스트가 필요합니다. 우선 적용해놓을테니 대출 삭제 api 완성되면 꼭 알려주세요!!!!!!!!! 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "child_id")
     @JsonIgnore //순환참조 문제 해결을 위한 JsonIgnore -> 해당 값을 DTO에 반환하기 위해서 get으로 값을 꺼내서 직접 넣어주세요.
     private Child child;

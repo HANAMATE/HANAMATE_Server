@@ -40,6 +40,8 @@ public class LoanResponseDto {
         private String loanName;
         private Integer loanAmount;
         private String loanMessage;
+        private Integer sequence;
+        private Boolean valid;
 
     }
 

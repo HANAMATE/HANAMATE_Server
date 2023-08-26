@@ -48,7 +48,13 @@ public class LoanService {
     }
 
     public ResponseEntity<?> apply(LoanRequestDto.Apply apply, String userId) {
-        Child now_user = childRepository.findByLoginId(userId).get();
+
+        Optional<Child> maybeUser = childRepository.findByLoginId(userId);
+        if (maybeUser.isEmpty()) {
+            return response.fail("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        }
+        Child now_user = maybeUser.get();
+//        Child now_user = childRepository.findByLoginId(userId).get();
 
         Loans loans = Loans.builder()
                 .child(now_user)
@@ -61,8 +67,10 @@ public class LoanService {
                 .interestRate(1)
                 .paymentMethod("원금균등상환")
                 .completed(false)
+                .valid(false)
                 .total_interestRate(apply.getTotal_interestRate())
                 .total_repaymentAmount(apply.getTotal_repaymentAmount())
+                .balance(apply.getBalance())
                 .sequence(apply.getSequence())
                 .build();
 
@@ -75,8 +83,12 @@ public class LoanService {
 
 
     public ResponseEntity<?> calculate(LoanRequestDto.Calculate calculate, String userId) {
-
-        Child now_user = childRepository.findByLoginId(userId).get();
+        Optional<Child> maybeChild = childRepository.findByLoginId(userId);
+        if (maybeChild.isEmpty()) {
+            return response.fail("해당하는 사용자 정보가 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        Child now_user = maybeChild.get();
+//        Child now_user = childRepository.findByLoginId(userId).get();
         Integer allowance = allowanceService.getPeriodicAllowanceByChildId(now_user);// ByChildID라는 함수를 가져왔다는 가정으로
 
         if (allowance == null) {
@@ -120,48 +132,60 @@ public class LoanService {
 
     //부모 - 아이 화면에서 대출 신청 정보 가져오기 (대출에 관련된 부모, 아이만 해당 정보를 가져올 수 있음 아니면 에러남)
     public ResponseEntity<?> applyInfo(String userId) {
-        User now_user = usersRepository.findByLoginId(userId).get();
+//        User now_user = usersRepository.findByLoginId(userId).get();
+        Optional<User> maybeUser = usersRepository.findByLoginId(userId);
+        if (maybeUser.isEmpty()) {
+            return response.fail("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        }
+        User now_user = maybeUser.get();
         LoanResponseDto.applyInfo applyInfo = new LoanResponseDto.applyInfo();
         LoanResponseDto.applyNotInfo applyNotInfo = new LoanResponseDto.applyNotInfo();
 
         if (now_user.getUserType().equals("Child")) {
-            if (childRepository.findByLoginId(userId).isEmpty()) {
+            Optional<Child> maybeChild = childRepository.findByLoginId(userId);
+            if (maybeChild.isEmpty()) {
                 return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
             }
-            Child now_child = childRepository.findByLoginId(userId).get();
+            Child now_child = maybeChild.get();
             if (loanRepository.findByChild(now_child).isEmpty()){
                 applyNotInfo.setUserType(now_user.getUserType());
                 return response.fail(applyNotInfo, "신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
             }
-            Loans now_loan = loanRepository.findByChild(now_child).get();
+            Optional<Loans> now_loan = loanRepository.findByChild(now_child);
+            Loans nowLoan=now_loan.get();
+//            Loans now_loan = loanRepository.findByChild(now_child).get();
             applyInfo.setUserType(now_user.getUserType());
-            applyInfo.setLoanName(now_loan.getLoanName());
-            applyInfo.setLoanAmount(now_loan.getLoanAmount());
-            applyInfo.setLoanMessage(now_loan.getLoanMessage());
+            applyInfo.setLoanName(nowLoan.getLoanName());
+            applyInfo.setLoanAmount(nowLoan.getLoanAmount());
+            applyInfo.setLoanMessage(nowLoan.getLoanMessage());
+            applyInfo.setSequence(nowLoan.getSequence());
+            applyInfo.setValid(nowLoan.getValid());
         } else {
-            if (parentRepository.findByLoginId(userId).isEmpty()) {
+            Optional<Parent> maybeParent = parentRepository.findByLoginId(userId);
+            if (maybeParent.isEmpty()) {
                 return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
             }
-            Parent now_parent = parentRepository.findByLoginId(userId).get();
+            Parent now_parent = maybeParent.get();
+
             if (loanRepository.findByParent(now_parent).isEmpty()){
                 applyNotInfo.setUserType(now_user.getUserType());
                 return response.fail(applyNotInfo,"아이가 신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
             }
-            Loans now_loan = loanRepository.findByParent(now_parent).get();
+            Optional<Loans> now_loan = loanRepository.findByParent(now_parent);
+            Loans nowLoan=now_loan.get();
+//            Loans now_loan = loanRepository.findByParent(now_parent).get();
             applyInfo.setUserType(now_user.getUserType());
-            applyInfo.setLoanName(now_loan.getLoanName());
-            applyInfo.setLoanAmount(now_loan.getLoanAmount());
-            applyInfo.setLoanMessage(now_loan.getLoanMessage());
+            applyInfo.setLoanName(nowLoan.getLoanName());
+            applyInfo.setLoanAmount(nowLoan.getLoanAmount());
+            applyInfo.setLoanMessage(nowLoan.getLoanMessage());
+            applyInfo.setSequence(nowLoan.getSequence());
+            applyInfo.setValid(nowLoan.getValid());
+
 
         }
-
         return response.success(applyInfo, "정상적으로 대출 신청 정보를 가져왔습니다.", HttpStatus.OK);
-
     }
-
     //history 정보에 값 넣기
-
-
     public ResponseEntity<?> approve(LoanRequestDto.Approve approve, String userId) {
         Parent now_parent = parentRepository.findByLoginId(userId).get();
         Optional<Loans> optionalLoans = loanRepository.findByParent(now_parent);
@@ -174,11 +198,12 @@ public class LoanService {
             existingLoan.setStartDate(approve.getStartDate());
             existingLoan.setEndDate(approve.getEndDate());
             existingLoan.setDuration(approve.getDuration());
+
             loanRepository.save(existingLoan); // 새로운 객체로 업데이트
 
-            //TODO 0821 고민 -> 전자로 구현함.
+
             //이때 history값을 다 넣어주고 용돈 안내면 false로 하고, 내면 true로 하고, 프론트에서 보여줄때는 true인것만 보여주는 식으로.. 하면 될거 같은데
-            //용돈을 낼때 history값이 들어가게 하는게 로직으로는 맞아서 고민 중
+            //뿐만 아니라 잔액에서 깎이도록 해야함!
             Integer interestRate = existingLoan.getInterestRate();
             Integer sequence = existingLoan.getSequence();
             Integer loanAmount = existingLoan.getLoanAmount();
@@ -212,10 +237,29 @@ public class LoanService {
 
 
     public ResponseEntity<?> refuse(String userId) {
-        Parent now_parent = parentRepository.findByLoginId(userId).get();
-        Long now_loanId = loanRepository.findByParent(now_parent).get().getLoanId();
+//        Parent now_parent = parentRepository.findByLoginId(userId).get();
+//        Long now_loanId = loanRepository.findByParent(now_parent).get().getLoanId();
+//
+//        if (parentRepository.findByLoginId(userId).isEmpty()){
+//            return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
+//        }
+//        loanRepository.deleteById(now_loanId);
+//
+//        return response.success(null, "정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
+        Optional<Parent> maybeParent = parentRepository.findByLoginId(userId);
 
-        loanRepository.deleteById(now_loanId);
+        if (maybeParent.isEmpty()){
+            return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        Parent now_parent = maybeParent.get();
+
+        Optional<Loans> maybeLoan = loanRepository.findByParent(now_parent);
+
+        if (maybeLoan.isPresent()) {
+            Long now_loanId = maybeLoan.get().getLoanId();
+            loanRepository.deleteById(now_loanId);
+        }
 
         return response.success(null, "정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
     }
