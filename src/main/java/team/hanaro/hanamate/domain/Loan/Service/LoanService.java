@@ -130,69 +130,100 @@ public class LoanService {
 
     }
 
+
     //부모 - 아이 화면에서 대출 신청 정보 가져오기 (대출에 관련된 부모, 아이만 해당 정보를 가져올 수 있음 아니면 에러남)
     public ResponseEntity<?> applyInfo(String userId) {
-//        User now_user = usersRepository.findByLoginId(userId).get();
         Optional<User> maybeUser = usersRepository.findByLoginId(userId);
+
         if (maybeUser.isEmpty()) {
             return response.fail("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         }
+
         User now_user = maybeUser.get();
         LoanResponseDto.applyInfo applyInfo = new LoanResponseDto.applyInfo();
-        LoanResponseDto.applyNotInfo applyNotInfo = new LoanResponseDto.applyNotInfo();
+
+//        List<Loans> validLoans = new ArrayList<>(); // 유효한 대출 목록
 
         if (now_user.getUserType().equals("Child")) {
             Optional<Child> maybeChild = childRepository.findByLoginId(userId);
+
             if (maybeChild.isEmpty()) {
                 return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
             }
+
             Child now_child = maybeChild.get();
-            if (loanRepository.findByChild(now_child).isEmpty()){
+            List<Loans> loansList = loanRepository.findByChild(now_child);
+
+            // Child의 대출 목록 중에서 유효한 대출만 필터링
+            // 유효한 대출 중에서 첫 번째 대출 정보를 가져오기
+            Optional<Loans> validLoan = loansList.stream()
+                    .filter(loan -> !loan.getCompleted()) // getCompleted가 false인 대출만 선택
+                    .findFirst();
+
+            if (validLoan.isEmpty()) {
+                LoanResponseDto.applyNotInfo applyNotInfo = new LoanResponseDto.applyNotInfo();
                 applyNotInfo.setUserType(now_user.getUserType());
                 return response.fail(applyNotInfo, "신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
             }
-            Optional<Loans> now_loan = loanRepository.findByChild(now_child);
-            Loans nowLoan=now_loan.get();
-//            Loans now_loan = loanRepository.findByChild(now_child).get();
+            Loans nowLoan = validLoan.get();
+
             applyInfo.setUserType(now_user.getUserType());
             applyInfo.setLoanName(nowLoan.getLoanName());
             applyInfo.setLoanAmount(nowLoan.getLoanAmount());
             applyInfo.setLoanMessage(nowLoan.getLoanMessage());
             applyInfo.setSequence(nowLoan.getSequence());
             applyInfo.setValid(nowLoan.getValid());
+
         } else {
             Optional<Parent> maybeParent = parentRepository.findByLoginId(userId);
+
             if (maybeParent.isEmpty()) {
                 return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
             }
-            Parent now_parent = maybeParent.get();
 
-            if (loanRepository.findByParent(now_parent).isEmpty()){
+            Parent now_parent = maybeParent.get();
+            List<Loans> loansList = loanRepository.findByParent(now_parent);
+
+            Optional<Loans> validLoan = loansList.stream()
+                    .filter(loan -> !loan.getCompleted()) // getCompleted가 false인 대출만 선택
+                    .findFirst();
+
+            if (validLoan.isEmpty()) {
+                LoanResponseDto.applyNotInfo applyNotInfo = new LoanResponseDto.applyNotInfo();
                 applyNotInfo.setUserType(now_user.getUserType());
-                return response.fail(applyNotInfo,"아이가 신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
+                return response.fail(applyNotInfo, "신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
             }
-            Optional<Loans> now_loan = loanRepository.findByParent(now_parent);
-            Loans nowLoan=now_loan.get();
-//            Loans now_loan = loanRepository.findByParent(now_parent).get();
+            Loans nowLoan = validLoan.get();
+
             applyInfo.setUserType(now_user.getUserType());
             applyInfo.setLoanName(nowLoan.getLoanName());
             applyInfo.setLoanAmount(nowLoan.getLoanAmount());
             applyInfo.setLoanMessage(nowLoan.getLoanMessage());
             applyInfo.setSequence(nowLoan.getSequence());
             applyInfo.setValid(nowLoan.getValid());
-
-
         }
+
         return response.success(applyInfo, "정상적으로 대출 신청 정보를 가져왔습니다.", HttpStatus.OK);
     }
+
+
     //history 정보에 값 넣기
     public ResponseEntity<?> approve(LoanRequestDto.Approve approve, String userId) {
         Parent now_parent = parentRepository.findByLoginId(userId).get();
-        Optional<Loans> optionalLoans = loanRepository.findByParent(now_parent);
+        List<Loans> loansList = loanRepository.findByParent(now_parent);
+//        List<Loans> optionalLoans = loanRepository.findByParent(now_parent);
 
+        Optional<Loans> validLoan = loansList.stream()
+                .filter(loan -> !loan.getCompleted()) // getCompleted가 false인 대출만 선택
+                .findFirst();
 
-        if (optionalLoans.isPresent()) {
-            Loans existingLoan = optionalLoans.get();
+        if (validLoan.isEmpty()) {
+            LoanResponseDto.applyNotInfo applyNotInfo = new LoanResponseDto.applyNotInfo();
+            applyNotInfo.setUserType(now_parent.getUserType());
+            return response.fail(applyNotInfo, "신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
+        }
+
+            Loans existingLoan = validLoan.get();
 
             existingLoan.setValid(true);
             existingLoan.setStartDate(approve.getStartDate());
@@ -229,23 +260,13 @@ public class LoanService {
             }
 
 
-        }
-
         return response.success(null, "정상적으로 대출을 승인했습니다.", HttpStatus.OK);
 
     }
 
 
     public ResponseEntity<?> refuse(String userId) {
-//        Parent now_parent = parentRepository.findByLoginId(userId).get();
-//        Long now_loanId = loanRepository.findByParent(now_parent).get().getLoanId();
-//
-//        if (parentRepository.findByLoginId(userId).isEmpty()){
-//            return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
-//        }
-//        loanRepository.deleteById(now_loanId);
-//
-//        return response.success(null, "정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
+
         Optional<Parent> maybeParent = parentRepository.findByLoginId(userId);
 
         if (maybeParent.isEmpty()){
@@ -254,12 +275,24 @@ public class LoanService {
 
         Parent now_parent = maybeParent.get();
 
-        Optional<Loans> maybeLoan = loanRepository.findByParent(now_parent);
+//        List<Loans> maybeLoan = loanRepository.findByParent(now_parent);
+        List<Loans> loansList = loanRepository.findByParent(now_parent);
+//        List<Loans> optionalLoans = loanRepository.findByParent(now_parent);
 
-        if (maybeLoan.isPresent()) {
-            Long now_loanId = maybeLoan.get().getLoanId();
-            loanRepository.deleteById(now_loanId);
+        Optional<Loans> validLoan = loansList.stream()
+                .filter(loan -> !loan.getCompleted()) // getCompleted가 false인 대출만 선택
+                .findFirst();
+
+        if (validLoan.isEmpty()) {
+            LoanResponseDto.applyNotInfo applyNotInfo = new LoanResponseDto.applyNotInfo();
+            applyNotInfo.setUserType(now_parent.getUserType());
+            return response.fail(applyNotInfo, "신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
         }
+
+
+        Long now_loanId = validLoan.get().getLoanId();
+        loanRepository.deleteById(now_loanId);
+
 
         return response.success(null, "정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
     }
@@ -269,7 +302,7 @@ public class LoanService {
 
         if (now_user.getUserType().equals("Child")) {
             Child now_child = childRepository.findByLoginId(userId).get();
-            Optional<List<Loans>> optionalLoans = loanRepository.findAllByChildAndValidIsTrue(now_child);
+            Optional<List<Loans>> optionalLoans = loanRepository.findAllByChildAndValidIsTrueAndCompletedIsTrue(now_child);
 
             if (optionalLoans.isPresent()) {
                 List<Loans> loanHistories = optionalLoans.get();
@@ -284,7 +317,7 @@ public class LoanService {
             }
         } else {
             Parent now_parent = parentRepository.findByLoginId(userId).get();
-            Optional<List<Loans>> optionalLoans = loanRepository.findAllByParentAndValidIsTrue(now_parent);
+            Optional<List<Loans>> optionalLoans = loanRepository.findAllByParentAndValidIsTrueAndCompletedIsTrue(now_parent);
 
             if (optionalLoans.isPresent()) {
                 List<Loans> loanHistories = optionalLoans.get();
@@ -298,49 +331,50 @@ public class LoanService {
                 return response.fail("아이의 대출 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
             }
         }
-//        return response.success(null, "대출 조회 내역이 없습니다", HttpStatus.OK);
     }
 
 
     public ResponseEntity<?> historydetailInfo(String userId) {
-        User now_user = usersRepository.findByLoginId(userId).get();
+//        User now_user = usersRepository.findByLoginId(userId).get();
+//
+//        if (now_user.getUserType().equals("Child")) {
+//            Child now_child = childRepository.findByLoginId(userId).get();
+//            List<Loans> loans = loanRepository.findByChild(now_child);
+//
+//            List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
+//
+//
+//            if (optionalLoans.isPresent()) {
+//                List<LoanHistory> loanHistories = optionalLoans.get();
+//                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
+//                for (LoanHistory loanHistory : loanHistories) {
+//                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
+//                    historydetailInfoList.add(historydetailInfo);
+//                }
+//                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
+//            } else {
+//                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
+//            }
+//        }
+//        else{
+//            Parent now_parent = parentRepository.findByLoginId(userId).get();
+//            Optional<Loans> loans = loanRepository.findByParent(now_parent);
+//
+//            Optional<List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
+//
+//            if (optionalLoans.isPresent()) {
+//                List<LoanHistory> loanHistories = optionalLoans.get();
+//                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
+//                for (LoanHistory loanHistory : loanHistories) {
+//                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
+//                    historydetailInfoList.add(historydetailInfo);
+//                }
+//                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
+//            } else {
+//                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
+//            }
+//        }
+        return response.success(null, "대출 조회 내역이 없습니다", HttpStatus.OK);
 
-        if (now_user.getUserType().equals("Child")) {
-            Child now_child = childRepository.findByLoginId(userId).get();
-            Optional<Loans> loans = loanRepository.findByChild(now_child);
-
-            Optional<List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
-
-
-            if (optionalLoans.isPresent()) {
-                List<LoanHistory> loanHistories = optionalLoans.get();
-                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
-                for (LoanHistory loanHistory : loanHistories) {
-                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
-                    historydetailInfoList.add(historydetailInfo);
-                }
-                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
-            } else {
-                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
-            }
-        }
-        else{
-            Parent now_parent = parentRepository.findByLoginId(userId).get();
-            Optional<Loans> loans = loanRepository.findByParent(now_parent);
-
-            Optional<List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
-
-            if (optionalLoans.isPresent()) {
-                List<LoanHistory> loanHistories = optionalLoans.get();
-                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
-                for (LoanHistory loanHistory : loanHistories) {
-                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
-                    historydetailInfoList.add(historydetailInfo);
-                }
-                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
-            } else {
-                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
-            }
-        }
     }
 }

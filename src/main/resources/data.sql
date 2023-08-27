@@ -32,3 +32,6 @@ insert into parent_and_child (id ,child_idx, parent_idx) values (2, 5, 4);
 -- insert into wallets_and_users (moim_wallet_id, user_id) values (1, 1);
 
 insert into allowances (allowance_id, allowance_amount, children_idx, parent_idx, valid) values (1, 20000, 3, 1, true);
+
+-- insert into loans (loan_id, balance, child_id, completed, duration, end_date, interest_rate, loan_amount, loan_message, loan_name, parent_id, payment_method, sequence, start_date, total_interest_rate, total_repayment_amount, valid, wallet_id) values (1, 10017, 3, true, 91, '2023-11-21T09:00:00.000+0900', 1, 100, '긴히 쓸일이 있어용', 'test1234', 1, '원금균등상환', 3, '2023-08-21T09:00:00.000+0900', 17, 10017, true, 3);
+

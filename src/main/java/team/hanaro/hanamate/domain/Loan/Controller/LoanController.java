@@ -64,19 +64,19 @@ public class LoanController {
     public ResponseEntity<?> approve(@AuthenticationPrincipal UserDetails userDetails){
         return loanService.refuse(userDetails.getUsername());
     }
-
+//
     //대출 상품 기본 정보 가져오기(진행중일때) (대출이름, 대출금액, 마감날짜)
     @GetMapping("/historyInfo")
     public ResponseEntity<?> historyInfo(@AuthenticationPrincipal UserDetails userDetails){
         return loanService.historyInfo(userDetails.getUsername());
     }
-
-
-    //대출 상품 상세 정보 가져오기 (회차, 거래날짜(=상환날짜), 상환금액, 상환 성공여부)
-    @GetMapping("/historydetailInfo")
-    public ResponseEntity<?> historydetailInfo(@AuthenticationPrincipal UserDetails userDetails){
-        return loanService.historydetailInfo(userDetails.getUsername());
-    }
+//
+//
+//    //대출 상품 상세 정보 가져오기 (회차, 거래날짜(=상환날짜), 상환금액, 상환 성공여부)
+//    @GetMapping("/historydetailInfo")
+//    public ResponseEntity<?> historydetailInfo(@AuthenticationPrincipal UserDetails userDetails){
+//        return loanService.historydetailInfo(userDetails.getUsername());
+//    }
 
     //TODO : 대출 상세 정보 위의 대출 상세 정보 가져오기 ( 이름, 총금액, 총이자, 총상환금액, 이자율, 상환방식, 기한)
     //대출 상품 기본 정보 가져오기랑 비슷하게 구현하면 됨.
