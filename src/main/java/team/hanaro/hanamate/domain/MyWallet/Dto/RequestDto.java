@@ -1,6 +1,6 @@
 package team.hanaro.hanamate.domain.MyWallet.Dto;
 
-import lombok.*;
+import lombok.Data;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
@@ -31,6 +31,8 @@ public class RequestDto {
         private Long receiveWalletId;
         @Positive(message = "요청 금액은 1이상의 양수 값을 입력해주세요.")
         private Integer amount;
+        @Nullable
+        private String message;
     }
 
 }
