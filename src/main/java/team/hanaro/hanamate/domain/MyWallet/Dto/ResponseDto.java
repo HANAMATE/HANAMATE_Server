@@ -46,6 +46,7 @@ public class ResponseDto {
         private Integer amount;
         private Integer balance;
         private String type;
+        private String message;
 
         public MyTransactions(Transactions transactions) {
             id = transactions.getId();
@@ -54,6 +55,7 @@ public class ResponseDto {
             amount = transactions.getAmount();
             balance = transactions.getBalance();
             type = transactions.getTransactionType();
+            message = transactions.getMessage();
         }
     }
 

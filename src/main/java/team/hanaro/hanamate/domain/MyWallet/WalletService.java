@@ -245,8 +245,8 @@ public class WalletService {
         walletRepository.save(receiveWallet);
 
         // 3. transaction 생성
-        Transactions sendTransaction = makeTransaction(sendWallet, receiveWallet, amount, senderComment);
-        Transactions receiveTransaction = makeTransaction(receiveWallet, sendWallet, amount, receiveComment);
+        Transactions sendTransaction = makeTransaction(sendWallet, receiveWallet, amount, "출금", senderComment);
+        Transactions receiveTransaction = makeTransaction(receiveWallet, sendWallet, amount, "입금", receiveComment);
 
         transactionRepository.save(sendTransaction);
         transactionRepository.save(receiveTransaction);
@@ -266,7 +266,13 @@ public class WalletService {
             return response.fail("받는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        boolean result = transfer(sendWallet.get(), receiveWallet.get(), transfer.getAmount(), "출금", "입금");
+        String sendMsg = transfer.getMessage();
+        String receiveMsg = transfer.getMessage();
+        if (transfer.getMessage() == null) {
+            receiveMsg = usersRepository.findByMyWallet(sendWallet.get()).get().getName();
+            sendMsg = usersRepository.findByMyWallet(receiveWallet.get()).get().getName();
+        }
+        boolean result = transfer(sendWallet.get(), receiveWallet.get(), transfer.getAmount(), sendMsg, receiveMsg);
 
         if (!result) {
             return response.fail("보내는 사람의 지갑 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
@@ -275,7 +281,7 @@ public class WalletService {
         return response.success("이체를 성공했습니다.");
     }
 
-    private static Transactions makeTransaction(MyWallet sendWallet, MyWallet receiveWallet, int amount, String type) {
+    private static Transactions makeTransaction(MyWallet sendWallet, MyWallet receiveWallet, int amount, String type, String message) {
         Transactions sendTransaction = Transactions.builder()
                 .wallet(sendWallet)
                 .counterId(receiveWallet.getId())
@@ -283,6 +289,7 @@ public class WalletService {
                 .transactionType(type)
                 .amount(amount)
                 .balance(sendWallet.getBalance())
+                .message(message)
                 .build();
         return sendTransaction;
     }
