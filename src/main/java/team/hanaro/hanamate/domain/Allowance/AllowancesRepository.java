@@ -22,7 +22,8 @@ public interface AllowancesRepository extends JpaRepository<Allowances, Long> {
 
     List<Allowances> findAllByDayOfWeek(Integer aInt);
 
-    List<Allowances> findAllByTransferDate(Integer aInt);
+    List<Allowances> findAllByTransferDateAndValidIsTrue(Integer aInt);
 
     List<Allowances> findAllByEverydayOrDayOfWeekOrTransferDateAndValidIsTrue(Boolean everyday, Integer dayOfWeek, Integer transferDate);
+
 }

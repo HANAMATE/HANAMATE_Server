@@ -50,7 +50,8 @@ public class AllowanceScheduler {
         int currentDate = localDateTime.getDayOfMonth();
         //System.out.println("currentDate: "+currentDate+", currentDayOfWeek: "+currentDayOfWeek);
         // 2. 오늘 날짜와 연관된 정기용돈 목록 불러오기
-        List<Allowances> allowances = allowancesRepository.findAllByEverydayOrDayOfWeekOrTransferDateAndValidIsTrue(true, currentDayOfWeek, currentDate);
+        //List<Allowances> allowances = allowancesRepository.findAllByEverydayOrDayOfWeekOrTransferDateAndValidIsTrue(true, currentDayOfWeek, currentDate);
+        List<Allowances> allowances = allowancesRepository.findAllByTransferDateAndValidIsTrue(currentDate);
 
         if (!allowances.isEmpty()) {
             // 3. 용돈 이체 일으키기
