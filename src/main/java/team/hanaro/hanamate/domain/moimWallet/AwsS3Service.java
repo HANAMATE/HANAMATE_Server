@@ -20,6 +20,7 @@ import team.hanaro.hanamate.entities.Images;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,11 +77,26 @@ public class AwsS3Service {
 
     //뒤에서부터 " . " 을 찾는다음에 그 다음문자를 substring 해서 확장자를 추출한다.
     //.이 붙은 확장자가 없으면 잘못된 파일로 판단하고 예외처리
-    private String getFileExtension(String fileName) {
+    private String getFileExtension2 (String fileName) {
         try {
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
         }
     }
+
+    private String getFileExtension(String fileName) {
+        try {
+            String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+            List<String> allowedExtensions = Arrays.asList(".jpg", ".jpeg", ".png", ".gif");
+            // 이미지 확장자인지 확인
+            if (!allowedExtensions.contains(extension)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미지 파일(.jpg, .jpeg, .png, .gif)만 업로드할 수 있습니다.");
+            }
+            return extension;
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
+        }
+    }
+
 }
