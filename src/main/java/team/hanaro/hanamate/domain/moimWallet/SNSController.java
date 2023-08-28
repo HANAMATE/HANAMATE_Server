@@ -37,7 +37,8 @@ public class SNSController {
         try {//이미지 안들어왔으면 그냥 초기화해서 넣어둠
             return snsService.writeArticle(articleDTO, multipartFile);
         } catch (ResponseStatusException e) {
-            return response.fail(articleDTO, "이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = e.getMessage().replace("400 BAD_REQUEST ", ""); // 상태 코드 제거
+            return response.fail(articleDTO, "이미지 업로드에 실패했습니다. 사유 : " +errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException | SQLException e) {
             return response.fail(articleDTO, e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -89,7 +90,7 @@ public class SNSController {
     //댓글 삭제 기능
     @Operation(summary = "댓글 삭제하기", description = "거래내역에 연결된 글의 댓글을 삭제합니다.", tags = {"모임통장"})
     @DeleteMapping("/article/comment")
-    public ResponseEntity<?> deleteCommnet(@Validated @RequestBody UpdateCommentRequestDTO requestDTO) {
+    public ResponseEntity<?> deleteCommnet(@Validated @RequestBody DeleteCommentRequestDTO requestDTO) {
         return snsService.deleteComment(requestDTO);
     }
 
