@@ -56,5 +56,11 @@ public class LoanRequestDto {
         private Timestamp endDate;
     }
 
+    @Getter
+    @Setter
+    public static class History{
+        private Long loanId;
+    }
+
 
 }

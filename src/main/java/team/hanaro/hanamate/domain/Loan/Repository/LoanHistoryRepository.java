@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LoanHistoryRepository extends JpaRepository<LoanHistory, Long> {
-    Optional<List<LoanHistory>> findAllByLoansAndSuccessIsTrue(Optional<Loans> loans);
+//    Optional<List<LoanHistory>> findAllByLoansAndSuccessIsTrue(Optional<Loans> loans);
+    Optional<List<LoanHistory>> findAllByLoansAndSuccessIsTrue(Long loanId);
+    List<LoanHistory> findAllBySuccessIsTrueAndLoansLoanId(Long loanId);
+
 
 }

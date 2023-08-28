@@ -60,12 +60,14 @@ public class LoanResponseDto {
     @Getter
     @Setter
     public static class historyInfo{
+        private Long loanId;
         private String loanName;
         private Integer loanAmount;
         private Timestamp endDate;
 
         public historyInfo(Loans loans){
 
+            loanId = loans.getLoanId();
             loanName = loans.getLoanName();
             loanAmount=loans.getLoanAmount();
             endDate=loans.getEndDate();
@@ -87,5 +89,20 @@ public class LoanResponseDto {
             repaymentAmount=loanHistory.getRepaymentAmount();
 
         }
+    }
+
+    @Getter
+    @Setter
+    public static class loandetailInfo{
+        private String loanName;
+        private Integer loanAmount;
+        private String loanMessage;
+        private Integer interestRate;
+        private Integer sequence;
+        private Integer total_interestRate;
+        private Integer total_repaymentAmount;
+        private String paymentMethod;
+
+
     }
 }

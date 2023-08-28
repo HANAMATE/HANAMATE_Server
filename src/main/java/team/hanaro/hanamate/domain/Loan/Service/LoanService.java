@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import team.hanaro.hanamate.domain.Allowance.AllowanceService;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanRequestDto;
 import team.hanaro.hanamate.domain.Loan.Dto.LoanResponseDto;
@@ -334,47 +335,38 @@ public class LoanService {
     }
 
 
-    public ResponseEntity<?> historydetailInfo(String userId) {
-//        User now_user = usersRepository.findByLoginId(userId).get();
-//
-//        if (now_user.getUserType().equals("Child")) {
-//            Child now_child = childRepository.findByLoginId(userId).get();
-//            List<Loans> loans = loanRepository.findByChild(now_child);
-//
-//            List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
-//
-//
-//            if (optionalLoans.isPresent()) {
-//                List<LoanHistory> loanHistories = optionalLoans.get();
-//                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
-//                for (LoanHistory loanHistory : loanHistories) {
-//                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
-//                    historydetailInfoList.add(historydetailInfo);
-//                }
-//                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
-//            } else {
-//                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
-//            }
-//        }
-//        else{
-//            Parent now_parent = parentRepository.findByLoginId(userId).get();
-//            Optional<Loans> loans = loanRepository.findByParent(now_parent);
-//
-//            Optional<List<LoanHistory>> optionalLoans = loanHistoryRepository.findAllByLoansAndSuccessIsTrue(loans);
-//
-//            if (optionalLoans.isPresent()) {
-//                List<LoanHistory> loanHistories = optionalLoans.get();
-//                List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
-//                for (LoanHistory loanHistory : loanHistories) {
-//                    LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
-//                    historydetailInfoList.add(historydetailInfo);
-//                }
-//                return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
-//            } else {
-//                return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
-//            }
-//        }
-        return response.success(null, "대출 조회 내역이 없습니다", HttpStatus.OK);
+    public ResponseEntity<?> historydetailInfo(@PathVariable Long loanId, String userId) {
+        List<LoanHistory> loanHistories = loanHistoryRepository.findAllBySuccessIsTrueAndLoansLoanId(loanId);
+        log.info("loanHistories={}", loanHistories);
+        if (!loanHistories.isEmpty()) {
+            List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
+            for (LoanHistory loanHistory : loanHistories) {
+                LoanResponseDto.historydetailInfo historydetailInfo = new LoanResponseDto.historydetailInfo(loanHistory);
+                historydetailInfoList.add(historydetailInfo);
+            }
+            return response.success(historydetailInfoList, "나의 대출 상세 내역 조회에 성공했습니다", HttpStatus.OK);
+        } else {
+            return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
+        }
 
+    }
+
+    public ResponseEntity<?> loandetailInfo(Long loanId) {
+        Optional<Loans> optionalLoan = loanRepository.findById(loanId);
+        LoanResponseDto.loandetailInfo loandetailInfo = new LoanResponseDto.loandetailInfo();
+        if (optionalLoan.isPresent()) {
+            Loans loan = optionalLoan.get();
+            loandetailInfo.setLoanName(loan.getLoanName());
+            loandetailInfo.setLoanMessage(loan.getLoanMessage());
+            loandetailInfo.setLoanAmount(loan.getLoanAmount());
+            loandetailInfo.setTotal_interestRate(loan.getTotal_interestRate());
+            loandetailInfo.setTotal_repaymentAmount(loan.getTotal_repaymentAmount());
+            loandetailInfo.setInterestRate(loan.getInterestRate());
+            loandetailInfo.setPaymentMethod(loan.getPaymentMethod());
+            loandetailInfo.setSequence(loan.getSequence());
+            return response.success(loandetailInfo, "대출 상세 정보 조회에 성공했습니다.", HttpStatus.OK);
+        } else {
+            return response.fail("대출 상세 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        }
     }
 }
