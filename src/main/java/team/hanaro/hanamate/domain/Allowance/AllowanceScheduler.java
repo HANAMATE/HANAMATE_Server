@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import team.hanaro.hanamate.domain.Loan.Repository.LoanHistoryRepository;
+import team.hanaro.hanamate.domain.Loan.Repository.LoanRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
-import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.entities.Allowances;
-import team.hanaro.hanamate.entities.MyWallet;
-import team.hanaro.hanamate.entities.Transactions;
-import team.hanaro.hanamate.entities.User;
+import team.hanaro.hanamate.domain.User.Repository.ChildRepository;
+import team.hanaro.hanamate.domain.User.Repository.ParentRepository;
+import team.hanaro.hanamate.entities.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -25,8 +25,11 @@ public class AllowanceScheduler {
 
     private final AllowancesRepository allowancesRepository;
     private final TransactionRepository transactionRepository;
-    private final UsersRepository usersRepository;
+    private final ChildRepository childRepository;
+    private final ParentRepository parentRepository;
     private final MyWalletRepository myWalletRepository;
+    private final LoanRepository loanRepository;
+    private final LoanHistoryRepository loanHistoryRepository;
 
     //@Scheduled(fixedDelay = 1000) 1초 단위 스케줄러
     public void scheduleFixedDelayTask() throws InterruptedException {
@@ -55,8 +58,8 @@ public class AllowanceScheduler {
                 System.out.println(allowance.toString());
 
                 // 3-1. allowance의 parentIdx와 childrenIdx로 User 불러오기
-                Optional<User> child = usersRepository.findById(allowance.getChildrenIdx());
-                Optional<User> parent = usersRepository.findById(allowance.getParentIdx());
+                Optional<Child> child = childRepository.findById(allowance.getChildrenIdx());
+                Optional<Parent> parent = parentRepository.findById(allowance.getParentIdx());
                 Optional<MyWallet> cWallet = myWalletRepository.findById(allowance.getChildrenIdx());
                 Optional<MyWallet> pWallet = myWalletRepository.findById(allowance.getParentIdx());
                 if (child.isEmpty() || parent.isEmpty() || cWallet.isEmpty() || pWallet.isEmpty()) {
@@ -65,20 +68,40 @@ public class AllowanceScheduler {
                 MyWallet childWallet = cWallet.get();
                 MyWallet parentWallet = pWallet.get();
 
+                int monthly_allowance_amount = allowance.getAllowanceAmount();
+
                 //TODO: 3-2. allowanceAmount>parent지갑 잔액이 작으면 실패 --> 거래 실패 이력 남기기
                 if (parentWallet.getBalance() < allowance.getAllowanceAmount()) {
                     System.out.println("실패");
                     break;
                 }
 
+                //대출 있는지 확인
+                Optional<Loans> loans = loanRepository.findByChild(child.get());
+                if (loans.isPresent()) {
+                    Optional<LoanHistory> history = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderBySequence_time(loans);
+
+                    if (history.isPresent()) {
+                        //대출만큼 금액에서 까기
+                        int monthly_repayment_amount = history.get().getRepaymentAmount();
+                        monthly_allowance_amount -= monthly_repayment_amount;
+                        if (monthly_allowance_amount < 0) {
+                            monthly_allowance_amount = 0;
+                        }
+                    }
+                    history.get().setSuccess(true);
+                    loanHistoryRepository.save(history.get());
+                }
+
                 // 3-3. 아이 지갑 +
-                childWallet.setBalance(childWallet.getBalance() + allowance.getAllowanceAmount());
+                childWallet.setBalance(childWallet.getBalance() + monthly_allowance_amount);
                 myWalletRepository.save(childWallet);
                 // 3-4. 부모 지갑 -
-                parentWallet.setBalance(parentWallet.getBalance() - allowance.getAllowanceAmount());
+                parentWallet.setBalance(parentWallet.getBalance() - monthly_allowance_amount);
                 myWalletRepository.save(parentWallet);
                 // 3-5. Transaction 작성
-                makeTransaction(parent.get(), child.get(), allowance.getAllowanceAmount());
+                makeTransaction(parent.get(), child.get(), monthly_allowance_amount);
+                //sequence 성공 이력 남기기
             }
         }
     }
