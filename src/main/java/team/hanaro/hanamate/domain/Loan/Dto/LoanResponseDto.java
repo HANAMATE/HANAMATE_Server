@@ -1,18 +1,89 @@
 package team.hanaro.hanamate.domain.Loan.Dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import team.hanaro.hanamate.entities.LoanHistory;
+import team.hanaro.hanamate.entities.Loans;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 public class LoanResponseDto {
-
-//    @Builder
-//    @Getter
+    @Getter
+    @Setter
 //    @AllArgsConstructor
-//    public static class TokenInfo {
-//        private String grantType;
-//        private String accessToken;
-//        private String refreshToken;
-//        private Long refreshTokenExpirationTime;
-//    }
+    public static class initInfo {
+        private Integer interestRate;
+        private String paymentMethod;
+
+        private Integer canAmount_3month;
+
+        private Integer canAmount_6month;
+
+        private Integer canAmount_12month;
+    }
+
+    @Getter
+    @Setter
+    public static class CalculateResult{
+        private ArrayList<Integer> loanAmountList;
+        private ArrayList<Integer> repaymentList;
+        private Integer total_interestRate;
+        private Integer total_repaymentAmount;
+
+
+    }
+    @Getter
+    @Setter
+    public static class applyInfo {
+        private String userType;
+        private String loanName;
+        private Integer loanAmount;
+        private String loanMessage;
+
+    }
+
+    @Getter
+    @Setter
+    public static class applyNotInfo {
+        private String userType;
+    }
+
+    @Getter
+    @Setter
+    public static class approve{
+        private Boolean valid;
+    }
+
+    @Getter
+    @Setter
+    public static class historyInfo{
+        private String loanName;
+        private Integer loanAmount;
+        private Timestamp endDate;
+
+        public historyInfo(Loans loans){
+
+            loanName = loans.getLoanName();
+            loanAmount=loans.getLoanAmount();
+            endDate=loans.getEndDate();
+
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class historydetailInfo{
+        private Integer sequence_time;
+        private Timestamp transactionDate;
+        private Integer repaymentAmount;
+
+        public historydetailInfo(LoanHistory loanHistory){
+
+            sequence_time = loanHistory.getSequence_time();
+            transactionDate=loanHistory.getTransactionDate();
+            repaymentAmount=loanHistory.getRepaymentAmount();
+
+        }
+    }
 }

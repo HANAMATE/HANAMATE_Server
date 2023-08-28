@@ -27,6 +27,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-validation:2.5.6")
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
     runtimeOnly ("com.h2database:h2")
 
     //p6spy - sql 쿼리문 모니터링 및 로깅 라이브러리

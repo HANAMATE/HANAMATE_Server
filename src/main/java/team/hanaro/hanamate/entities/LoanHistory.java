@@ -16,8 +16,12 @@ public class LoanHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId;
-    private Long allowanceId;
-    private Integer allowanceAmount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="loanId")
+    private Loans loans;
+    private Integer sequence_time;
     private Timestamp transactionDate;
+    private Integer repaymentAmount; //상환금액
     private Boolean success;
 }

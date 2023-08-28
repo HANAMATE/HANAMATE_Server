@@ -12,7 +12,10 @@ import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.entities.*;
+import team.hanaro.hanamate.entities.Account;
+import team.hanaro.hanamate.entities.MyWallet;
+import team.hanaro.hanamate.entities.Transactions;
+import team.hanaro.hanamate.entities.User;
 import team.hanaro.hanamate.global.Response;
 
 import java.sql.Timestamp;
@@ -27,10 +30,10 @@ public class WalletService {
     private final AccountRepository accountRepository;
     private final Response response;
 
-    public ResponseEntity<?> myWallet(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+    public ResponseEntity<?> myWallet(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -42,28 +45,30 @@ public class WalletService {
     }
 
     //TODO : Timestamp -> LocalDateTime 수정 필요
-    public ResponseEntity<?> myWalletTransactions(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+    public ResponseEntity<?> myWalletTransactions(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        Integer year;
-        Integer month;
+        Integer year = Calendar.getInstance().get(Calendar.YEAR);
+        Integer month = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
+        /*
         if (!user.getYear().equals(null) && !user.getMonth().equals(null)) {
             year = user.getYear();
             month = user.getMonth();
         } else {
             year = Calendar.getInstance().get(Calendar.YEAR);
             month = Calendar.getInstance().get(Calendar.MONTH) + 1;
-        }
+        }*/
+
         HashMap<String, Timestamp> map = getDate(year, month);
 
         List<Transactions> transactionsList = transactionRepository.findAllByWalletIdAndTransactionDateBetween(userInfo.get().getMyWallet().getId(), map.get("startDate"), map.get("endDate"));
 
-        if(transactionsList.isEmpty()){
+        if (transactionsList.isEmpty()) {
             return response.fail("거래 내역이 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -76,16 +81,16 @@ public class WalletService {
 
     }
 
-    public ResponseEntity<?> getAccount(RequestDto.User user) {
-        Optional<User> userInfo = usersRepository.findById(user.getUserId());
+    public ResponseEntity<?> getAccount(String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Account> account = accountRepository.findByUserId(user.getUserId());
+        Optional<Account> account = accountRepository.findByUserId(userInfo.get().getIdx());
 
-        if(account.isEmpty()){
+        if (account.isEmpty()) {
             return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -94,22 +99,21 @@ public class WalletService {
     }
 
     @Transactional
-    public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge) {
+    public ResponseEntity<?> chargeFromAccount(RequestDto.Charge charge, String loginId) {
 
-        Optional<User> userInfo = usersRepository.findById(charge.getUserId());
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
-        if(userInfo.isEmpty()){
+        if (userInfo.isEmpty()) {
             return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Account> account = accountRepository.findByUserId(charge.getUserId());
+        Optional<Account> account = accountRepository.findByUserId(userInfo.get().getIdx());
 
-        if(account.isEmpty()){
+        if (account.isEmpty()) {
             return response.fail("연결된 계좌가 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         MyWallet wallet = userInfo.get().getMyWallet();
-
 
         // 1. 남은 잔액보다 돈이 적을 때
         if (account.get().getBalance() < charge.getAmount()) {
@@ -129,16 +133,22 @@ public class WalletService {
 
     }
 
-    public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo) {
-        Optional<Account> account = accountRepository.findByUserId(accountInfo.getUserId());
+    public ResponseEntity<?> connectAccount(RequestDto.AccountInfo accountInfo, String loginId) {
+        Optional<User> userInfo = usersRepository.findByLoginId(loginId);
 
-        if (account.isPresent()){
+        if (userInfo.isEmpty()) {
+            return response.fail("유저 Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Account> account = accountRepository.findByUserId(userInfo.get().getIdx());
+
+        if (account.isPresent()) {
             return response.fail("연결된 계좌가 존재합니다.", HttpStatus.BAD_REQUEST);
         }
 
         // 연결된 계좌가 없을 때, 새로 생성 (100만원이 들어있다고 가정)
         Account newAccount = Account.builder()
-                .userId(accountInfo.getUserId())
+                .userId(userInfo.get().getIdx())
                 .accountId(accountInfo.getAccountId())
                 .openDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .name(accountInfo.getName())
@@ -192,34 +202,88 @@ public class WalletService {
     }
 
     /**
-     * <p>회원가입 시 생성된 유저 Id를 바탕으로, 개인지갑 생성</p>
-     * <p>이미 개인 지갑이 존재하는 경우 null</p>
+     * <p>회원가입 시 생성된 유저를 바탕으로, 개인지갑 생성</p>
+     * <p>이미 개인 지갑이 존재하는 경우 false</p>
      *
-     * @param : 유저 ID
-     * @return : 생성된 지갑 ID 또는 null
+     * @param : 유저
+     * @return : 생성 성공, 실패
      */
-    public Long createPrivateWallet(Long userId) {
-//        Optional<MyWallet> wallets = walletRepository.findByUserId(userId);
-//        if (wallets.isPresent()) {
-//            return null;
-//        }
-        User user = usersRepository.findById(userId).get();
+    public Boolean makeMyWallet(User user) {
+
         MyWallet myWallet = user.getMyWallet();
-        if (ObjectUtils.isEmpty(myWallet)) {
-            return null;
+        if (!ObjectUtils.isEmpty(myWallet)) {
+            return false;
         }
+
         MyWallet newWallet = MyWallet.builder()
-//                .userId(userId)
-//                .walletType(false)
                 .balance(0)
                 .build();
 
-//        MyWallet savedWallet = walletRepository.save(newWallet);
+        //walletRepository.save(newWallet);
         user.setMyWallet(newWallet);
-        usersRepository.save(user);
 
-        return user.getMyWallet().getId();
+        return true;
     }
 
+    public List<Transactions> getTransactionsByWallet(MyWallet myWallet) {
+        List<Transactions> transactions = transactionRepository.findAllByWalletId(myWallet.getId());
+        return transactions;
+    }
 
+    @Transactional
+    public boolean transfer(MyWallet sendWallet, MyWallet receiveWallet, int amount, String senderComment, String receiveComment) {
+        if (sendWallet.getBalance() < amount) {
+            System.out.println("보내는 사람의 지갑 잔액이 부족합니다.");
+            return false;
+        }
+
+        // 1. sendWallet 잔액 차감
+        sendWallet.setBalance(sendWallet.getBalance() - amount);
+        walletRepository.save(sendWallet);
+        // 2. receiverWallet 잔액 추가
+        receiveWallet.setBalance(receiveWallet.getBalance() + amount);
+        walletRepository.save(receiveWallet);
+
+        // 3. transaction 생성
+        Transactions sendTransaction = makeTransaction(sendWallet, receiveWallet, amount, senderComment);
+        Transactions receiveTransaction = makeTransaction(receiveWallet, sendWallet, amount, receiveComment);
+
+        transactionRepository.save(sendTransaction);
+        transactionRepository.save(receiveTransaction);
+
+        return true;
+    }
+
+    public ResponseEntity<?> transfer(RequestDto.Transfer transfer) {
+        Optional<MyWallet> sendWallet = walletRepository.findById(transfer.getSendWalletId());
+        Optional<MyWallet> receiveWallet = walletRepository.findById(transfer.getReceiveWalletId());
+
+        if (sendWallet.isEmpty()) {
+            return response.fail("보내는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (receiveWallet.isEmpty()) {
+            return response.fail("받는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean result = transfer(sendWallet.get(), receiveWallet.get(), transfer.getAmount(), "출금", "입금");
+
+        if (!result) {
+            return response.fail("보내는 사람의 지갑 잔액이 부족합니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        return response.success("이체를 성공했습니다.");
+    }
+
+    private static Transactions makeTransaction(MyWallet sendWallet, MyWallet receiveWallet, int amount, String type) {
+        Transactions sendTransaction = Transactions.builder()
+                .wallet(sendWallet)
+                .counterId(receiveWallet.getId())
+                .transactionDate(new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .transactionType(type)
+                .amount(amount)
+                .balance(sendWallet.getBalance())
+                .build();
+        return sendTransaction;
+    }
 }
