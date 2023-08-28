@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface LoanHistoryRepository extends JpaRepository<LoanHistory, Long> {
     Optional<List<LoanHistory>> findAllByLoansAndSuccessIsTrue(Optional<Loans> loans);
 
-    Optional<LoanHistory> findByLoansAndSuccessIsFalseOrderBySequence_time(Optional<Loans> loans);
+    Optional<LoanHistory> findByLoansAndSuccessIsFalseOrderByHistoryId(Optional<Loans> loans);
 
 }

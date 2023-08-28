@@ -80,7 +80,7 @@ public class AllowanceScheduler {
                 //대출 있는지 확인
                 Optional<Loans> loans = loanRepository.findByChild(child.get());
                 if (loans.isPresent()) {
-                    Optional<LoanHistory> history = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderBySequence_time(loans);
+                    Optional<LoanHistory> history = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderByHistoryId(loans);
 
                     if (history.isPresent()) {
                         //대출만큼 금액에서 까기
@@ -93,7 +93,7 @@ public class AllowanceScheduler {
                     history.get().setSuccess(true);
                     loanHistoryRepository.save(history.get());
 
-                    Optional<LoanHistory> result = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderBySequence_time(loans);
+                    Optional<LoanHistory> result = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderByHistoryId(loans);
                     //더이상 상환해야하는 loanHistory가 없다면
                     if (result.isEmpty()) {
                         loans.get().setCompleted(true);
