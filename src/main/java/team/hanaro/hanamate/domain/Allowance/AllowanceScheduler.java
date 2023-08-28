@@ -92,6 +92,13 @@ public class AllowanceScheduler {
                     }
                     history.get().setSuccess(true);
                     loanHistoryRepository.save(history.get());
+
+                    Optional<LoanHistory> result = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderBySequence_time(loans);
+                    //더이상 상환해야하는 loanHistory가 없다면
+                    if (result.isEmpty()) {
+                        loans.get().setCompleted(true);
+                        loanRepository.save(loans.get());
+                    }
                 }
 
                 // 3-3. 아이 지갑 +
