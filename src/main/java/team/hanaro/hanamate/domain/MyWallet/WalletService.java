@@ -12,10 +12,7 @@ import team.hanaro.hanamate.domain.MyWallet.Repository.AccountRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.MyWalletRepository;
 import team.hanaro.hanamate.domain.MyWallet.Repository.TransactionRepository;
 import team.hanaro.hanamate.domain.User.Repository.UsersRepository;
-import team.hanaro.hanamate.entities.Account;
-import team.hanaro.hanamate.entities.MyWallet;
-import team.hanaro.hanamate.entities.Transactions;
-import team.hanaro.hanamate.entities.User;
+import team.hanaro.hanamate.entities.*;
 import team.hanaro.hanamate.global.Response;
 
 import java.sql.Timestamp;
@@ -259,18 +256,27 @@ public class WalletService {
         Optional<MyWallet> receiveWallet = walletRepository.findById(transfer.getReceiveWalletId());
 
         if (sendWallet.isEmpty()) {
-            return response.fail("보내는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            return response.fail("보내는 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if (receiveWallet.isEmpty()) {
-            return response.fail("받는 사람의 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            return response.fail("받는 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
         String sendMsg = transfer.getMessage();
         String receiveMsg = transfer.getMessage();
         if (transfer.getMessage() == null) {
-            receiveMsg = usersRepository.findByMyWallet(sendWallet.get()).get().getName();
-            sendMsg = usersRepository.findByMyWallet(receiveWallet.get()).get().getName();
+            if (sendWallet.get().getDecriminatorValue().equals("my")) {
+                receiveMsg = usersRepository.findByMyWallet(sendWallet.get()).get().getName();
+            } else {
+                receiveMsg = ((MoimWallet) sendWallet.get()).getWalletName();
+            }
+            //동일
+            if (receiveWallet.get().getDecriminatorValue().equals("my")) {
+                sendMsg = usersRepository.findByMyWallet(receiveWallet.get()).get().getName();
+            } else {
+                sendMsg = ((MoimWallet) receiveWallet.get()).getWalletName();
+            }
         }
         boolean result = transfer(sendWallet.get(), receiveWallet.get(), transfer.getAmount(), sendMsg, receiveMsg);
 
