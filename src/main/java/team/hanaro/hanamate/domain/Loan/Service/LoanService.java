@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import team.hanaro.hanamate.domain.Allowance.AllowanceService;
@@ -131,7 +132,6 @@ public class LoanService {
 
     }
 
-
     //부모 - 아이 화면에서 대출 신청 정보 가져오기 (대출에 관련된 부모, 아이만 해당 정보를 가져올 수 있음 아니면 에러남)
     public ResponseEntity<?> applyInfo(String userId) {
         Optional<User> maybeUser = usersRepository.findByLoginId(userId);
@@ -205,8 +205,8 @@ public class LoanService {
         }
 
         return response.success(applyInfo, "정상적으로 대출 신청 정보를 가져왔습니다.", HttpStatus.OK);
-    }
 
+    }
 
     //history 정보에 값 넣기
     public ResponseEntity<?> approve(LoanRequestDto.Approve approve, String userId) {
@@ -332,6 +332,7 @@ public class LoanService {
                 return response.fail("아이의 대출 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
             }
         }
+//        return response.success(null, "대출 조회 내역이 없습니다", HttpStatus.OK);
     }
 
 
@@ -368,5 +369,8 @@ public class LoanService {
         } else {
             return response.fail("대출 상세 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         }
+//
+//
+
     }
 }

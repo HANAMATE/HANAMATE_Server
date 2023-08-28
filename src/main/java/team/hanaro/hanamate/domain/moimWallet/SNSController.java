@@ -1,19 +1,15 @@
 package team.hanaro.hanamate.domain.moimWallet;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import team.hanaro.hanamate.domain.moimWallet.dto.SNSRequestDTO.GetOrDeleteArticleRequestDTO;
-import team.hanaro.hanamate.domain.moimWallet.dto.SNSRequestDTO.WriteArticleRequestDTO;
-import team.hanaro.hanamate.domain.moimWallet.repository.ArticleRepository;
-import team.hanaro.hanamate.domain.moimWallet.service.MoimWalletService;
 import team.hanaro.hanamate.domain.moimWallet.service.SNSService;
 import team.hanaro.hanamate.global.Response;
 
@@ -24,6 +20,7 @@ import java.util.Map;
 
 import static team.hanaro.hanamate.domain.moimWallet.dto.SNSRequestDTO.*;
 
+@Tag(name = "모임통장", description = "모임통장 컨트롤러")
 @RestController
 @RequestMapping("/moim/sns")
 @RequiredArgsConstructor
@@ -48,9 +45,9 @@ public class SNSController {
 
     @Operation(summary = "이미지 삭제하기", description = "Response로 넘어온 fileName 을 이용해서 이미지를 삭제할 수 있습니다.", tags = {"모임통장"})
     @DeleteMapping("/image")
-    public ResponseEntity<?> deleteImage(@RequestBody Map<String,String> param) {
+    public ResponseEntity<?> deleteImage(@RequestBody Map<String, String> param) {
         if (param.get("fileName").isEmpty() || param.isEmpty()) {
-            return response.fail("fileName을 입력해야 합니다.",HttpStatus.BAD_REQUEST);
+            return response.fail("fileName을 입력해야 합니다.", HttpStatus.BAD_REQUEST);
         }
         return snsService.deleteImage(param.get("fileName"));
     }
@@ -95,8 +92,6 @@ public class SNSController {
     public ResponseEntity<?> deleteCommnet(@Validated @RequestBody UpdateCommentRequestDTO requestDTO) {
         return snsService.deleteComment(requestDTO);
     }
-
-
 
 
 }

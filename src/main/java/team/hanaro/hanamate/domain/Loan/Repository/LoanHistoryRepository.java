@@ -13,4 +13,6 @@ public interface LoanHistoryRepository extends JpaRepository<LoanHistory, Long> 
     List<LoanHistory> findAllBySuccessIsTrueAndLoansLoanId(Long loanId);
 
 
+    Optional<LoanHistory> findByLoansAndSuccessIsFalseOrderByHistoryId(Optional<Loans> loans);
+
 }
