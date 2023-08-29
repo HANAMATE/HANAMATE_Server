@@ -56,12 +56,25 @@ public class SNSResponseDTO {
         public void addCommentList(List<CommentResponseDTO> commentResponseDTOList){
             this.commentList = commentResponseDTOList;
         }
+        public ArticleResponseDTO(Article article, boolean imgCheck) {
+            articleId = article.getId();
+            //n+1터지겠다 무조건 서비스단에서 빼서 처리
+            if(imgCheck==true){
+                this.fileName = article.getImagesList().stream().map(Images::getSavedName).collect(Collectors.toList());
+                this.imageUrl = article.getImagesList().stream()
+                        .map(Images::getSavedPath).collect(Collectors.toList());
+            }
+            title = article.getTitle();
+            content = article.getContent();
+            like = article.getLikes();
+            transactionMessage = article.getTransaction().getMessage();
+        }
         public ArticleResponseDTO(Article article) {
             articleId = article.getId();
             //n+1터지겠다 무조건 서비스단에서 빼서 처리
-            this.fileName = article.getImagesList().stream().map(Images::getSavedName).collect(Collectors.toList());
-            this.imageUrl = article.getImagesList().stream()
-                    .map(Images::getSavedPath).collect(Collectors.toList());
+                this.fileName = article.getImagesList().stream().map(Images::getSavedName).collect(Collectors.toList());
+                this.imageUrl = article.getImagesList().stream()
+                        .map(Images::getSavedPath).collect(Collectors.toList());
             title = article.getTitle();
             content = article.getContent();
             like = article.getLikes();
@@ -74,6 +87,7 @@ public class SNSResponseDTO {
     public static class CommentResponseDTO {
         private Long commentId;
         private Long userIdx;
+        private String writerName;
         private String writerId;
         private String commentContent;
         private LocalDateTime createDate;
@@ -86,6 +100,7 @@ public class SNSResponseDTO {
             this.commentContent = comment.getContent();
             this.createDate = comment.getCreateDate();
             this.modifiedDate = comment.getModifiedDate();
+            this.writerName = comment.getWriterName();
         }
     }
 }

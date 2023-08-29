@@ -13,10 +13,7 @@ public class MoimWalletRequestDto {
     @Builder
     @ToString
     public static class JoinMoimWalletDTO {
-        //TODO: 입력값 Validation Check
-        @NotBlank(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
-        private String userId;
-
+        //토큰으로 전환 완료
         @NotBlank(message = "모임통장 이름이 비어있거나 공백문자이면 안됩니다.")
         private String walletName;
 
@@ -32,10 +29,7 @@ public class MoimWalletRequestDto {
     @Builder
     @ToString
     public static class UpdateMoimWalletInfoRequestDTO {
-        //TODO: 입력값 Validation Check
-        @NotBlank(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
-        private String userId;
-
+        //토큰으로 전환 완료
         @NotNull(message = "모임통장 번호가 입력되어야 합니다.")
         private Long moimWalletId;
 
@@ -48,32 +42,16 @@ public class MoimWalletRequestDto {
         private Integer targetAmount;
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @ToString
-    public static class findAllMoimWalletDTO {
-        //TODO: 입력값 Validation Check
-        @NotBlank(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
-        private String userId;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @ToString
-    public static class RequestAmount {
-        @NotNull
-        private Long memberId;
-
-        @NotNull
-        private Long walletId;
-        @NotNull
-        private Integer amount;
-    }
-
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    @Builder
+//    @ToString
+//    public static class findAllMoimWalletDTO {
+//        //TODO: 입력값 Validation Check
+//        @NotBlank(message = "유저 아이디가 비어있거나 공백문자이면 안됩니다.")
+//        private String userId;
+//    }
 
     @AllArgsConstructor
     @NoArgsConstructor

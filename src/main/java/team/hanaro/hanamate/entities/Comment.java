@@ -28,6 +28,6 @@ public class Comment extends BaseTime{
     @JoinColumn(name = "user_id")
     @ReadOnlyProperty
     private User user;
-
+    private String writerName;
     private String content;
 }
