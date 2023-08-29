@@ -31,6 +31,7 @@ public class LoanRequestDto {
         private Integer total_interestRate;
         private Integer total_repaymentAmount;
         private ArrayList<Integer> repaymentList;
+        private Integer balance;
 
     }
 
@@ -53,6 +54,12 @@ public class LoanRequestDto {
         private Integer duration; //기한
         private Timestamp startDate; //
         private Timestamp endDate;
+    }
+
+    @Getter
+    @Setter
+    public static class History{
+        private Long loanId;
     }
 
 
