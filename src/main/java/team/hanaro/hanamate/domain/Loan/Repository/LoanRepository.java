@@ -14,6 +14,8 @@ public interface LoanRepository extends JpaRepository<Loans, Long> {
     List<Loans> findByChild(Child id);
     List<Loans> findByParent(Parent id);
 
+    Optional<Loans> findByChildAndCompletedIsFalse(Child id);
+
     void deleteById(Long loanId);
 
     Optional<List<Loans>> findAllByChild(Child nowChild);

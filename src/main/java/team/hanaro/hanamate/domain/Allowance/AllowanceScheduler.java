@@ -78,7 +78,7 @@ public class AllowanceScheduler {
                 }
 
                 //대출 있는지 확인
-                Optional<Loans> loans = loanRepository.findByChild(child.get());
+                Optional<Loans> loans = loanRepository.findByChildAndCompletedIsFalse(child.get());
                 if (loans.isPresent()) {
                     Optional<LoanHistory> history = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderByHistoryId(loans);
 
