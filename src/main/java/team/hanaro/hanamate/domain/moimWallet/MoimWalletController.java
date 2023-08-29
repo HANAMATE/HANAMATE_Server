@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +30,9 @@ public class MoimWalletController {
     }
     @Operation(summary = "내 모임통장 만들기", description = "내 모임통장 만들기", tags = {"모임통장"})
     @PostMapping("/moim")
-    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet){
-        return moimWalletService.createMoimWallet(moimWallet);
+    public ResponseEntity<?> createMoimWallet(@Validated @RequestBody MoimWalletRequestDto.JoinMoimWalletDTO moimWallet, @AuthenticationPrincipal UserDetails userDetails) {
+        //토큰으로 전환 완료
+        return moimWalletService.createMoimWallet(moimWallet, userDetails.getUsername());
     }
 
     @Operation(summary = "모임통장 내용 가져오기", description = "지정한 모임통장의 세부내역(거래내역, 글, 댓글) 등을 모두 가져옵니다.)", tags = {"모임통장"})
@@ -40,13 +43,10 @@ public class MoimWalletController {
 
 
     @Operation(summary = "내 모임통장 전부 가져오기", description = "내 모임통장 전부 가져오기", tags = {"모임통장"})
-    @PostMapping("/moims")
-    public ResponseEntity<?> myMoimWallet(@Validated @RequestBody MoimWalletRequestDto.findAllMoimWalletDTO moimWallet, Errors errors) {
-        // validation check
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
-        return moimWalletService.getMoimWalletListByLoginId(moimWallet);
+    @GetMapping("/moims")
+    public ResponseEntity<?> myMoimWallet(@AuthenticationPrincipal UserDetails userDetails) {
+        //토큰으로 전환 완료
+        return moimWalletService.getMoimWalletListByLoginId(userDetails.getUsername());
     }
     @Operation(summary = "모임 통장 정보 수정하기", description = "모임 통장 정보 수정하기", tags = {"모임통장"})
     @PutMapping("/moim")

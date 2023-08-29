@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +34,7 @@ public class SNSController {
     @Operation(summary = "거래내역 글쓰기", description = "거래내역 1개에 대해서 1개의 글을 쓸 수 있습니다.", tags = {"모임통장"})
     @PostMapping("/article")
     public ResponseEntity<?> writeArticle(@Validated @ModelAttribute WriteArticleRequestDTO articleDTO,
-                                          @RequestPart List<MultipartFile> multipartFile) {
+                                          @Nullable  @RequestPart List<MultipartFile> multipartFile) {
         try {//이미지 안들어왔으면 그냥 초기화해서 넣어둠
             return snsService.writeArticle(articleDTO, multipartFile);
         } catch (ResponseStatusException e) {

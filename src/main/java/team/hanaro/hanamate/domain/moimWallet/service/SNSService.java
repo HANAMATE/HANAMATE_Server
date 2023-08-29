@@ -56,11 +56,8 @@ public class SNSService {
                     .content(articleDTO.getContent())
                     .title(articleDTO.getTitle())
                     .transaction(savedTransaction.get()).build();
-            for (MultipartFile file : multipartFile) {
-                if(!file.isEmpty()){
-                    fileIsPresent=true;
-                    break;
-                }
+            if(multipartFile != null && !multipartFile.isEmpty()){
+                fileIsPresent=true;
             }
             if (fileIsPresent) {
                 article.setImagesList(awsS3Service.uploadImage(multipartFile,article));
