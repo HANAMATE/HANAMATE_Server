@@ -10,15 +10,17 @@ import java.util.Optional;
 public interface LoanRepository extends JpaRepository<Loans, Long> {
 
     Optional<Loans> findByLoanId(String user);
-//    Optional<Loans> findByLoanId(Loans id);
-    Optional<Loans> findByChild(Child id);
-    Optional<Loans> findByParent(Parent id);
+//    List<Loans> findByLoanId(Loans id);
+    List<Loans> findByChild(Child id);
+    List<Loans> findByParent(Parent id);
+
+    Optional<Loans> findByChildAndCompletedIsFalse(Child id);
 
     void deleteById(Long loanId);
 
     Optional<List<Loans>> findAllByChild(Child nowChild);
-    Optional<List<Loans>> findAllByChildAndValidIsTrue(Child child);
-    Optional<List<Loans>> findAllByParentAndValidIsTrue(Parent parent);
+    Optional<List<Loans>> findAllByChildAndValidIsTrueAndCompletedIsTrue(Child child);
+    Optional<List<Loans>> findAllByParentAndValidIsTrueAndCompletedIsTrue(Parent parent);
 
 //    Optional<List<LoanHistory>> findAllByChildAndSuccessIsTrue(Child nowChild);
 }
