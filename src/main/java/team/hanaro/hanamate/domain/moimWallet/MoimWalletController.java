@@ -56,10 +56,7 @@ public class MoimWalletController {
 
     @Operation(summary = "모임 통장 삭제하기", description = "모임통장 삭제하기", tags = {"모임통장"})
     @DeleteMapping("/moim")
-    public ResponseEntity<?> deleteMoimWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO, Errors errors) {
-        if (errors.hasErrors()) {
-            return response.invalidFields(Helper.refineErrors(errors));
-        }
+    public ResponseEntity<?> deleteMoimWallet(@Validated @RequestBody MoimWalletRequestDto.DeleteRequestDTO deleteRequestDTO) {
         return moimWalletService.deleteMoimWallet(deleteRequestDTO);
     }
 
