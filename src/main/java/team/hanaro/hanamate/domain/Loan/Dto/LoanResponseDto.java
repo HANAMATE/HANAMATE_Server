@@ -15,12 +15,6 @@ public class LoanResponseDto {
     public static class initInfo {
         private Integer interestRate;
         private String paymentMethod;
-
-        private Integer canAmount_3month;
-
-        private Integer canAmount_6month;
-
-        private Integer canAmount_12month;
     }
 
     @Getter

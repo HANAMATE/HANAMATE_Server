@@ -27,7 +27,6 @@ public class UserResponseDto {
     public static class UserInfo {
         private String userId;
         private String userType;
-
         private String userName;
         private Long myWalletId;
 

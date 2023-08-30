@@ -25,10 +25,9 @@ public class Loans {
     @JsonIgnore //순환참조 문제 해결을 위한 JsonIgnore -> 해당 값을 DTO에 반환하기 위해서 get으로 값을 꺼내서 직접 넣어주세요.
     private Parent parent;
 
-    // TODO: 2023/08/19 cascade 옵션 테스트가 필요합니다. 우선 적용해놓을테니 대출 삭제 api 완성되면 꼭 알려주세요!!!!!!!!! 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "child_id")
-    @JsonIgnore //순환참조 문제 해결을 위한 JsonIgnore -> 해당 값을 DTO에 반환하기 위해서 get으로 값을 꺼내서 직접 넣어주세요.
+    @JsonIgnore //순환참조 문제 해결을 위한 JsonIgnore
     private Child child;
 
     private Long walletId; //내지갑
@@ -38,8 +37,6 @@ public class Loans {
     private Timestamp endDate; //마감날짜
     private Integer loanAmount; //대출 금액
     private Integer balance; //잔액
-//    private Integer repaymentAmount; //상환금액 TODO: 어떤 컬럼인지 확인
-
     private String paymentMethod;
     private Integer interestRate;// 고정 이자 /* 5%면 5 */
     private Integer sequence; /* 상환 회차 */
@@ -48,5 +45,4 @@ public class Loans {
     private String loanMessage; //요청 메세지
     private Integer total_interestRate; //총이자
     private Integer total_repaymentAmount; //총상환금액
-//    private Integer month_loanAmount; //매달 상환금액
 }

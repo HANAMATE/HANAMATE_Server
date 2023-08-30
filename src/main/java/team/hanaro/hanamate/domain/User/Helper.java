@@ -8,7 +8,6 @@ import java.util.LinkedList;
 
 @Service
 public class Helper {
-
     public static LinkedList<LinkedHashMap<String, String>> refineErrors(Errors errors) {
         LinkedList errorList = new LinkedList<LinkedHashMap<String, String>>();
         errors.getFieldErrors().forEach(e-> {

@@ -42,9 +42,6 @@ public class LoanController {
     @Operation(summary = "대출 등록", description = "대출 등록", tags = {"대출"})
     @PostMapping("/apply")
     public ResponseEntity<?> apply(@Validated @RequestBody LoanRequestDto.Apply apply, Errors errors, @AuthenticationPrincipal UserDetails userDetails) {
-//        log.info("대출 컨트롤러 들어옴");
-//        log.info("authentication={}", authentication);
-        // validation check
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }

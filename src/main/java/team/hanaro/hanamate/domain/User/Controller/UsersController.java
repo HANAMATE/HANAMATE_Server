@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class UsersController {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private final UsersService usersService;
     private final Response response;
 

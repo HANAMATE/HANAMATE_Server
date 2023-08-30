@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import team.hanaro.hanamate.domain.Allowance.AllowanceService;
@@ -42,10 +41,6 @@ public class LoanService {
         LoanResponseDto.initInfo initInfo = new LoanResponseDto.initInfo();
         initInfo.setInterestRate(1);
         initInfo.setPaymentMethod("원금균등상환");
-        // TODO: 08.19 얼만큼 빌릴 수 있는지 제공해줘야 함.
-        //개인의 정기 용돈의 금액을 id를 통해 가져와서 빌릴 수 있는 값을 보냄
-//        initInfo.setCanAmount_3month();
-
         return response.success(initInfo, "정상적으로 대출 초기 정보를 가져왔습니다.", HttpStatus.OK);
     }
 
@@ -56,11 +51,8 @@ public class LoanService {
             return response.fail("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         }
         Child now_user = maybeUser.get();
-//        Child now_user = childRepository.findByLoginId(userId).get();
-
         Loans loans = Loans.builder()
                 .child(now_user)
-                //부모가 아닌 값이 들어가면 500 오류가 뜸 TODO: 오류 처리해줘야함
                 .parent(now_user.getMyParentList().get(0).getParent())
                 .walletId(now_user.getMyWallet().getId())
                 .loanName(apply.getLoanName())
@@ -75,14 +67,10 @@ public class LoanService {
                 .balance(apply.getBalance())
                 .sequence(apply.getSequence())
                 .build();
-
-
         loanRepository.save(loans);
-
 
         return response.success("대출 신청이 완료되었습니다.");
     }
-
 
     public ResponseEntity<?> calculate(LoanRequestDto.Calculate calculate, String userId) {
         Optional<Child> maybeChild = childRepository.findByLoginId(userId);
@@ -90,7 +78,6 @@ public class LoanService {
             return response.fail("해당하는 사용자 정보가 없습니다.", HttpStatus.BAD_REQUEST);
         }
         Child now_user = maybeChild.get();
-//        Child now_user = childRepository.findByLoginId(userId).get();
         Integer allowance = allowanceService.getPeriodicAllowanceByChildId(now_user);// ByChildID라는 함수를 가져왔다는 가정으로
 
         if (allowance == null) {
@@ -135,15 +122,11 @@ public class LoanService {
     //부모 - 아이 화면에서 대출 신청 정보 가져오기 (대출에 관련된 부모, 아이만 해당 정보를 가져올 수 있음 아니면 에러남)
     public ResponseEntity<?> applyInfo(String userId) {
         Optional<User> maybeUser = usersRepository.findByLoginId(userId);
-
         if (maybeUser.isEmpty()) {
             return response.fail("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         }
-
         User now_user = maybeUser.get();
         LoanResponseDto.applyInfo applyInfo = new LoanResponseDto.applyInfo();
-
-//        List<Loans> validLoans = new ArrayList<>(); // 유효한 대출 목록
 
         if (now_user.getUserType().equals("Child")) {
             Optional<Child> maybeChild = childRepository.findByLoginId(userId);
@@ -212,7 +195,6 @@ public class LoanService {
     public ResponseEntity<?> approve(LoanRequestDto.Approve approve, String userId) {
         Parent now_parent = parentRepository.findByLoginId(userId).get();
         List<Loans> loansList = loanRepository.findByParent(now_parent);
-//        List<Loans> optionalLoans = loanRepository.findByParent(now_parent);
 
         Optional<Loans> validLoan = loansList.stream()
                 .filter(loan -> !loan.getCompleted()) // getCompleted가 false인 대출만 선택
@@ -259,12 +241,8 @@ public class LoanService {
                         .build();
                 loanHistoryRepository.save(loanHistory);
             }
-
-
         return response.success(null, "정상적으로 대출을 승인했습니다.", HttpStatus.OK);
-
     }
-
 
     public ResponseEntity<?> refuse(String userId) {
 
@@ -273,12 +251,8 @@ public class LoanService {
         if (maybeParent.isEmpty()){
             return response.fail("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
         }
-
         Parent now_parent = maybeParent.get();
-
-//        List<Loans> maybeLoan = loanRepository.findByParent(now_parent);
         List<Loans> loansList = loanRepository.findByParent(now_parent);
-//        List<Loans> optionalLoans = loanRepository.findByParent(now_parent);
 
         Optional<Loans> validLoan = loansList.stream()
                 .filter(loan -> !loan.getCompleted()) // getCompleted가 false인 대출만 선택
@@ -290,10 +264,8 @@ public class LoanService {
             return response.fail(applyNotInfo, "신청한 대출 상품이 없습니다.", HttpStatus.NO_CONTENT);
         }
 
-
         Long now_loanId = validLoan.get().getLoanId();
         loanRepository.deleteById(now_loanId);
-
 
         return response.success(null, "정상적으로 대출이 거절되어 요청이 삭제됐습니다.", HttpStatus.OK);
     }
@@ -332,13 +304,11 @@ public class LoanService {
                 return response.fail("아이의 대출 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
             }
         }
-//        return response.success(null, "대출 조회 내역이 없습니다", HttpStatus.OK);
     }
 
 
     public ResponseEntity<?> historydetailInfo(@PathVariable Long loanId, String userId) {
         List<LoanHistory> loanHistories = loanHistoryRepository.findAllBySuccessIsTrueAndLoansLoanId(loanId);
-        log.info("loanHistories={}", loanHistories);
         if (!loanHistories.isEmpty()) {
             List<LoanResponseDto.historydetailInfo> historydetailInfoList = new ArrayList<>();
             for (LoanHistory loanHistory : loanHistories) {
@@ -349,7 +319,6 @@ public class LoanService {
         } else {
             return response.fail("나의 대출 상세 내역 조회에 실패했습니다.", HttpStatus.BAD_REQUEST);
         }
-
     }
 
     public ResponseEntity<?> loandetailInfo(Long loanId) {
@@ -371,8 +340,6 @@ public class LoanService {
         } else {
             return response.fail("대출 상세 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         }
-//
-//
 
     }
 }
