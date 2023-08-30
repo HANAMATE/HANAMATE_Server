@@ -102,6 +102,8 @@ public class LoanResponseDto {
         private Integer total_interestRate;
         private Integer total_repaymentAmount;
         private String paymentMethod;
+        private Timestamp startDate;
+        private Timestamp endDate;
 
 
     }

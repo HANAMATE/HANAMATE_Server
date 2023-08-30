@@ -365,6 +365,8 @@ public class LoanService {
             loandetailInfo.setInterestRate(loan.getInterestRate());
             loandetailInfo.setPaymentMethod(loan.getPaymentMethod());
             loandetailInfo.setSequence(loan.getSequence());
+            loandetailInfo.setStartDate(loan.getStartDate());
+            loandetailInfo.setEndDate(loan.getEndDate());
             return response.success(loandetailInfo, "대출 상세 정보 조회에 성공했습니다.", HttpStatus.OK);
         } else {
             return response.fail("대출 상세 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
