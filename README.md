@@ -92,17 +92,17 @@
 
 ## 🌐 배포환경
 
-![image](https://github.com/HANAMATE/Hanamate_Server/src/main/resources/readme/architecture.png)
+![image](./src/main/resources/readme/architecture.png)
 <br>
 
 <br>
 
 ## 🗄️ 데이터베이스 모델링
 
-![image](https://github.com/HANAMATE/Hanamate_Server/src/main/resources/readme/erd.png)
+![image](./src/main/resources/readme/erd.png)
 <br>
 
 ## 🎨 UI
-![image](https://github.com/HANAMATE/Hanamate_Server/src/main/resources/readme/ui.png)
+![image](./src/main/resources/readme/ui.png)
 
 <br>
