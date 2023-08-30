@@ -39,9 +39,6 @@ public class UserRequestDto {
 
         private UserType userType;
 
-
-
-
     }
 
 

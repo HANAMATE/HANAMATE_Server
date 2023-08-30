@@ -136,7 +136,7 @@ public class UsersService {
         String get_accessToken = request.getHeader("AccessToken");
         Authentication authentication = jwtTokenProvider.getAuthentication(get_accessToken);
 
-        // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
+        // 3. Redis 에서 User id 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
         String redisRefreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
         // (추가) 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
         if (ObjectUtils.isEmpty(redisRefreshToken)) {
