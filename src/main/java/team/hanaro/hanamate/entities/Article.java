@@ -33,7 +33,7 @@ public class Article extends BaseTime {
     @Builder.Default
     private Long likes = 0L; //TODO: likes 관련 요구사항 다시 확인하기
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "transaction_id")
     @JsonIgnore
     private Transactions transaction;

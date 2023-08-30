@@ -262,7 +262,9 @@ public class WalletService {
         if (receiveWallet.isEmpty()) {
             return response.fail("받는 지갑Id가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
-
+        if (transfer.getAmount()==null) {
+            return response.fail("금액은 반드시 입력해야합니다.", HttpStatus.BAD_REQUEST);
+        }
         String sendMsg = transfer.getMessage();
         String receiveMsg = transfer.getMessage();
         if (transfer.getMessage() == null) {

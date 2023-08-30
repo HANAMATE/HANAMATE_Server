@@ -45,6 +45,7 @@ public class SNSService {
                                           List<MultipartFile> multipartFile) throws SQLException, IOException {
         //1-1. 트랜잭션 id로 해당 트랜잭션 찾아온다.
         Optional<Transactions> savedTransaction = transactionRepository.findById(articleDTO.getTransactionId());
+        boolean fileIsPresent = false;
         if (savedTransaction.isEmpty()) {
             return response.fail("잘못된 거래내역 입니다.", HttpStatus.BAD_REQUEST);
         }
@@ -55,26 +56,28 @@ public class SNSService {
                     .content(articleDTO.getContent())
                     .title(articleDTO.getTitle())
                     .transaction(savedTransaction.get()).build();
-            boolean fileIsEmpty = false;
-            for (MultipartFile file : multipartFile) {
-                if(!file.isEmpty()){
-                    fileIsEmpty=true;
-                }
+            if(multipartFile != null && !multipartFile.isEmpty()){
+                fileIsPresent=true;
             }
-            if (fileIsEmpty) {
+            if (fileIsPresent) {
                 article.setImagesList(awsS3Service.uploadImage(multipartFile,article));
             }
             Article savedArticle = articleRepository.save(article);
-            articleResponseDTO = new SNSResponseDTO.ArticleResponseDTO(savedArticle);
+            articleResponseDTO = new SNSResponseDTO.ArticleResponseDTO(savedArticle,fileIsPresent);
             return response.success(articleResponseDTO, "성공적으로 글이 작성되었습니다.", HttpStatus.OK);
         } else {
             //1-3존재하면 수정
             Article savedArticle = savedTransaction.get().getArticle();
             savedArticle.setContent(articleDTO.getContent());
             savedArticle.setTitle(articleDTO.getTitle());
+
             //글의 사진 수정은 입력, 삭제만 하도록 하여서 여기에서는 수정 X
             articleRepository.save(savedArticle);
-            articleResponseDTO = new SNSResponseDTO.ArticleResponseDTO(savedArticle);
+            if (!savedArticle.getImagesList().isEmpty()) {
+                //이미지가 존재하면 true
+                fileIsPresent = true;
+            }
+            articleResponseDTO = new SNSResponseDTO.ArticleResponseDTO(savedArticle,fileIsPresent);
             List<SNSResponseDTO.CommentResponseDTO> commentDTOList = new ArrayList<>();
             for (Comment comment : savedArticle.getComments()) {
                 SNSResponseDTO.CommentResponseDTO temp = new SNSResponseDTO.CommentResponseDTO(comment);
@@ -146,7 +149,7 @@ public class SNSService {
         }
         Article article = optionalArticle.get();
         User user = optionalUser.get();
-        Comment comment = new Comment(null, article, user, requestDTO.getContent());
+        Comment comment = new Comment(null, article, user,user.getName(), requestDTO.getContent());
         commentRepository.save(comment);
         return response.success(new WriteCommentResponseDTO(comment), "댓글 작성에 성공했습니다.", HttpStatus.CREATED);
     }
@@ -165,13 +168,12 @@ public class SNSService {
     }
 
     //4. 댓글 삭제 기능
-    public ResponseEntity<?> deleteComment(UpdateCommentRequestDTO requestDTO) {
+    public ResponseEntity<?> deleteComment(DeleteCommentRequestDTO requestDTO) {
         Optional<Comment> optionalComment = commentRepository.findById(requestDTO.getCommentId());
         if (optionalComment.isEmpty()) {
             return response.fail("이미 삭제된 댓글이거나 없는 댓글입니다.", HttpStatus.NOT_FOUND);
         }
         Comment comment = optionalComment.get();
-        comment.setContent(requestDTO.getContent());
         commentRepository.delete(comment);
         return response.success("댓글 삭제에 성공했습니다.");
     }

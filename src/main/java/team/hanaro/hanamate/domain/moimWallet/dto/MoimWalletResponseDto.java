@@ -47,6 +47,7 @@ public class MoimWalletResponseDto {
         private Integer amount;
         private Integer balance;
         private String type;
+        private String transactionMessage;
 
         private ArticleResponseDTO article;
 
@@ -57,6 +58,7 @@ public class MoimWalletResponseDto {
             amount = transactions.getAmount();
             balance = transactions.getBalance();
             type = transactions.getTransactionType();
+            transactionMessage = transactions.getMessage();
         }
     }
 

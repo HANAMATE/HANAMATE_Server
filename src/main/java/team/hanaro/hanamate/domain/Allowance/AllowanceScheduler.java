@@ -77,19 +77,10 @@ public class AllowanceScheduler {
                     break;
                 }
 
-                //TODO : 민선님 아이 값 가져오는 것 findByChild 리턴값이 리스트로 바뀌게 되어서 그에 맞춰서 수정했는데 잘못됐는지 확인해주세요
-                List<Loans> loansList = loanRepository.findByChild(child.get());
-
-                // Child의 대출 목록 중에서 유효한 대출만 필터링
-                // 유효한 대출 중에서 첫 번째 대출 정보를 가져오기
-                Optional<Loans> validLoan = loansList.stream()
-                        .filter(loan -> !loan.getCompleted()) // getCompleted가 false인 대출만 선택
-                        .findFirst();
-
                 //대출 있는지 확인
-//                Optional<Loans> loans = loanRepository.findByChild(child.get()); //TODO: 이 코드가 원래 민선님 코드 입니다! loans를 validLoan로 바꾸었습니다
-                if (validLoan.isPresent()) {
-                    Optional<LoanHistory> history = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderByHistoryId(validLoan);
+                Optional<Loans> loans = loanRepository.findByChildAndCompletedIsFalse(child.get());
+                if (loans.isPresent()) {
+                    Optional<LoanHistory> history = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderByHistoryId(loans);
 
                     if (history.isPresent()) {
                         //대출만큼 금액에서 까기
@@ -102,11 +93,11 @@ public class AllowanceScheduler {
                     history.get().setSuccess(true);
                     loanHistoryRepository.save(history.get());
 
-                    Optional<LoanHistory> result = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderByHistoryId(validLoan);
+                    Optional<LoanHistory> result = loanHistoryRepository.findByLoansAndSuccessIsFalseOrderByHistoryId(loans);
                     //더이상 상환해야하는 loanHistory가 없다면
                     if (result.isEmpty()) {
-                        validLoan.get().setCompleted(true);
-                        loanRepository.save(validLoan.get());
+                        loans.get().setCompleted(true);
+                        loanRepository.save(loans.get());
                     }
                 }
 

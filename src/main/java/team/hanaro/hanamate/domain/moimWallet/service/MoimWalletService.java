@@ -30,8 +30,8 @@ public class MoimWalletService {
 
     private final SNSService snsService;
 
-    public ResponseEntity<?> getMoimWalletListByLoginId(MoimWalletRequestDto.findAllMoimWalletDTO moimWalletDto) {
-        Optional<User> byLoginId = usersRepository.findByLoginId(moimWalletDto.getUserId());
+    public ResponseEntity<?> getMoimWalletListByLoginId(String userId) {
+        Optional<User> byLoginId = usersRepository.findByLoginId(userId);
         if (byLoginId.isEmpty()) {
             return response.fail("해당하는 유저 아이디가 없습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -52,9 +52,8 @@ public class MoimWalletService {
     /**
      * 새로운 모임 통장 만들기어서 새로운 모임통장 idx 값 반환하기.
      */
-    public ResponseEntity<?> createMoimWallet(MoimWalletRequestDto.JoinMoimWalletDTO joinMoimWalletDTO) {
-
-        Optional<User> savedUser = usersRepository.findByLoginId(joinMoimWalletDTO.getUserId());
+    public ResponseEntity<?> createMoimWallet(MoimWalletRequestDto.JoinMoimWalletDTO joinMoimWalletDTO,String userId) {
+        Optional<User> savedUser = usersRepository.findByLoginId(userId);
         if (savedUser.isEmpty()) {
             return response.fail("모임통장 개설 실패 - 잘못된 유저 ID 입니다.", HttpStatus.BAD_REQUEST);
         }
@@ -104,6 +103,7 @@ public class MoimWalletService {
     }
 
 
+    //토큰으로 전환 완료
 
     public ResponseEntity<?> updateMoimWalletInfo(MoimWalletRequestDto.UpdateMoimWalletInfoRequestDTO updateMoimWalletDTO) {
         Optional<MoimWallet> optionalMoimWallet = moimWalletRepository.findById(updateMoimWalletDTO.getMoimWalletId());
