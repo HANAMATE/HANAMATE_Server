@@ -269,4 +269,3 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,intellij,java,gradle
 src/main/java/team/hanaro/hanamate/initDb.java
-src/main/resources/application-S3.properties
