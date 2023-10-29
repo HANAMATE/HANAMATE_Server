@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@PropertySource("application-S3.properties")
+//@PropertySource("application-S3.properties")
 public class AwsS3Service {
     private final AmazonS3 amazonS3;
     private final ImageRepository imageRepository;
