@@ -1,57 +1,23 @@
 # 👫 하나메이트
 
-## 👥 Team Members
-
-|Role | Name | Email                 | Github                                        |
-|-----|------|-----------------------|-----------------------------------------------|
-|Leader| 민새미  | msw4585@gmail.com     | [Github Link](https://github.com/petcu1004)   |
-|Member| 권민선  | jms393497@gmail.com   | [Github Link](https://github.com/helloalpaca) |
-|Member| 최안식  | choiansik98@naver.com | [Github Link](https://github.com/Ansix1207)   |
+## 💬 프로젝트 소개
+자녀의 금융 교육을 돕는 플랫폼입니다. <br />
+용돈 요청 및 관리부터 모임통장까지! 부모, 친구와 함께하는 <b>상호작용을 통해 좋은 금융습관</b>을 기를 수 있습니다.
 
 <br>
 
-## 📄 Project Description
-아이들을 위한 맞춤형 금융 교육 서비스입니다. 부모-아이 역할 기반으로 상호작용을 통해서 금융을 학습할 수 있습니다.
+## 🙋 팀원 소개
 
+| <img src="https://github.com/petcu1004.png" width="200" height="200"/> | <img src="https://github.com/helloalpaca.png" width="200" height="200"> | <img src="https://github.com/Ansix1207.png" width="200" height="200"> |
+|:----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|:---------------------------------------------------------------------:|
+|                  [민새미](https://github.com/petcu1004)                   |                  [권민선](https://github.com/helloalpaca)                  |                  [최안식](https://github.com/Ansix1207)                  |
+|                                 Leader                                 |                                 Member                                  |                                Member                                 |
+|                     JWT 기반 로그인 개발 <br /> 대출 기능 구현                      |                         용돈 기능 구현 <br /> CICD 배포                         |                       모임통장 기능 구현 <br /> CICD 배포                       |
 <br>
 
 ## 💻 기술 스택 🛠️
 
-### 개발 환경
-
-| IDE                                                                                                            | JDK                                                                                                      | Build                                                                                                  |
-|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
-| <img src="https://img.shields.io/badge/IntelliJ-000000?style=for-the-badge&logo=IntelliJIDEA&logoColor=white"> | <img  src="https://img.shields.io/badge/JDK 11-007396?style=for-the-badge&logo=Java&logoColor=white"> | <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> | 
-
-### Frontend
-
-| HTML                                                                                                 | CSS                                                                                               | JavaScript                                                                                                     | REACT                                                                                        |
-|------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
-| <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=HTML5&logoColor=white"> | <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white"> | <img src="https://img.shields.io/badge/Javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white"> | <img src="https://img.shields.io/badge/-ReactJs-61DAFB?logo=react&logoColor=white&style=for-the-badge"> |
-
-| REDUX                                                                                             | 
-|---------------------------------------------------------------------------------------------------| 
-| <img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white"> |
-
-### Backend
-
-| Java                                                                                               | SpringBoot                                                                                                    | SpringSecurity                                                                                                           | JPA| 
-|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|----|
-| <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=Java&logoColor=white"> | <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> | <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white"> |<img src="https://img.shields.io/badge/JPA-ED8B00.svg?style=for-the-badge&logoColor=white">
-
-### DevOps
-
-| EC2                                                                                                 | Codepiepline                                                                                        | S3                                                                                                      | RDS                                                                                                      | Redis                                                                                                 |
-|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=Amazon AWS&logoColor=white"> | <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=Amazon AWS&logoColor=white"> | <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=Amazon AWS&logoColor=white"> |  <img src="https://img.shields.io/badge/RDS-232F3E?style=for-the-badge&logo=Amazon AWS&logoColor=white"> | <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> |
-
-### 협업
-
-| GIT                                                                                                | Notion                                                                                                 | Swagger                                                                                                       |
-|----------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white">   | <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white"> | <img src="https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white"> |
-
-<br>
+<img src="src/main/resources/readme/hanamate_stack.png" alt="stack">
 
 ## 📂 Folder Structure
 
