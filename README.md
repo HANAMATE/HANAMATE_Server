@@ -21,16 +21,17 @@
 
 ## ⚡ 주요 기능
 
-### 1) 용돈 주고받기를 통한 부모님과의 상호작용
-- 아이 : 용돈 조르기, 용돈 내역 확인
-- 부모 : 용돈 조르기 승인, 용돈 이체(수시/정기)
+### 1) 용돈 관리를 통해 스스로 배우는 금융
+![image](./src/main/resources/readme/wallet-child.png)
+![image](./src/main/resources/readme/wallet-parent.png)
 
 ### 2) 모임 통장으로 친구들과 함께 용돈 관리하고 추억 공유하기
-- 모임통장 생성, 거래내역 확인, 글 생성, 댓글 달기, 좋아요
+![image](./src/main/resources/readme/moim1.png)
+![image](./src/main/resources/readme/moim2.png)
 
-### 3) 대출을 통해서 금융 배우기
-- 아이 : 대출 신청, 대출 상환
-- 부모 : 대출 승인/거절
+### 3) 부모님께 빌리는 대출을 통해서 금융 학습하기
+  ![image](./src/main/resources/readme/loan-child.png)
+  ![image](./src/main/resources/readme/loan-parent.png)
 
 ## 📂 Folder Structure
 
@@ -75,3 +76,7 @@
 ![image](./src/main/resources/readme/hanamate-server-architecture.png)
 ### 2) 배포 아키텍처
 ![image](./src/main/resources/readme/hanamate-cicd-architecture.png)
+
+## 🎬 시연 영상
+
+[![하나메이트 시연영상](http://img.youtube.com/vi/m-6irBoz81I/0.jpg)](https://www.youtube.com/watch?v=m-6irBoz81I) 
